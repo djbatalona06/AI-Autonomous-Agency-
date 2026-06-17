@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/trpc/:path*", "destination": "/api/index" },
+    { "source": "/api/auth/:path*", "destination": "/api/index" },
+    { "source": "/((?!api/|trpc/|assets/|favicon).*)", "destination": "/index.html" }
+  ]
+}

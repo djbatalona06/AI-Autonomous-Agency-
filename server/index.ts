@@ -2,11 +2,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import express from "express";
-import cookieParser from "cookie-parser";
-import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { appRouter } from "./routers";
-import { createContext } from "./context";
-import { authRouter } from "./_core/auth";
+import { createApp } from "./app";
 import { ENV } from "./_core/env";
 
 // Load .env if present (Node 20.6+ has process.loadEnvFile).
@@ -17,19 +13,11 @@ try {
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const app = express();
-
-app.use(express.json());
-app.use(cookieParser());
-
-// Auth + tRPC API
-app.use("/api/auth", authRouter);
-app.use(
-  "/trpc",
-  createExpressMiddleware({ router: appRouter, createContext }),
-);
+const app = createApp();
 
 // In production, serve the built client and let the SPA handle routing.
+// (On Vercel this branch is unused — static output is served by the platform
+// and the API runs as a serverless function in `api/index.ts`.)
 if (ENV.isProd) {
   const clientDir = path.join(__dirname, "..", "dist");
   app.use(express.static(clientDir));
