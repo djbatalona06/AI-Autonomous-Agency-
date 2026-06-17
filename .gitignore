@@ -1,8 +1,8 @@
 node_modules
 dist
-api
 .env
 .env.local
 server/.data
+api/.data
 *.log
 .DS_Store
