@@ -1,0 +1,339 @@
+# Instincts generated from https://github.com/djbatalona06/AI-Autonomous-Agency-
+# Generated: 2026-06-17T04:28:47.905Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: AI-Autonomous-Agency--commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/djbatalona06/AI-Autonomous-Agency-
+---
+
+# AI Autonomous Agency  Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: feat
+
+## Evidence
+
+- 1 commits analyzed
+- Detected conventional commit pattern
+- Examples: feat: scaffold Yawn — self-contained, runnable AI automation agency
+
+---
+id: AI-Autonomous-Agency--commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/djbatalona06/AI-Autonomous-Agency-
+---
+
+# AI Autonomous Agency  Commit Length
+
+## Action
+
+Write moderate-length commit messages (~67 characters)
+
+## Evidence
+
+- Average commit message length: 67 chars
+- Based on 1 commits
+
+---
+id: AI-Autonomous-Agency--naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/djbatalona06/AI-Autonomous-Agency-
+---
+
+# AI Autonomous Agency  Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: AI-Autonomous-Agency--import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/djbatalona06/AI-Autonomous-Agency-
+---
+
+# AI Autonomous Agency  Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: AI-Autonomous-Agency--export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/djbatalona06/AI-Autonomous-Agency-
+---
+
+# AI Autonomous Agency  Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: AI-Autonomous-Agency--arch-type-based
+trigger: "when adding new code"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/djbatalona06/AI-Autonomous-Agency-
+---
+
+# AI Autonomous Agency  Arch Type Based
+
+## Action
+
+Place code in the appropriate type folder (components/, services/, utils/, etc.)
+
+## Evidence
+
+- Type-based module organization detected
+- Folders: _core, components, contexts, lib, pages
+
+---
+id: AI-Autonomous-Agency--test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/djbatalona06/AI-Autonomous-Agency-
+---
+
+# AI Autonomous Agency  Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: ai-autonomous-agency--naming-convention-files
+trigger: "When creating or renaming a file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: djbatalona06/AI-Autonomous-Agency-
+---
+
+# Ai Autonomous Agency  Naming Convention Files
+
+## Action
+
+Use camelCase for file names
+
+## Evidence
+
+- Pattern in namingConventions.files
+
+---
+id: ai-autonomous-agency--naming-convention-functions
+trigger: "When defining a function"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: djbatalona06/AI-Autonomous-Agency-
+---
+
+# Ai Autonomous Agency  Naming Convention Functions
+
+## Action
+
+Use camelCase for function names
+
+## Evidence
+
+- Pattern in namingConventions.functions
+
+---
+id: ai-autonomous-agency--naming-convention-classes
+trigger: "When defining a class"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: djbatalona06/AI-Autonomous-Agency-
+---
+
+# Ai Autonomous Agency  Naming Convention Classes
+
+## Action
+
+Use PascalCase for class names
+
+## Evidence
+
+- Pattern in namingConventions.classes
+
+---
+id: ai-autonomous-agency--naming-convention-constants
+trigger: "When defining a constant"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: djbatalona06/AI-Autonomous-Agency-
+---
+
+# Ai Autonomous Agency  Naming Convention Constants
+
+## Action
+
+Use SCREAMING_SNAKE_CASE for constant names
+
+## Evidence
+
+- Pattern in namingConventions.constants
+
+---
+id: ai-autonomous-agency--import-style
+trigger: "When importing modules"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: djbatalona06/AI-Autonomous-Agency-
+---
+
+# Ai Autonomous Agency  Import Style
+
+## Action
+
+Use alias import style
+
+## Evidence
+
+- Pattern in importStyle
+
+---
+id: ai-autonomous-agency--export-style
+trigger: "When exporting modules"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: djbatalona06/AI-Autonomous-Agency-
+---
+
+# Ai Autonomous Agency  Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle
+
+---
+id: ai-autonomous-agency--commit-format
+trigger: "When making a git commit"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: djbatalona06/AI-Autonomous-Agency-
+---
+
+# Ai Autonomous Agency  Commit Format
+
+## Action
+
+Use the 'feat: description' conventional commit format
+
+## Evidence
+
+- Pattern in commits.prefixes
+- Seen in commit: 'feat: scaffold Yawn — self-contained, runnable AI automation agency'
+
+---
+id: ai-autonomous-agency--test-location
+trigger: "When adding new tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: djbatalona06/AI-Autonomous-Agency-
+---
+
+# Ai Autonomous Agency  Test Location
+
+## Action
+
+Place tests in a separate directory from source code
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+
+---
+id: ai-autonomous-agency--test-type-organization
+trigger: "When organizing modules"
+confidence: 0.7
+domain: architecture
+source: repo-analysis
+source_repo: djbatalona06/AI-Autonomous-Agency-
+---
+
+# Ai Autonomous Agency  Test Type Organization
+
+## Action
+
+Organize code by type (e.g., components, contexts, lib)
+
+## Evidence
+
+- Pattern in architecture.moduleOrganization
+- Pattern in architecture.folderStructure.srcLayout
+
+---
+id: ai-autonomous-agency--error-handling
+trigger: "When handling errors in React components"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: djbatalona06/AI-Autonomous-Agency-
+---
+
+# Ai Autonomous Agency  Error Handling
+
+## Action
+
+Use error boundaries for error handling
+
+## Evidence
+
+- Pattern in errorHandling.errorBoundaries
+
