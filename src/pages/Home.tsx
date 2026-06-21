@@ -3,6 +3,7 @@ import { motion, type Variants } from "framer-motion";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import { Button } from "@/components/ui/button";
+import { KoalaShowcase } from "@/components/KoalaShowcase";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -99,40 +100,51 @@ export default function Home() {
       <main className="pt-16">
         {/* Hero */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-16">
-          <motion.div
-            variants={container}
-            initial={reduce ? false : "hidden"}
-            animate="visible"
-            className="max-w-4xl"
-          >
-            <motion.p
-              variants={item}
-              className="inline-block border-2 border-border bg-secondary px-3 py-1 text-sm font-bold uppercase tracking-widest mb-6"
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            <motion.div
+              variants={container}
+              initial={reduce ? false : "hidden"}
+              animate="visible"
+              className="flex-1 min-w-0"
             >
-              AI Automation Agency
-            </motion.p>
-            <motion.h1
-              variants={item}
-              className="text-5xl sm:text-7xl lg:text-8xl font-extrabold leading-[0.95] tracking-tight"
-            >
-              Automate <br />
-              the <span className="text-primary">Boring.</span>
-            </motion.h1>
-            <motion.p variants={item} className="mt-8 text-xl sm:text-2xl font-semibold max-w-2xl">
-              Wake up your business with AI-powered automation. Generate images, scrape competitors,
-              and scale without the grind.
-            </motion.p>
-            <motion.div variants={item} className="mt-10 flex flex-wrap gap-4">
-              <a href={ctaHref}>
-                <Button size="lg">{isAuthenticated ? "Go to Dashboard →" : "Start Automating →"}</Button>
-              </a>
-              <a href="#features">
-                <Button size="lg" variant="outline">
-                  See what it does
-                </Button>
-              </a>
+              <motion.p
+                variants={item}
+                className="inline-block border-2 border-border bg-secondary px-3 py-1 text-sm font-bold uppercase tracking-widest mb-6"
+              >
+                AI Automation Agency
+              </motion.p>
+              <motion.h1
+                variants={item}
+                className="text-5xl sm:text-7xl lg:text-8xl font-extrabold leading-[0.95] tracking-tight"
+              >
+                Automate <br />
+                the <span className="text-primary">Boring.</span>
+              </motion.h1>
+              <motion.p variants={item} className="mt-8 text-xl sm:text-2xl font-semibold max-w-2xl">
+                Wake up your business with AI-powered automation. Generate images, scrape competitors,
+                and scale without the grind.
+              </motion.p>
+              <motion.div variants={item} className="mt-10 flex flex-wrap gap-4">
+                <a href={ctaHref}>
+                  <Button size="lg">{isAuthenticated ? "Go to Dashboard →" : "Start Automating →"}</Button>
+                </a>
+                <a href="#features">
+                  <Button size="lg" variant="outline">
+                    See what it does
+                  </Button>
+                </a>
+              </motion.div>
             </motion.div>
-          </motion.div>
+
+            <motion.div
+              variants={item}
+              initial={reduce ? false : "hidden"}
+              animate="visible"
+              className="flex-1 w-full lg:max-w-[600px] shrink-0"
+            >
+              <KoalaShowcase />
+            </motion.div>
+          </div>
         </section>
 
         {/* Automation Feed marquee */}
