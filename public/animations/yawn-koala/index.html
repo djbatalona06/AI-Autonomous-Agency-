@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Yawn — Kaiju Koala</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Oswald';
+        font-style: normal;
+        font-weight: 700;
+        font-display: block;
+        src: url('assets/fonts/oswald-700.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 300;
+        font-display: block;
+        src: url('assets/fonts/montserrat-300.woff2') format('woff2');
+      }
+    </style>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #080b12;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="yawn-kaiju-koala"
+      data-start="0"
+      data-duration="32"
+      data-width="1920"
+      data-height="1080"
+    >
+
+      <!-- ═══ LAYER 1: Background ═══ -->
+      <div id="yk-bg"></div>
+      <div id="yk-bg-glow"></div>
+      <div id="yk-bg-tint"></div>
+
+      <!-- ═══ LAYER 2: Ghost "YAWN" text ═══ -->
+      <div id="yk-ghost" aria-hidden="true">YAWN</div>
+
+      <!-- ═══ LAYER 3: City silhouette ═══ -->
+      <div id="yk-city" aria-hidden="true">
+        <div class="bld bld-1"></div>
+        <div class="bld bld-2"></div>
+        <div class="bld bld-3"></div>
+        <div class="bld bld-4"></div>
+        <div class="bld bld-5"></div>
+        <div class="bld bld-6"></div>
+        <div class="bld bld-7"></div>
+        <div class="bld bld-8"></div>
+        <div class="bld bld-9"></div>
+        <div class="bld bld-10"></div>
+      </div>
+
+      <!-- ═══ LAYER 4: Ambient particles ═══ -->
+      <div id="yk-particles" aria-hidden="true">
+        <div class="ptcl" style="left:115px;top:970px;width:3px;height:9px"></div>
+        <div class="ptcl" style="left:272px;top:952px;width:2px;height:6px"></div>
+        <div class="ptcl" style="left:448px;top:978px;width:4px;height:5px"></div>
+        <div class="ptcl" style="left:617px;top:961px;width:3px;height:8px"></div>
+        <div class="ptcl" style="left:783px;top:984px;width:2px;height:4px"></div>
+        <div class="ptcl" style="left:955px;top:958px;width:4px;height:11px"></div>
+        <div class="ptcl" style="left:1118px;top:972px;width:3px;height:7px"></div>
+        <div class="ptcl" style="left:1298px;top:948px;width:2px;height:9px"></div>
+        <div class="ptcl" style="left:1452px;top:976px;width:4px;height:6px"></div>
+        <div class="ptcl" style="left:1608px;top:963px;width:3px;height:8px"></div>
+        <div class="ptcl" style="left:1758px;top:974px;width:2px;height:10px"></div>
+        <div class="ptcl" style="left:1877px;top:950px;width:4px;height:5px"></div>
+      </div>
+
+      <!-- ═══ LAYER 5: The Koala Character ═══ -->
+      <div id="yk-koala-group" aria-label="Kaiju koala character">
+
+        <!-- Ground shadow -->
+        <div id="yk-shadow"></div>
+
+        <!-- Neck connector -->
+        <div id="yk-neck"></div>
+
+        <!-- Body -->
+        <div id="yk-body">
+          <div id="yk-belly"></div>
+        </div>
+
+        <!-- Arms (behind body in render order, but visually overlap) -->
+        <div id="yk-arm-l"></div>
+        <div id="yk-arm-r"></div>
+
+        <!-- Head (on top of body) -->
+        <div id="yk-head">
+          <div id="yk-ear-l"><div class="ear-inner"></div></div>
+          <div id="yk-ear-r"><div class="ear-inner"></div></div>
+          <div id="yk-eye-l"><div class="eye-shine"></div></div>
+          <div id="yk-eye-r"><div class="eye-shine"></div></div>
+          <div id="yk-nose"></div>
+        </div>
+
+        <!-- n8n Wand (sibling to arm, positioned at raised-arm tip) -->
+        <div id="yk-wand" aria-label="n8n wand">
+          <div id="yk-wand-badge">n8n</div>
+          <div id="yk-wand-staff"></div>
+          <div id="yk-wand-glow"></div>
+        </div>
+
+      </div>
+
+      <!-- ═══ LAYER 6: Task icons (the "enemies") ═══ -->
+      <div id="yk-tasks" aria-hidden="true">
+        <div class="task t-email">📧</div>
+        <div class="task t-cal">📅</div>
+        <div class="task t-sheet">📊</div>
+        <div class="task t-clock">⏰</div>
+        <div class="task t-bell">🔔</div>
+        <div class="task t-folder">📁</div>
+        <div class="task t-chat">💬</div>
+        <div class="task t-cursor">🖱️</div>
+        <div class="task t-clip">📋</div>
+      </div>
+
+      <!-- ═══ LAYER 7: Energy wave SVG ═══ -->
+      <svg id="yk-wave" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <radialGradient id="wg" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#EA580C" stop-opacity="0.85"/>
+            <stop offset="55%"  stop-color="#EA580C" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#EA580C" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <circle id="yk-wave-circle" cx="878" cy="338" r="90" fill="url(#wg)"/>
+      </svg>
+
+      <!-- ═══ LAYER 8: Burst particles ═══ -->
+      <div id="yk-burst" aria-hidden="true">
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+        <div class="bptcl" style="left:878px;top:338px"></div>
+      </div>
+
+      <!-- ═══ LAYER 9: Wordmark + Tagline ═══ -->
+      <div id="yk-wordmark-layer">
+        <div id="yk-wordmark">YAWN.</div>
+        <div id="yk-tagline">Magic at your fingertips,<br>stress free with Yawn</div>
+        <div id="yk-n8n-credit">powered by n8n automation</div>
+      </div>
+
+      <!-- Flash overlay -->
+      <div id="yk-flash" aria-hidden="true"></div>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           STYLES
+           ═══════════════════════════════════════════════════════════ -->
+      <style>
+        #root {
+          position: relative;
+          width: 1920px;
+          height: 1080px;
+          overflow: hidden;
+          background: #080b12;
+        }
+
+        /* ── Background ── */
+        #yk-bg {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(ellipse 160% 90% at 40% 130%,
+            #0e1929 0%, #080b12 55%, #040608 100%);
+        }
+        #yk-bg-glow {
+          position: absolute;
+          bottom: -140px;
+          left: 40px;
+          width: 720px;
+          height: 500px;
+          background: radial-gradient(ellipse at center,
+            rgba(107, 122, 94, 0.22) 0%, rgba(107, 122, 94, 0.08) 45%, transparent 75%);
+          opacity: 0;
+          pointer-events: none;
+        }
+        #yk-bg-tint {
+          position: absolute;
+          inset: 0;
+          background: rgba(180, 40, 20, 0.07);
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        /* ── Ghost text ── */
+        #yk-ghost {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          font-family: 'Oswald', sans-serif;
+          font-size: 540px;
+          font-weight: 700;
+          color: #f5f0e8;
+          opacity: 0;
+          letter-spacing: -0.06em;
+          white-space: nowrap;
+          pointer-events: none;
+          user-select: none;
+          line-height: 1;
+        }
+
+        /* ── City silhouette ── */
+        #yk-city {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 1920px;
+          height: 340px;
+          opacity: 0;
+          pointer-events: none;
+        }
+        .bld {
+          position: absolute;
+          bottom: 0;
+          background: #08090f;
+        }
+        .bld-1  { left: 0;     width: 170px; height: 215px; }
+        .bld-2  { left: 148px; width:  98px; height: 275px; }
+        .bld-3  { left: 224px; width: 130px; height: 190px; }
+        .bld-4  { left: 332px; width:  76px; height: 235px; }
+        .bld-5  { left: 386px; width: 110px; height: 175px; }
+        .bld-6  { left: 1420px; width: 128px; height: 255px; }
+        .bld-7  { left: 1524px; width: 155px; height: 195px; }
+        .bld-8  { left: 1655px; width:  96px; height: 278px; }
+        .bld-9  { left: 1727px; width: 174px; height: 218px; }
+        .bld-10 { left: 1874px; width:  46px; height: 242px; }
+
+        /* ── Ambient particles ── */
+        .ptcl {
+          position: absolute;
+          background: rgba(139, 158, 122, 0.55);
+          border-radius: 2px;
+          opacity: 0;
+        }
+
+        /* ── Koala group ── */
+        #yk-koala-group {
+          position: absolute;
+          left: 80px;
+          top: -60px;
+          width: 940px;
+          height: 1200px;
+          transform-origin: center bottom;
+          pointer-events: none;
+        }
+
+        /* Shadow */
+        #yk-shadow {
+          position: absolute;
+          left: 60px;
+          bottom: 120px;
+          width: 420px;
+          height: 55px;
+          background: rgba(0, 0, 0, 0.35);
+          border-radius: 50%;
+          filter: blur(22px);
+        }
+
+        /* Neck */
+        #yk-neck {
+          position: absolute;
+          left: 195px;
+          top: 488px;
+          width: 160px;
+          height: 90px;
+          background: #728066;
+          border-radius: 0 0 40% 40%;
+        }
+
+        /* Body */
+        #yk-body {
+          position: absolute;
+          left: 85px;
+          top: 550px;
+          width: 430px;
+          height: 540px;
+          background: #6b7a5e;
+          border-radius: 54% 54% 46% 46%;
+          box-shadow:
+            inset -22px -32px 65px rgba(0, 0, 0, 0.42),
+            inset 12px 14px 40px rgba(148, 166, 128, 0.18);
+        }
+        #yk-belly {
+          position: absolute;
+          left: 50%;
+          top: 38%;
+          transform: translate(-50%, 0);
+          width: 215px;
+          height: 195px;
+          background: rgba(148, 166, 128, 0.42);
+          border-radius: 50%;
+        }
+
+        /* Arms */
+        #yk-arm-l,
+        #yk-arm-r {
+          position: absolute;
+          width: 105px;
+          height: 305px;
+          background: #6b7a5e;
+          border-radius: 52px;
+          transform-origin: 50% 0%;
+          box-shadow: inset -8px -12px 30px rgba(0, 0, 0, 0.35);
+        }
+        #yk-arm-l {
+          left: 12px;
+          top: 600px;
+        }
+        #yk-arm-r {
+          left: 516px;
+          top: 590px;
+        }
+
+        /* Head */
+        #yk-head {
+          position: absolute;
+          left: 100px;
+          top: 125px;
+          width: 365px;
+          height: 365px;
+          background: #7a8b70;
+          border-radius: 50%;
+          box-shadow:
+            inset -18px -24px 55px rgba(0, 0, 0, 0.38),
+            inset 10px 10px 35px rgba(168, 188, 148, 0.16);
+        }
+
+        /* Ears */
+        #yk-ear-l,
+        #yk-ear-r {
+          position: absolute;
+          width: 130px;
+          height: 130px;
+          background: #5a6b50;
+          border-radius: 50%;
+          top: -52px;
+        }
+        #yk-ear-l { left: -38px; }
+        #yk-ear-r { right: -38px; }
+        .ear-inner {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          width: 68px;
+          height: 68px;
+          background: #c09490;
+          border-radius: 50%;
+        }
+
+        /* Eyes */
+        #yk-eye-l,
+        #yk-eye-r {
+          position: absolute;
+          width: 66px;
+          height: 40px;
+          background: #ffd966;
+          border-radius: 50%;
+          top: 33%;
+          box-shadow:
+            0 0 22px rgba(255, 217, 102, 0.7),
+            0 0 45px rgba(255, 200, 50, 0.35);
+        }
+        #yk-eye-l { left: 13%; }
+        #yk-eye-r { right: 13%; }
+        .eye-shine {
+          position: absolute;
+          top: 8px;
+          left: 11px;
+          width: 18px;
+          height: 11px;
+          background: rgba(255, 255, 255, 0.62);
+          border-radius: 50%;
+        }
+
+        /* Nose */
+        #yk-nose {
+          position: absolute;
+          left: 50%;
+          top: 55%;
+          transform: translateX(-50%);
+          width: 52px;
+          height: 36px;
+          background: #2c1810;
+          border-radius: 50%;
+        }
+
+        /* n8n Wand */
+        #yk-wand {
+          position: absolute;
+          left: 758px;
+          top: 230px;
+          width: 130px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          opacity: 0;
+          pointer-events: none;
+        }
+        #yk-wand-badge {
+          width: 114px;
+          height: 52px;
+          background: #ea580c;
+          border-radius: 26px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: 'Oswald', sans-serif;
+          font-size: 24px;
+          font-weight: 700;
+          color: #ffffff;
+          letter-spacing: 0.1em;
+          box-shadow:
+            0 0 24px rgba(234, 88, 12, 0.8),
+            0 0 60px rgba(234, 88, 12, 0.35);
+        }
+        #yk-wand-staff {
+          width: 9px;
+          height: 110px;
+          background: linear-gradient(180deg, #fed7aa 0%, #f97316 40%, #c2410c 100%);
+          border-radius: 0 0 5px 5px;
+          box-shadow: 0 0 14px rgba(234, 88, 12, 0.75);
+        }
+        #yk-wand-glow {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 220px;
+          height: 220px;
+          background: radial-gradient(ellipse,
+            rgba(234, 88, 12, 0.45) 0%,
+            rgba(234, 88, 12, 0.1) 50%,
+            transparent 75%);
+          pointer-events: none;
+          border-radius: 50%;
+        }
+
+        /* ── Task icons ── */
+        #yk-tasks {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+        }
+        .task {
+          position: absolute;
+          font-size: 68px;
+          opacity: 0;
+          line-height: 1;
+          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+        }
+        /* Final cluster positions (where tasks swarm to) */
+        .t-email  { left: 688px; top: 285px; }
+        .t-cal    { left: 876px; top: 315px; }
+        .t-sheet  { left: 706px; top: 432px; }
+        .t-clock  { left: 972px; top: 295px; }
+        .t-bell   { left: 800px; top: 222px; }
+        .t-folder { left: 1018px; top: 368px; }
+        .t-chat   { left: 732px; top: 480px; }
+        .t-cursor { left: 904px; top: 485px; }
+        .t-clip   { left: 998px; top: 448px; }
+
+        /* ── Energy wave SVG ── */
+        #yk-wave {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 1920px;
+          height: 1080px;
+          pointer-events: none;
+          opacity: 0;
+          overflow: visible;
+        }
+
+        /* ── Burst particles ── */
+        #yk-burst {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+        }
+        .bptcl {
+          position: absolute;
+          width: 14px;
+          height: 14px;
+          background: #ea580c;
+          border-radius: 50%;
+          opacity: 0;
+          box-shadow: 0 0 10px rgba(234, 88, 12, 0.9);
+        }
+
+        /* ── Wordmark layer ── */
+        #yk-wordmark-layer {
+          position: absolute;
+          right: 90px;
+          top: 50%;
+          transform: translateY(-50%);
+          text-align: right;
+        }
+        #yk-wordmark {
+          font-family: 'Oswald', sans-serif;
+          font-size: 168px;
+          font-weight: 700;
+          color: #f5f0e8;
+          letter-spacing: -0.04em;
+          line-height: 1;
+          opacity: 0;
+        }
+        #yk-tagline {
+          font-family: 'Montserrat', sans-serif;
+          font-size: 29px;
+          font-weight: 300;
+          color: rgba(245, 240, 232, 0.72);
+          letter-spacing: 0.05em;
+          line-height: 1.6;
+          margin-top: 26px;
+          opacity: 0;
+        }
+        #yk-n8n-credit {
+          margin-top: 36px;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 15px;
+          font-weight: 400;
+          color: rgba(234, 88, 12, 0.75);
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          opacity: 0;
+        }
+
+        /* ── Flash ── */
+        #yk-flash {
+          position: absolute;
+          inset: 0;
+          background: #ffffff;
+          opacity: 0;
+          pointer-events: none;
+        }
+      </style>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ANIMATION — single paused GSAP timeline
+           ═══════════════════════════════════════════════════════════ -->
+      <script>
+        (function () {
+          var tl = gsap.timeline({ paused: true });
+
+          // ── Deterministic burst directions (20 particles × 18°) ──
+          var bptcls = document.querySelectorAll('#yk-burst .bptcl');
+          var burstDirs = [];
+          for (var bi = 0; bi < 20; bi++) {
+            var rad = bi * 18 * Math.PI / 180;
+            burstDirs.push({ dx: Math.cos(rad) * 340, dy: Math.sin(rad) * 340 });
+          }
+
+          // ── Task data: [selector, startX, startY, endX*, endY*] ──
+          // *endX/Y are GSAP x/y offsets FROM the CSS-defined cluster position (→ always 0,0)
+          // startX/Y are offsets from cluster position to the off-screen start
+          var tasks = [
+            ['.t-email',  -820,   -10],
+            ['.t-cal',    1190,  -170],
+            ['.t-sheet',  -760,    80],
+            ['.t-clock',  1040,   110],
+            ['.t-bell',    180,  -440],
+            ['.t-folder',  920,  -250],
+            ['.t-chat',   -680,   120],
+            ['.t-cursor',  200,   650],
+            ['.t-clip',    980,   -80],
+          ];
+          var explodeVecs = [
+            { dx: -420, dy: -310 },
+            { dx:  310, dy: -380 },
+            { dx: -370, dy:  210 },
+            { dx:  380, dy: -195 },
+            { dx: -215, dy: -430 },
+            { dx:  440, dy:  160 },
+            { dx: -320, dy:  360 },
+            { dx:   90, dy:  430 },
+            { dx:  360, dy: -195 },
+          ];
+
+          // ════════════════════════════════════════════════════
+          // INITIAL STATE
+          // ════════════════════════════════════════════════════
+          tl.set('#yk-koala-group', { y: 1380, scale: 0.04, opacity: 1 }, 0);
+          tl.set('#yk-arm-l', { rotation: -25 }, 0);
+          tl.set('#yk-arm-r', { rotation: 22 }, 0);
+          tl.set('#yk-wand', { opacity: 0, y: -460 }, 0);
+          tl.set('#yk-bg-glow', { opacity: 0 }, 0);
+          tl.set('#yk-bg-tint', { opacity: 0 }, 0);
+          tl.set('#yk-city', { opacity: 0 }, 0);
+          tl.set('#yk-ghost', { opacity: 0, y: 0, xPercent: -50, yPercent: -50 }, 0);
+          tl.set('#yk-wordmark-layer', { opacity: 1 }, 0);
+          tl.set('#yk-wordmark', { opacity: 0, y: 55, scale: 0.86 }, 0);
+          tl.set('#yk-tagline', { opacity: 0, y: 22 }, 0);
+          tl.set('#yk-n8n-credit', { opacity: 0, y: 12 }, 0);
+          tl.set('#yk-wave', { opacity: 0, scale: 0 }, 0);
+          tl.set('#yk-flash', { opacity: 0 }, 0);
+          tl.set('.task', { x: 0, y: 0, opacity: 0, scale: 0.3, rotation: 0 }, 0);
+          tl.set('.bptcl', { x: 0, y: 0, opacity: 0 }, 0);
+          tl.set('.ptcl', { opacity: 0, y: 0 }, 0);
+
+          // Set task starting offsets
+          tasks.forEach(function (d) {
+            tl.set(d[0], { x: d[1], y: d[2] }, 0);
+          });
+
+          // ════════════════════════════════════════════════════
+          // ACT 1 — AWAKENING  (0 – 5s)
+          // ════════════════════════════════════════════════════
+
+          // Subtle ground tremble at t=0.8 (x jitter, 8 repeats)
+          tl.to('#yk-bg', { x: 5, duration: 0.07, yoyo: true, repeat: 7, ease: 'none' }, 0.8);
+          tl.set('#yk-bg', { x: 0 }, 1.42);
+
+          // Ghost "YAWN" text breathes in slowly
+          tl.fromTo(
+            '#yk-ghost',
+            { opacity: 0, y: 0, xPercent: -50, yPercent: -50 },
+            { opacity: 0.034, y: -20, xPercent: -50, yPercent: -50, duration: 6, ease: 'sine.inOut' },
+            1.0
+          );
+
+          // City silhouette rises out of darkness
+          tl.fromTo(
+            '#yk-city',
+            { opacity: 0, y: 38 },
+            { opacity: 0.28, y: 0, duration: 2.6, ease: 'power2.out' },
+            3.2
+          );
+
+          // Ambient particles float upward (staggered)
+          var ptcls = document.querySelectorAll('#yk-particles .ptcl');
+          ptcls.forEach(function (p, i) {
+            tl.fromTo(
+              p,
+              { opacity: 0, y: 0 },
+              { opacity: 0.48, y: -(190 + i * 18), duration: 4.2 + i * 0.18, ease: 'power1.out' },
+              1.9 + i * 0.11
+            );
+          });
+
+          // ════════════════════════════════════════════════════
+          // ACT 2 — THE REVEAL  (5 – 9.5s)
+          // ════════════════════════════════════════════════════
+
+          // Koala rises from below: massive scale surge, overshoot via ease
+          tl.fromTo(
+            '#yk-koala-group',
+            { y: 1380, scale: 0.04 },
+            { y: 0, scale: 1.0, duration: 4.2, ease: 'back.out(1.15)' },
+            5.0
+          );
+
+          // Background glow blooms beneath rising koala
+          tl.fromTo(
+            '#yk-bg-glow',
+            { opacity: 0, scale: 0 },
+            { opacity: 1, scale: 1, duration: 2.8, ease: 'power2.out' },
+            5.6
+          );
+
+          // Eye flash as koala lands
+          tl.to(
+            '#yk-eye-l, #yk-eye-r',
+            {
+              boxShadow: '0 0 45px rgba(255,217,102,1), 0 0 90px rgba(255,200,50,0.85)',
+              duration: 0.35,
+              ease: 'power3.out'
+            },
+            7.8
+          );
+          tl.to(
+            '#yk-eye-l, #yk-eye-r',
+            {
+              boxShadow: '0 0 22px rgba(255,217,102,0.7), 0 0 45px rgba(255,200,50,0.35)',
+              duration: 0.9,
+              ease: 'power2.out'
+            },
+            8.2
+          );
+
+          // Screen impact flash
+          tl.to('#yk-flash', { opacity: 0.2, duration: 0.07 }, 7.7);
+          tl.to('#yk-flash', { opacity: 0, duration: 0.38, ease: 'power2.out' }, 7.78);
+
+          // Koala breathing — seekable (24 plays × 1s each, t=9.5 to t=33.5)
+          tl.to(
+            '#yk-koala-group',
+            { y: -12, duration: 1, ease: 'sine.inOut', repeat: 23, yoyo: true },
+            9.5
+          );
+
+          // ════════════════════════════════════════════════════
+          // ACT 3 — THE WAND  (8.5 – 12s)
+          // ════════════════════════════════════════════════════
+
+          // n8n wand plummets from above
+          tl.fromTo(
+            '#yk-wand',
+            { opacity: 1, y: -460, rotation: -28 },
+            { opacity: 1, y: 0, rotation: 0, duration: 1.6, ease: 'bounce.out' },
+            8.5
+          );
+
+          // Right arm raises to meet the wand
+          tl.to(
+            '#yk-arm-r',
+            { rotation: 132, duration: 1.0, ease: 'back.out(1.6)' },
+            9.7
+          );
+
+          // Wand glow blooms on "catch"
+          tl.fromTo(
+            '#yk-wand-glow',
+            { scale: 0, opacity: 0 },
+            { scale: 2.2, opacity: 1, duration: 0.65, ease: 'power2.out' },
+            10.3
+          );
+          tl.to(
+            '#yk-wand-glow',
+            { scale: 1.5, opacity: 0.62, duration: 0.6, ease: 'power2.out', overwrite: 'auto' },
+            10.95
+          );
+
+          // Wand badge ambient pulse — seekable (54 plays × 0.4s, t=10.8 to t=32.4)
+          tl.to(
+            '#yk-wand-badge',
+            {
+              boxShadow: '0 0 40px rgba(234,88,12,1), 0 0 90px rgba(234,88,12,0.65)',
+              scale: 1.07,
+              duration: 0.4,
+              ease: 'sine.inOut',
+              repeat: 53,
+              yoyo: true
+            },
+            10.8
+          );
+
+          // ════════════════════════════════════════════════════
+          // ACT 4 — THE SWARM  (12 – 17s)
+          // ════════════════════════════════════════════════════
+
+          // Task icons converge from off-screen edges
+          tasks.forEach(function (d, i) {
+            tl.fromTo(
+              d[0],
+              { x: d[1], y: d[2], opacity: 0, scale: 0.3, rotation: (i % 2 === 0 ? 18 : -18) },
+              {
+                x: 0, y: 0, opacity: 1, scale: 1, rotation: 0,
+                duration: 2.1, ease: 'power2.in'
+              },
+              12.0 + i * 0.3
+            );
+          });
+
+          // Ominous red tint creeps in
+          tl.fromTo(
+            '#yk-bg-tint',
+            { opacity: 0 },
+            { opacity: 1, duration: 2.2, ease: 'sine.inOut' },
+            14.2
+          );
+
+          // Tasks wobble menacingly (approach tremor)
+          tl.to(
+            '.task',
+            { y: -14, duration: 0.38, ease: 'sine.inOut', repeat: 5, yoyo: true },
+            15.8
+          );
+
+          // ════════════════════════════════════════════════════
+          // ACT 5 — THE PURGE  (17 – 20s)
+          // ════════════════════════════════════════════════════
+
+          // Arm winds up then sweeps
+          tl.to('#yk-arm-r', { rotation: 158, duration: 0.18, ease: 'power4.out' }, 17.0);
+          tl.to('#yk-arm-r', { rotation: 52, duration: 0.55, ease: 'power3.in' }, 17.2);
+          tl.to('#yk-arm-r', { rotation: 125, duration: 0.85, ease: 'elastic.out(1, 0.4)' }, 17.8);
+
+          // Wand badge mega-burst then settles (overwrite: auto to clear the pulse repeat)
+          tl.to(
+            '#yk-wand-badge',
+            { boxShadow: '0 0 90px rgba(234,88,12,1), 0 0 200px rgba(234,88,12,0.95)', scale: 1.18, duration: 0.14, overwrite: 'auto' },
+            17.0
+          );
+          tl.to(
+            '#yk-wand-badge',
+            { boxShadow: '0 0 24px rgba(234,88,12,0.8), 0 0 60px rgba(234,88,12,0.35)', scale: 1, duration: 0.7, overwrite: 'auto' },
+            17.2
+          );
+
+          // Wand glow nova
+          tl.to('#yk-wand-glow', { scale: 9, opacity: 0, duration: 0.55, ease: 'expo.out' }, 17.1);
+
+          // Energy wave radiates outward — transform-origin on SVG circle
+          tl.fromTo(
+            '#yk-wave',
+            { opacity: 0.88, scale: 0 },
+            { opacity: 0, scale: 6.5, duration: 1.9, ease: 'power1.out', transformOrigin: '878px 338px' },
+            17.18
+          );
+
+          // Screen flash
+          tl.to('#yk-flash', { opacity: 0.48, duration: 0.09 }, 17.12);
+          tl.to('#yk-flash', { opacity: 0, duration: 0.45, ease: 'power2.out' }, 17.22);
+
+          // Tasks scatter and dissolve (overwrite: auto to cut the wobble repeat)
+          tasks.forEach(function (d, i) {
+            var ev = explodeVecs[i];
+            tl.to(
+              d[0],
+              {
+                x: ev.dx, y: ev.dy,
+                opacity: 0, scale: 0.12,
+                rotation: (i % 2 === 0 ? 1 : -1) * (130 + i * 14),
+                duration: 0.72, ease: 'power3.in',
+                overwrite: 'auto'
+              },
+              17.28 + i * 0.04
+            );
+          });
+
+          // Orange burst particles from wand tip
+          bptcls.forEach(function (p, i) {
+            var bd = burstDirs[i];
+            tl.fromTo(
+              p,
+              { x: 0, y: 0, opacity: 0.92 },
+              { x: bd.dx, y: bd.dy, opacity: 0, duration: 0.95, ease: 'power2.out' },
+              17.22 + i * 0.014
+            );
+          });
+
+          // Red tint clears away
+          tl.to('#yk-bg-tint', { opacity: 0, duration: 1.3, ease: 'power2.out' }, 17.6);
+
+          // ════════════════════════════════════════════════════
+          // ACT 6 — VICTORY  (20 – 32s)
+          // ════════════════════════════════════════════════════
+
+          // Satisfied blink
+          tl.to('#yk-eye-l, #yk-eye-r', { scaleY: 0.1, duration: 0.1, ease: 'power2.in' }, 20.0);
+          tl.to('#yk-eye-l, #yk-eye-r', { scaleY: 1, duration: 0.22, ease: 'power3.out' }, 20.2);
+          tl.to(
+            '#yk-eye-l, #yk-eye-r',
+            { boxShadow: '0 0 38px rgba(255,217,102,0.9), 0 0 75px rgba(255,200,50,0.55)', duration: 0.6 },
+            20.22
+          );
+          tl.to(
+            '#yk-eye-l, #yk-eye-r',
+            { boxShadow: '0 0 22px rgba(255,217,102,0.7), 0 0 45px rgba(255,200,50,0.35)', duration: 1.2, ease: 'power2.out' },
+            20.85
+          );
+
+          // "YAWN." wordmark assembles with cinematic authority
+          tl.to(
+            '#yk-wordmark',
+            { opacity: 1, y: 0, scale: 1, duration: 1.7, ease: 'expo.out' },
+            20.6
+          );
+
+          // Tagline drifts up into view
+          tl.to(
+            '#yk-tagline',
+            { opacity: 1, y: 0, duration: 1.3, ease: 'power2.out' },
+            22.2
+          );
+
+          // n8n credit badge
+          tl.to(
+            '#yk-n8n-credit',
+            { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out' },
+            23.8
+          );
+
+          // Ghost text intensifies slightly into victory
+          tl.to('#yk-ghost', { opacity: 0.055, xPercent: -50, yPercent: -50, duration: 3.5, ease: 'sine.inOut' }, 22.0);
+
+          // Ambient glow breathes in victory (6 cycles × 1.5s, t=22 to t=31)
+          tl.to(
+            '#yk-bg-glow',
+            { opacity: 0.72, scale: 1.06, duration: 1.5, ease: 'sine.inOut', repeat: 5, yoyo: true },
+            22.0
+          );
+
+          // ════════════════════════════════════════════════════
+          // Register
+          // ════════════════════════════════════════════════════
+          window.__timelines = window.__timelines || {};
+          window.__timelines['yawn-kaiju-koala'] = tl;
+        })();
+      </script>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+    </script>
+  </body>
+</html>
