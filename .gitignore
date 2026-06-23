@@ -2,7 +2,9 @@ node_modules
 dist
 .env
 .env.local
+.env.*.local
 server/.data
 api/.data
+backups
 *.log
 .DS_Store

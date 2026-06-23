@@ -1,0 +1,81 @@
+name: npm audit
+
+on:
+  pull_request:
+  schedule:
+    # Weekly audit, Mondays 07:23 UTC.
+    - cron: "23 7 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: npm-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: npm audit (high)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Informative, not gating: a transient upstream advisory should not block
+      # an unrelated PR. We capture the result and publish a readable summary,
+      # but only annotate (never hard-fail) the job.
+      - name: Run npm audit
+        id: audit
+        run: |
+          set +e
+          npm audit --audit-level=high --json > audit.json
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          # Always surface the human-readable report in the logs too.
+          npm audit --audit-level=high || true
+          exit 0
+
+      - name: Summarize audit
+        if: always()
+        run: |
+          {
+            echo "## npm audit summary"
+            echo ""
+            if [ -f audit.json ]; then
+              node -e '
+                const fs = require("node:fs");
+                let data;
+                try { data = JSON.parse(fs.readFileSync("audit.json", "utf8")); }
+                catch { console.log("Could not parse audit output."); process.exit(0); }
+                const v = (data.metadata && data.metadata.vulnerabilities) || {};
+                const total = Object.values(v).reduce((a, b) => a + (b || 0), 0);
+                console.log("| Severity | Count |");
+                console.log("| --- | --- |");
+                for (const sev of ["critical","high","moderate","low","info"]) {
+                  console.log(`| ${sev} | ${v[sev] || 0} |`);
+                }
+                console.log("");
+                console.log(`**Total advisories:** ${total}`);
+                if ((v.high || 0) + (v.critical || 0) > 0) {
+                  console.log("");
+                  console.log("> :warning: High or critical advisories present — review before release.");
+                }
+              '
+            else
+              echo "No audit output was produced."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Note high/critical advisories
+        if: always()
+        run: |
+          if [ "${{ steps.audit.outputs.exit_code }}" != "0" ]; then
+            echo "::warning title=npm audit::High or critical advisories detected. See the job summary for details."
+          fi

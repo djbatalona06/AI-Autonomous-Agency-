@@ -1,0 +1,48 @@
+name: Backup & Restore Test
+
+on:
+  # Run on changes to the backup tooling...
+  push:
+    branches:
+      - main
+      - "claude/**"
+    paths:
+      - "scripts/backup-store.mjs"
+      - "scripts/restore-store.mjs"
+      - "scripts/test-backup-restore.mjs"
+      - ".github/workflows/backup-restore-test.yml"
+  pull_request:
+    paths:
+      - "scripts/backup-store.mjs"
+      - "scripts/restore-store.mjs"
+      - "scripts/test-backup-restore.mjs"
+  # ...and on a weekly cadence as standing evidence that restores work.
+  schedule:
+    - cron: "17 6 * * 1" # Mondays 06:17 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: backup-restore-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backup-restore:
+    name: Backup/restore round trip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The self-test exercises the full round trip (plain + AES-256-GCM) and
+      # asserts deep-equality, plus a negative check that an encrypted backup
+      # cannot be restored without the key. No dependencies required.
+      - name: Run backup/restore self-test
+        run: npm run test:backup

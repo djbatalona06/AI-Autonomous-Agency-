@@ -1,0 +1,37 @@
+# gitleaks configuration for Yawn AI Agency.
+#
+# Extends gitleaks' built-in rules (broad coverage of API keys, tokens, etc.)
+# and layers on a project-specific allowlist so documentation placeholders do
+# not produce noise, while real committed secrets (e.g. in a tracked `.env`)
+# are still reported.
+
+title = "Yawn AI Agency gitleaks config"
+
+[extend]
+# Inherit gitleaks' default rule set, then apply the allowlist below.
+useDefault = true
+
+[allowlist]
+description = "Allow placeholder/example secrets, deny real ones"
+
+# Files that are meant to contain placeholder values only.
+paths = [
+  '''(^|/)\.env\.example$''',
+  '''(^|/)\.env\.sample$''',
+  '''(^|/)\.env\.template$''',
+]
+
+# Well-known non-secret placeholder values that may appear in docs/examples.
+regexes = [
+  '''(?i)your[_-]?(api[_-]?)?key[_-]?here''',
+  '''(?i)example[_-]?(api[_-]?)?key''',
+  '''(?i)changeme''',
+  '''(?i)dummy[_-]?secret''',
+  '''xxx+''',
+  '''sk-proj-xxxxxxxx''',
+  '''fc-xxxxxxxx''',
+]
+
+# IMPORTANT: a tracked `.env` is NOT allowlisted here on purpose. Real secrets
+# committed to `.env` should be reported by the default rules so they can be
+# rotated and removed from history.

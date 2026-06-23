@@ -1,0 +1,36 @@
+version: 2
+updates:
+  # ── npm (application dependencies) ──
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - npm
+    # Group routine minor/patch bumps into a single PR to cut review overhead;
+    # major bumps stay as individual PRs for closer review.
+    groups:
+      npm-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+
+  # ── GitHub Actions used by the workflows above ──
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+    labels:
+      - dependencies
+      - github-actions
+    groups:
+      actions-all:
+        patterns:
+          - "*"
