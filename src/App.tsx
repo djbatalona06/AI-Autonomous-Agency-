@@ -13,6 +13,14 @@ import ProjectHistory from "@/pages/ProjectHistory";
 import Settings from "@/pages/Settings";
 import Help from "@/pages/Help";
 import NotFound from "@/pages/NotFound";
+import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
+import SecurityCenter from "@/pages/SecurityCenter";
+import PolicyDoc from "@/pages/PolicyDoc";
+import Privacy from "@/pages/Privacy";
+import Terms from "@/pages/Terms";
 import type { JSX } from "react";
 
 function protect(Page: () => JSX.Element) {
@@ -27,6 +35,20 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+
+      {/* Auth (public) */}
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/reset-password" component={ResetPassword} />
+
+      {/* Security & legal (public) */}
+      <Route path="/security" component={SecurityCenter} />
+      <Route path="/security/:slug" component={PolicyDoc} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
+
+      {/* Dashboard (protected) */}
       <Route path="/dashboard" component={protect(Dashboard)} />
       <Route path="/dashboard/history" component={protect(ProjectHistory)} />
       <Route path="/dashboard/settings" component={protect(Settings)} />

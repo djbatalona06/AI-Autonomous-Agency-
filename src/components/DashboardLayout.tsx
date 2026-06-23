@@ -12,6 +12,7 @@ const NAV = [
   { label: "Web Crawler", icon: "🕷️", href: "/studio/crawler" },
   { label: "Project History", icon: "📚", href: "/dashboard/history" },
   { label: "Settings", icon: "⚙️", href: "/dashboard/settings" },
+  { label: "Security", icon: "🛡️", href: "/security" },
   { label: "Help & Docs", icon: "📖", href: "/dashboard/help" },
 ];
 
