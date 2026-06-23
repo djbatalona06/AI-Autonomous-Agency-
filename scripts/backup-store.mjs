@@ -109,16 +109,22 @@ export function backupStore({ storePath, outDir } = {}) {
     encrypted = true;
   }
 
-  fs.mkdirSync(dir, { recursive: true });
+  // Owner-only backup directory (it may live under a shared /tmp on Vercel).
+  fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
 
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   const ext = encrypted ? "json.gz.enc" : "json.gz";
   const backupPath = path.join(dir, `store-${stamp}.${ext}`);
-  fs.writeFileSync(backupPath, payload);
+  // mode 0o600 (owner-only) + exclusive "wx" flag: refuse to follow/overwrite a
+  // pre-existing path, defeating symlink races in a shared temp directory.
+  fs.writeFileSync(backupPath, payload, { mode: 0o600, flag: "wx" });
 
   const checksum = crypto.createHash("sha256").update(payload).digest("hex");
   // Write a sidecar checksum file for later verification.
-  fs.writeFileSync(`${backupPath}.sha256`, `${checksum}  ${path.basename(backupPath)}\n`);
+  fs.writeFileSync(`${backupPath}.sha256`, `${checksum}  ${path.basename(backupPath)}\n`, {
+    mode: 0o600,
+    flag: "wx",
+  });
 
   return { backupPath, checksum, encrypted, bytes: payload.length };
 }

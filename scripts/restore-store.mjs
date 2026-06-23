@@ -84,8 +84,14 @@ export function restoreStore({ backupFile, storePath, force } = {}) {
 
   const restored = zlib.gunzipSync(payload);
 
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.writeFileSync(dest, restored);
+  // Write to a unique, owner-only temp file (exclusive "wx" flag prevents a
+  // pre-created symlink hijack), then atomically rename over the destination.
+  // This removes the check-then-write (TOCTOU) race and avoids predictable
+  // temp paths in a shared directory.
+  fs.mkdirSync(path.dirname(dest), { recursive: true, mode: 0o700 });
+  const tmpDest = `${dest}.tmp-${crypto.randomBytes(6).toString("hex")}`;
+  fs.writeFileSync(tmpDest, restored, { mode: 0o600, flag: "wx" });
+  fs.renameSync(tmpDest, dest);
 
   return { storePath: dest, encrypted, bytes: restored.length };
 }
