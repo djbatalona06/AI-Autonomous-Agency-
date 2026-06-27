@@ -49,12 +49,21 @@ covering at least:
 2. Authentication & session flaws (brute force vs. lockout/rate limits, MFA
    bypass, reset-token handling, cookie flags & expiry, fixation).
 3. Injection (SQLi/argument injection, prompt injection into LLM flows, SSRF via
-   the crawler — verify URL handling).
+   the crawler — verify URL handling). Mitigations in place: untrusted scraped
+   content and chat input are delimited + guarded before reaching the LLM
+   (`server/_core/aiSafety.ts`); the crawler validates URLs against an SSRF
+   guard (`server/_core/ssrf.ts`). Verify these cannot be bypassed.
 4. Cryptographic failures (TLS config, password hashing parameters, secret
    storage).
 5. Security misconfiguration (headers/CSP, error verbosity, CORS).
 6. Vulnerable & outdated components.
-7. SSRF / unsafe outbound requests from the scraper.
+7. SSRF / unsafe outbound requests from the scraper. Mitigated by
+   `server/_core/ssrf.ts`: scheme allow-list (http/https only), rejection of
+   embedded credentials, DNS resolution with blocking of private/loopback/
+   link-local/CGNAT/metadata ranges (incl. IPv4-mapped IPv6), per-redirect-hop
+   re-validation, and a response-size cap. Verify metadata endpoints
+   (169.254.169.254), loopback, and private ranges are unreachable, including
+   via DNS rebinding and redirect chains.
 8. Logging integrity & sensitive-data exposure in logs/responses.
 
 Testing combines automated tooling with manual verification. A safe,

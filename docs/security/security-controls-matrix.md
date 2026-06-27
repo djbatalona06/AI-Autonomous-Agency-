@@ -1,6 +1,6 @@
 # Security Controls Matrix
 
-_Last updated: 2026-06-22 · Owner: Security Officer (CISO)_
+_Last updated: 2026-06-27 · Owner: Security Officer (CISO)_
 
 The master mapping of security requirements to their implementation status,
 evidence, and owner. Status legend:
@@ -51,6 +51,8 @@ evidence, and owner. Status legend:
 | Signed session cookies with expiry + constant-time verify | `server/_core/cookies.ts` |
 | Row-Level Security (deny-by-default, per-owner) | `supabase/migrations/0002` |
 | Redacted, append-only DB audit trail | `supabase/migrations/0004` |
+| SSRF guard on user-supplied crawler URLs (scheme allow-list, private/loopback/link-local/metadata range blocking, per-redirect re-validation, response-size cap) | `server/_core/ssrf.ts`, `server/_core/scrape.ts` |
+| Prompt-injection hardening for LLM flows (untrusted content delimited + guarded; context size capped) | `server/_core/aiSafety.ts`, `routers.ts` (`crawler.scrape`, `chat.send`) |
 | Static analysis (CodeQL) | `.github/workflows/codeql.yml` |
 | Coordinated vulnerability disclosure | `SECURITY.md` |
 
