@@ -4,6 +4,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import { Button } from "@/components/ui/button";
 import { KoalaShowcase } from "@/components/KoalaShowcase";
+import { CursorEffect } from "@/components/CursorEffect";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -95,17 +96,29 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
+      <CursorEffect />
       <TopNav />
 
       <main className="pt-16">
-        {/* Hero */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-16">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
+        {/* Hero — full-bleed cyber koala perched behind the content */}
+        <section className="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
+          {/* Background mascot */}
+          <KoalaShowcase background />
+          {/* Legibility overlay over the dark animation */}
+          <div
+            className="absolute inset-0 z-[1] pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(10,5,20,0.82) 0%, rgba(10,5,20,0.55) 45%, rgba(10,5,20,0.15) 100%)",
+            }}
+          />
+
+          <div className="relative z-[2] w-full max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
             <motion.div
               variants={container}
               initial={reduce ? false : "hidden"}
               animate="visible"
-              className="flex-1 min-w-0"
+              className="max-w-2xl border-2 border-primary/40 bg-card/70 backdrop-blur-md p-7 sm:p-10 shadow-[0_0_60px_rgba(182,102,210,0.25)]"
             >
               <motion.p
                 variants={item}
@@ -134,15 +147,6 @@ export default function Home() {
                   </Button>
                 </a>
               </motion.div>
-            </motion.div>
-
-            <motion.div
-              variants={item}
-              initial={reduce ? false : "hidden"}
-              animate="visible"
-              className="flex-1 w-full lg:max-w-[600px] shrink-0"
-            >
-              <KoalaShowcase />
             </motion.div>
           </div>
         </section>
