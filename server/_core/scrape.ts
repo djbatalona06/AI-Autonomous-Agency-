@@ -1,4 +1,5 @@
 import { ENV } from "./env";
+import { assertSafeUrl, safeFetch } from "./ssrf";
 
 export interface ScrapeResult {
   title: string;
@@ -8,8 +9,16 @@ export interface ScrapeResult {
 /**
  * Fetch and extract readable text from a URL. Uses Firecrawl when a key is set,
  * otherwise native fetch + a lightweight HTML→text pass (no heavy deps).
+ *
+ * SECURITY: the URL is user-supplied, so we validate it against the SSRF guard
+ * BEFORE any outbound request — including the Firecrawl path, so we never ask a
+ * third party (or a self-hosted Firecrawl) to fetch an internal address on our
+ * behalf. The fallback path uses `safeFetch`, which re-validates every redirect
+ * hop and caps the response size.
  */
 export async function scrapeUrl(url: string): Promise<ScrapeResult> {
+  await assertSafeUrl(url);
+
   if (ENV.firecrawlApiKey) {
     try {
       return await scrapeWithFirecrawl(url);
@@ -40,18 +49,12 @@ async function scrapeWithFirecrawl(url: string): Promise<ScrapeResult> {
 }
 
 async function scrapeWithFetch(url: string): Promise<ScrapeResult> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12_000);
-  try {
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: { "user-agent": "Mozilla/5.0 (compatible; YawnBot/1.0)" },
-    });
-    const html = await res.text();
-    return { title: extractTitle(html) ?? url, text: htmlToText(html) };
-  } finally {
-    clearTimeout(timeout);
-  }
+  // safeFetch re-validates the URL and every redirect hop against the SSRF
+  // guard, enforces a timeout, and caps the response body size.
+  const { text: html } = await safeFetch(url, {
+    headers: { "user-agent": "Mozilla/5.0 (compatible; YawnBot/1.0)" },
+  });
+  return { title: extractTitle(html) ?? url, text: htmlToText(html) };
 }
 
 function extractTitle(html: string): string | null {
