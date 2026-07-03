@@ -15,6 +15,7 @@
     "preview": "npm run build && npm start"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.110.0",
     "@tanstack/react-query": "^5.59.0",
     "@trpc/client": "^11.0.0",
     "@trpc/react-query": "^11.0.0",
@@ -46,6 +47,7 @@
     "concurrently": "^9.1.0",
     "cross-env": "^7.0.3",
     "esbuild": "^0.24.0",
+    "supabase": "^2.109.0",
     "tailwindcss": "^4.0.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",

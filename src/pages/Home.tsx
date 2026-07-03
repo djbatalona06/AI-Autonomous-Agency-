@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { motion, type Variants } from "framer-motion";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
@@ -57,10 +58,22 @@ function MarqueeTrack() {
   );
 }
 
+/** Opens the auth modal for guests, or links to the dashboard when signed in. */
+function PrimaryCta({ authed, guest }: { authed: string; guest: string }) {
+  const { isAuthenticated, openAuth } = useAuth();
+  return isAuthenticated ? (
+    <Link href="/dashboard">
+      <Button size="lg">{authed}</Button>
+    </Link>
+  ) : (
+    <Button size="lg" onClick={openAuth}>
+      {guest}
+    </Button>
+  );
+}
+
 export default function Home() {
-  const { isAuthenticated, loginUrl } = useAuth();
   const reduce = usePrefersReducedMotion();
-  const ctaHref = isAuthenticated ? "/dashboard" : loginUrl;
 
   return (
     <div className="min-h-screen bg-background">
@@ -101,9 +114,7 @@ export default function Home() {
                   scale without the grind. Validated before they ever touch production.
                 </motion.p>
                 <motion.div variants={item} className="mt-10 flex flex-wrap gap-4" id="start">
-                  <a href={ctaHref}>
-                    <Button size="lg">{isAuthenticated ? "Go to dashboard →" : "Start automating →"}</Button>
-                  </a>
+                  <PrimaryCta authed="Go to dashboard →" guest="Start automating →" />
                   <a href="#features">
                     <Button size="lg" variant="outline">
                       See what it does
@@ -181,9 +192,7 @@ export default function Home() {
             <h2 className="font-serif text-4xl sm:text-5xl font-semibold mb-8 tracking-tight">
               Ready to automate the <span className="text-primary">boring?</span>
             </h2>
-            <a href={ctaHref}>
-              <Button size="lg">{isAuthenticated ? "Open dashboard →" : "Start free →"}</Button>
-            </a>
+            <PrimaryCta authed="Open dashboard →" guest="Start free →" />
           </div>
         </section>
       </main>

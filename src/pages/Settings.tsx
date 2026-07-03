@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 
 export default function Settings() {
-  const { user, logout } = useAuth();
+  const { user, displayName, role, signOut } = useAuth();
   const { data: health } = trpc.system.health.useQuery();
 
   return (
@@ -15,7 +15,7 @@ export default function Settings() {
           <dl className="space-y-3">
             <div className="flex justify-between gap-4">
               <dt className="text-muted-foreground">Name</dt>
-              <dd className="font-semibold">{user?.name ?? "—"}</dd>
+              <dd className="font-semibold">{displayName}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-muted-foreground">Email</dt>
@@ -23,7 +23,7 @@ export default function Settings() {
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-muted-foreground">Role</dt>
-              <dd className="font-semibold capitalize">{user?.role ?? "user"}</dd>
+              <dd className="font-semibold capitalize">{role ?? "customer"}</dd>
             </div>
           </dl>
         </section>
@@ -49,7 +49,7 @@ export default function Settings() {
           </dl>
         </section>
 
-        <Button variant="destructive" onClick={logout}>
+        <Button variant="destructive" onClick={() => void signOut()}>
           Log out
         </Button>
       </div>

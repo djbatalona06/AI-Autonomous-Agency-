@@ -56,7 +56,7 @@ Adopted from `site/index.html` + the Framer Stackgrid reference, in dark mode:
 - **Exit:** home renders dark with a live particle hero; `npm run build` + `typecheck` pass; no purple remnants.
 
 ### Phase 2 — Supabase Auth foundation (replaces fake login)
-- **Deps/env** — add `@supabase/supabase-js`. Env: `VITE_SUPABASE_URL` (`https://ijtqhysxbjloagmfzrtu.supabase.co`), `VITE_SUPABASE_ANON_KEY` *(currently empty — **must be supplied**, see §7)*, and server-side `SUPABASE_SERVICE_ROLE_KEY` + JWT verification secret. Add to `.env.example` and Vercel.
+- **Deps/env** — add `@supabase/supabase-js`. Env: `VITE_SUPABASE_URL` (`https://odibvergwcllhsbzbgwa.supabase.co`), `VITE_SUPABASE_ANON_KEY` *(currently empty — **must be supplied**, see §7)*, and server-side `SUPABASE_SERVICE_ROLE_KEY` + JWT verification secret. Add to `.env.example` and Vercel.
 - **`src/lib/supabase.ts`** (new) — browser client from the `VITE_` env vars.
 - **Migration** — run `0001_auth_and_rate_limit.sql` in the Supabase project (via Supabase MCP `apply_migration` **iff** the MCP is bound to project `ijtqhysxbjloagmfzrtu`; otherwise user runs it in the SQL editor). Then promote `batalona06@gmail.com` to `admin` in `profiles`.
 - **`src/_core/hooks/useAuth.ts`** — rewrite over Supabase: `getSession` + `onAuthStateChange`; expose `user`, `role` (from `profiles`), `isAuthenticated`, `isLoading`, `signIn`, `signUp`, `signOut`. Remove the tRPC `auth.me`/`getLoginUrl` path.
@@ -85,7 +85,7 @@ Adopted from `site/index.html` + the Framer Stackgrid reference, in dark mode:
 **Retired:** `server/_core/auth.ts` (fake login), `src/const.ts` `getLoginUrl` path.
 
 ## 6. Data / integration notes
-- Supabase URL: `https://ijtqhysxbjloagmfzrtu.supabase.co`. Anon key is **public by design** (safe in client). Service-role key is **server-only** (never shipped to client).
+- Supabase URL: `https://odibvergwcllhsbzbgwa.supabase.co` (project `odibvergwcllhsbzbgwa` — the canonical/new project as of 2026-07-03; the old `ijtqhysxbjloagmfzrtu` in the original `config.js` is retired). The connected Supabase **MCP is bound to the OLD ref**, so migrations for the new project go through the **CLI** (`supabase db push`), not the MCP. Anon key is **public by design** (safe in client). Service-role key is **server-only** (never shipped to client).
 - Lockout thresholds live server-side in the RPC (3 / 15 min); `config.js`'s `LOCK_MAX`/`LOCK_WINDOW_MIN` are client display only.
 - `profiles.role` is server-assigned (`customer` default via trigger); admin is a manual DB promotion — never trust client role input.
 

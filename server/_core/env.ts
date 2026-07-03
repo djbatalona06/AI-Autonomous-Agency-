@@ -12,6 +12,12 @@ export const ENV = {
 
   // Scraping
   firecrawlApiKey: process.env.FIRECRAWL_API_KEY ?? "",
+
+  // Supabase (auth + data). Anon key is public by design; the server verifies
+  // user JWTs with it via supabase.auth.getUser — no service_role required.
+  supabaseUrl:
+    process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? "https://odibvergwcllhsbzbgwa.supabase.co",
+  supabaseAnonKey: process.env.SUPABASE_ANON_KEY ?? process.env.VITE_SUPABASE_ANON_KEY ?? "",
 };
 
 export type AppUser = {

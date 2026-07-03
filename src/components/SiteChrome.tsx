@@ -17,7 +17,7 @@ const NAV_LINKS = [
 ];
 
 export function SiteNav() {
-  const { isAuthenticated, user, logout, loginUrl } = useAuth();
+  const { isAuthenticated, displayName, signOut, openAuth } = useAuth();
   return (
     <nav className="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-background/70 border-b border-border">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -36,19 +36,19 @@ export function SiteNav() {
           {isAuthenticated ? (
             <>
               <span className="hidden sm:inline text-sm font-medium text-muted-foreground truncate max-w-[10rem]">
-                {user?.name}
+                {displayName}
               </span>
               <Link href="/dashboard">
                 <Button size="sm">Dashboard</Button>
               </Link>
-              <Button size="sm" variant="ghost" onClick={logout}>
+              <Button size="sm" variant="ghost" onClick={() => void signOut()}>
                 Log out
               </Button>
             </>
           ) : (
-            <a href={loginUrl}>
-              <Button size="sm">Get started</Button>
-            </a>
+            <Button size="sm" onClick={openAuth}>
+              Get started
+            </Button>
           )}
         </div>
       </div>

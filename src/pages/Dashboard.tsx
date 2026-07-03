@@ -12,7 +12,7 @@ const ACTIONS = [
 ];
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { displayName } = useAuth();
   const reduce = usePrefersReducedMotion();
   const { data } = trpc.projects.getAll.useQuery({ limit: 100 });
 
@@ -31,7 +31,7 @@ export default function Dashboard() {
           transition={{ duration: 0.4 }}
         >
           <h2 className="text-3xl font-extrabold">
-            Welcome back, <span className="text-primary">{user?.name?.split(" ")[0] ?? "there"}</span>.
+            Welcome back, <span className="text-primary">{displayName.split(" ")[0]}</span>.
           </h2>
           <p className="text-muted-foreground mt-2">Pick a tool and start automating.</p>
         </motion.div>

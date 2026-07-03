@@ -6,3 +6,7 @@ server/.data
 api/.data
 *.log
 .DS_Store
+.claude/settings.local.json
+.supabase
+supabase/.temp
+.env*.local

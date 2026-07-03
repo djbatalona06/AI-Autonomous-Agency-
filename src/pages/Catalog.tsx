@@ -3,6 +3,7 @@ import { motion, type Variants } from "framer-motion";
 import { ArrowUpRight, Lock, Star } from "lucide-react";
 import { VERTICALS, type Vertical } from "@/data/verticals";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { SiteNav, SiteFooter } from "@/components/SiteChrome";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
@@ -70,6 +71,7 @@ function BubbleCard({ v }: { v: Vertical }) {
 
 export default function Catalog() {
   const reduce = usePrefersReducedMotion();
+  const { openAuth } = useAuth();
   return (
     <div className="min-h-screen bg-background">
       <SiteNav />
@@ -100,10 +102,11 @@ export default function Catalog() {
             ))}
 
             <motion.div variants={cell}>
-              <a
-                href="/api/auth/login"
+              <button
+                type="button"
+                onClick={openAuth}
                 onMouseMove={trackGlow}
-                className="group relative flex flex-col justify-between min-h-[200px] rounded-2xl border border-highlight/30 p-6 overflow-hidden hover:-translate-y-1.5 transition-transform bg-[linear-gradient(165deg,#1a1208,#0e0b07)]"
+                className="group relative flex flex-col justify-between text-left w-full min-h-[200px] rounded-2xl border border-highlight/30 p-6 overflow-hidden hover:-translate-y-1.5 transition-transform bg-[linear-gradient(165deg,#1a1208,#0e0b07)]"
               >
                 <div className="relative">
                   <div className="font-mono text-xs font-semibold tracking-[0.08em] text-primary">ACCOUNT</div>
@@ -121,7 +124,7 @@ export default function Catalog() {
                     <ArrowUpRight size={15} />
                   </span>
                 </div>
-              </a>
+              </button>
             </motion.div>
           </motion.div>
         </section>
