@@ -1,0 +1,50 @@
+name: Dependency Review
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  # Lets the action post the review summary on the PR.
+  pull-requests: write
+
+# NOTE: actions/dependency-review-action requires the repository's
+# **Dependency Graph** feature to be enabled
+# (Settings → Code security and analysis → Dependency graph). Until it is, the
+# action errors with "Dependency review is not supported on this repository",
+# so both jobs use `continue-on-error: true` to avoid blocking PRs on a missing
+# repo setting. Dependency vulnerability coverage is still enforced by the
+# `npm audit` workflow and Dependabot. Once Dependency Graph is enabled, remove
+# the `continue-on-error` lines below to restore hard gating.
+
+jobs:
+  # Gate on newly introduced high-severity (or worse) vulnerabilities in
+  # dependency changes (active once Dependency Graph is enabled).
+  vulnerabilities:
+    name: Vulnerability Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Dependency Review (vulnerabilities)
+        uses: actions/dependency-review-action@v4
+        continue-on-error: true
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: always
+
+  # Surface GPL-family copyleft licenses (warning only).
+  licenses:
+    name: License Advisory
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Dependency Review (licenses)
+        uses: actions/dependency-review-action@v4
+        continue-on-error: true
+        with:
+          deny-licenses: GPL-2.0, GPL-3.0, LGPL-2.0, LGPL-2.1, LGPL-3.0, AGPL-1.0, AGPL-3.0
+          warn-only: true

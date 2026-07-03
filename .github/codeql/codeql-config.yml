@@ -1,0 +1,11 @@
+name: "Yawn CodeQL config"
+
+# Generated / bundled output is not first-party source — don't scan it.
+# `api/index.js` is an esbuild bundle of node_modules (express, tRPC, hash-wasm,
+# …) produced by `scripts/build-api.mjs`; scanning minified third-party code
+# yields noise and false positives. The authored source under `server/`, `src/`,
+# `shared/`, and `scripts/` is analyzed instead.
+paths-ignore:
+  - api
+  - dist
+  - "**/*.min.js"
