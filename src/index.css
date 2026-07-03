@@ -1,48 +1,55 @@
 @import "tailwindcss";
 
-/* ── Kinetic Brutalism design tokens ──────────────────────────────────────── */
+/* ── Dark Yawn / Stackgrid design tokens ──────────────────────────────────── */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
 
-  /* Purple palette */
-  --color-background: #ecdaf2; /* pale purple */
-  --color-foreground: #2d1b3d; /* near-black purple ink */
-  --color-card: #f5f1f8;
-  --color-card-foreground: #2d1b3d;
-  --color-primary: #b666d2; /* rich lilac */
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #b9a3d9; /* light pastel purple */
-  --color-secondary-foreground: #2d1b3d;
-  --color-muted: #d9c7e8;
-  --color-muted-foreground: #5a4470;
-  --color-accent: #b666d2;
-  --color-accent-foreground: #ffffff;
-  --color-border: #2d1b3d; /* hard dark brutalist frame */
-  --color-input: #2d1b3d;
-  --color-ring: #b666d2;
-  --color-destructive: #c0392b;
-  --color-destructive-foreground: #ffffff;
+  /* Dark palette — near-black canvas, orange primary, yellow highlight */
+  --color-background: #0a0b0d; /* canvas */
+  --color-bg2: #101216;
+  --color-foreground: #f4f5f7; /* ink */
+  --color-card: #14171c; /* panel */
+  --color-card-foreground: #f4f5f7;
+  --color-popover: #101216;
+  --color-popover-foreground: #f4f5f7;
+  --color-primary: #ff5c35; /* orange */
+  --color-primary-foreground: #1a0a04;
+  --color-secondary: #16191f; /* dark chip */
+  --color-secondary-foreground: #f4f5f7;
+  --color-muted: #14171c;
+  --color-muted-foreground: #9aa3af;
+  --color-faint: #6b7280;
+  --color-accent: #ff744f; /* orange hover */
+  --color-accent-foreground: #1a0a04;
+  --color-highlight: #ffd23f; /* yellow */
+  --color-highlight-foreground: #1a0a04;
+  --color-border: #23272f; /* soft line */
+  --color-input: #23272f;
+  --color-ring: #ff5c35;
+  --color-success: #39d98a;
+  --color-destructive: #ff5470;
+  --color-destructive-foreground: #1a0a04;
 
-  /* Strict 0px radius */
-  --radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 0px;
+  /* Stackgrid rounded scale (was 0px brutalist) */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
 }
 
 @layer base {
-  * {
-    border-color: var(--color-border);
-  }
   html {
     scroll-behavior: smooth;
+    color-scheme: dark;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
   /* Visible focus ring everywhere (WCAG) */
   :where(a, button, input, textarea, select, [tabindex]):focus-visible {
-    outline: 3px solid var(--color-ring);
+    outline: 2px solid var(--color-ring);
     outline-offset: 2px;
   }
   /* Pointer affordance on interactive elements */
@@ -51,6 +58,38 @@
   a[href] {
     cursor: pointer;
   }
+  ::selection {
+    background: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  }
+}
+
+/* ── Stackgrid helpers ────────────────────────────────────────────────────── */
+/* Warm hero glow behind the particle field */
+.hero-glow {
+  background:
+    radial-gradient(1200px 600px at 70% -10%, #1a1410 0%, transparent 60%),
+    var(--color-background);
+}
+/* Dashed grid section frame */
+.grid-frame {
+  border: 1px dashed var(--color-border);
+}
+/* Crosshair corner marker — place inside a `position:relative` box */
+.crosshair::before,
+.crosshair::after {
+  content: "+";
+  position: absolute;
+  top: 6px;
+  color: var(--color-faint);
+  font-family: var(--font-mono);
+  line-height: 1;
+  pointer-events: none;
+}
+.crosshair::before {
+  left: 8px;
+}
+.crosshair::after {
+  right: 8px;
 }
 
 /* ── Seamless infinite marquee ────────────────────────────────────────────── */

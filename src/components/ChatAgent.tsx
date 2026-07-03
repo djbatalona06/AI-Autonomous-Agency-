@@ -50,7 +50,7 @@ export function ChatAgent() {
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? "Close assistant" : "Open assistant"}
         aria-expanded={open}
-        className="fixed bottom-5 right-5 z-50 w-14 h-14 border-2 border-border bg-primary text-primary-foreground text-2xl font-bold shadow-[4px_4px_0_0_#2d1b3d] active:scale-[0.97] transition-transform"
+        className="fixed bottom-5 right-5 z-50 w-14 h-14 rounded-full border border-transparent bg-primary text-primary-foreground text-2xl font-bold shadow-[0_14px_40px_-12px_var(--color-primary)] active:scale-[0.97] transition-transform"
       >
         <span aria-hidden>{open ? "✕" : "💬"}</span>
       </button>
@@ -58,7 +58,7 @@ export function ChatAgent() {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed bottom-24 right-5 z-50 w-[min(92vw,360px)] h-[480px] flex flex-col border-2 border-border bg-card shadow-[6px_6px_0_0_#2d1b3d]"
+            className="fixed bottom-24 right-5 z-50 w-[min(92vw,360px)] h-[480px] flex flex-col rounded-2xl border border-border bg-card shadow-[0_40px_100px_-30px_#000]"
             initial={reduce ? false : { opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduce ? undefined : { opacity: 0, y: 16, scale: 0.98 }}

@@ -6,6 +6,9 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { RequireAuth } from "@/components/RequireAuth";
 import { ChatAgent } from "@/components/ChatAgent";
 import Home from "@/pages/Home";
+import Catalog from "@/pages/Catalog";
+import CatalogVertical from "@/pages/CatalogVertical";
+import Pricing from "@/pages/Pricing";
 import Dashboard from "@/pages/Dashboard";
 import ImageStudio from "@/pages/ImageStudio";
 import WebCrawler from "@/pages/WebCrawler";
@@ -27,6 +30,9 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/catalog" component={Catalog} />
+      <Route path="/catalog/:code" component={CatalogVertical} />
+      <Route path="/pricing" component={Pricing} />
       <Route path="/dashboard" component={protect(Dashboard)} />
       <Route path="/dashboard/history" component={protect(ProjectHistory)} />
       <Route path="/dashboard/settings" component={protect(Settings)} />
@@ -41,7 +47,7 @@ function Router() {
 export default function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light">
+      <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster />
           <Router />
