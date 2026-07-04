@@ -12,13 +12,12 @@ const NAV = [
   { label: "Web Crawler", icon: "🕷️", href: "/studio/crawler" },
   { label: "Project History", icon: "📚", href: "/dashboard/history" },
   { label: "Settings", icon: "⚙️", href: "/dashboard/settings" },
-  { label: "Security", icon: "🛡️", href: "/security" },
   { label: "Help & Docs", icon: "📖", href: "/dashboard/help" },
 ];
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const [location] = useLocation();
-  const { user, logout } = useAuth();
+  const { user, displayName, signOut } = useAuth();
 
   return (
     <div className="flex flex-col h-full">
@@ -56,10 +55,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="p-4 border-t-2 border-border space-y-3">
         <div className="px-1">
-          <p className="font-bold text-foreground truncate">{user?.name ?? "User"}</p>
+          <p className="font-bold text-foreground truncate">{displayName}</p>
           <p className="text-muted-foreground text-xs truncate">{user?.email}</p>
         </div>
-        <Button variant="outline" className="w-full" onClick={logout}>
+        <Button variant="outline" className="w-full" onClick={() => void signOut()}>
           Log out
         </Button>
       </div>

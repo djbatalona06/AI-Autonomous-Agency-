@@ -1,74 +1,10 @@
-import { useState, type FormEvent } from "react";
-import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { MfaSetup } from "@/components/auth/MfaSetup";
-
-function ChangePassword() {
-  const [current, setCurrent] = useState("");
-  const [next, setNext] = useState("");
-  const [confirm, setConfirm] = useState("");
-
-  const change = trpc.auth.changePassword.useMutation({
-    onSuccess: () => {
-      setCurrent("");
-      setNext("");
-      setConfirm("");
-      toast.success("Password updated.");
-    },
-    onError: (e) => toast.error(e.message || "Could not update password."),
-  });
-
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (next !== confirm) {
-      toast.error("New passwords do not match.");
-      return;
-    }
-    change.mutate({ currentPassword: current, newPassword: next });
-  }
-
-  return (
-    <form onSubmit={onSubmit} className="space-y-3 max-w-sm">
-      <Input
-        type="password"
-        autoComplete="current-password"
-        placeholder="Current password"
-        required
-        value={current}
-        onChange={(e) => setCurrent(e.target.value)}
-      />
-      <Input
-        type="password"
-        autoComplete="new-password"
-        placeholder="New password"
-        required
-        value={next}
-        onChange={(e) => setNext(e.target.value)}
-      />
-      <Input
-        type="password"
-        autoComplete="new-password"
-        placeholder="Confirm new password"
-        required
-        value={confirm}
-        onChange={(e) => setConfirm(e.target.value)}
-      />
-      <p className="text-xs text-muted-foreground">
-        At least 12 characters, with upper & lower case, a number, and a symbol.
-      </p>
-      <Button type="submit" disabled={change.isPending}>
-        {change.isPending ? "Updating…" : "Change password"}
-      </Button>
-    </form>
-  );
-}
 
 export default function Settings() {
-  const { user, logout } = useAuth();
+  const { user, displayName, role, signOut } = useAuth();
   const { data: health } = trpc.system.health.useQuery();
 
   return (
@@ -79,7 +15,7 @@ export default function Settings() {
           <dl className="space-y-3">
             <div className="flex justify-between gap-4">
               <dt className="text-muted-foreground">Name</dt>
-              <dd className="font-semibold">{user?.name ?? "—"}</dd>
+              <dd className="font-semibold">{displayName}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-muted-foreground">Email</dt>
@@ -87,25 +23,9 @@ export default function Settings() {
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-muted-foreground">Role</dt>
-              <dd className="font-semibold capitalize">{user?.role ?? "user"}</dd>
+              <dd className="font-semibold capitalize">{role ?? "customer"}</dd>
             </div>
           </dl>
-        </section>
-
-        <section className="border-2 border-border bg-card p-6 space-y-8">
-          <h2 className="text-xl font-extrabold">Security</h2>
-
-          <div>
-            <h3 className="font-bold mb-3 uppercase tracking-wide text-sm">Change password</h3>
-            <ChangePassword />
-          </div>
-
-          <div className="border-t-2 border-border pt-6">
-            <h3 className="font-bold mb-3 uppercase tracking-wide text-sm">
-              Two-factor authentication
-            </h3>
-            <MfaSetup />
-          </div>
         </section>
 
         <section className="border-2 border-border bg-card p-6">
@@ -129,7 +49,7 @@ export default function Settings() {
           </dl>
         </section>
 
-        <Button variant="destructive" onClick={logout}>
+        <Button variant="destructive" onClick={() => void signOut()}>
           Log out
         </Button>
       </div>

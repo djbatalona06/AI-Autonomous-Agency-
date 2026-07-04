@@ -3,8 +3,9 @@ import { motion, type Variants } from "framer-motion";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import { Button } from "@/components/ui/button";
+import { ParticleField } from "@/components/ParticleField";
 import { KoalaShowcase } from "@/components/KoalaShowcase";
-import { CursorEffect } from "@/components/CursorEffect";
+import { SiteNav, SiteFooter } from "@/components/SiteChrome";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -13,8 +14,8 @@ const container: Variants = {
   visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
 };
 const item: Variants = {
-  hidden: { opacity: 0, y: 24, scale: 0.97 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: EASE } },
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
 };
 
 const FEED = [
@@ -44,43 +45,11 @@ const FEATURES = [
   },
 ];
 
-function TopNav() {
-  const { isAuthenticated, user, logout, loginUrl } = useAuth();
-  return (
-    <nav className="fixed top-0 inset-x-0 z-50 bg-card border-b-2 border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-extrabold text-primary tracking-tight">
-          Yawn
-        </Link>
-        <div className="flex items-center gap-3">
-          {isAuthenticated ? (
-            <>
-              <span className="hidden sm:inline text-sm font-semibold text-foreground truncate max-w-[10rem]">
-                {user?.name}
-              </span>
-              <Link href="/dashboard">
-                <Button size="sm">Dashboard</Button>
-              </Link>
-              <Button size="sm" variant="outline" onClick={logout}>
-                Log out
-              </Button>
-            </>
-          ) : (
-            <a href={loginUrl}>
-              <Button size="sm">Get Started</Button>
-            </a>
-          )}
-        </div>
-      </div>
-    </nav>
-  );
-}
-
 function MarqueeTrack() {
   return (
     <div className="flex shrink-0">
       {FEED.map((t, i) => (
-        <span key={i} className="flex items-center gap-3 pr-12 text-lg font-bold text-foreground">
+        <span key={i} className="flex items-center gap-3 pr-12 text-lg font-semibold text-foreground/90">
           <span className="text-primary">✓</span>
           {t}
         </span>
@@ -89,70 +58,84 @@ function MarqueeTrack() {
   );
 }
 
+/** Opens the auth modal for guests, or links to the dashboard when signed in. */
+function PrimaryCta({ authed, guest }: { authed: string; guest: string }) {
+  const { isAuthenticated, openAuth } = useAuth();
+  return isAuthenticated ? (
+    <Link href="/dashboard">
+      <Button size="lg">{authed}</Button>
+    </Link>
+  ) : (
+    <Button size="lg" onClick={openAuth}>
+      {guest}
+    </Button>
+  );
+}
+
 export default function Home() {
-  const { isAuthenticated, loginUrl } = useAuth();
   const reduce = usePrefersReducedMotion();
-  const ctaHref = isAuthenticated ? "/dashboard" : loginUrl;
 
   return (
     <div className="min-h-screen bg-background">
-      <CursorEffect />
-      <TopNav />
+      <SiteNav />
 
       <main className="pt-16">
-        {/* Hero — full-bleed cyber koala perched behind the content */}
-        <section className="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
-          {/* Background mascot */}
-          <KoalaShowcase background />
-          {/* Legibility overlay over the dark animation */}
-          <div
-            className="absolute inset-0 z-[1] pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(90deg, rgba(10,5,20,0.82) 0%, rgba(10,5,20,0.55) 45%, rgba(10,5,20,0.15) 100%)",
-            }}
-          />
-
-          <div className="relative z-[2] w-full max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
-            <motion.div
-              variants={container}
-              initial={reduce ? false : "hidden"}
-              animate="visible"
-              className="max-w-2xl border-2 border-primary/40 bg-card/70 backdrop-blur-md p-7 sm:p-10 shadow-[0_0_60px_rgba(182,102,210,0.25)]"
-            >
-              <motion.p
-                variants={item}
-                className="inline-block border-2 border-border bg-secondary px-3 py-1 text-sm font-bold uppercase tracking-widest mb-6"
+        {/* Hero with live particle field */}
+        <section className="relative overflow-hidden hero-glow">
+          <div className="absolute inset-0 z-0" aria-hidden>
+            <ParticleField />
+          </div>
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-20">
+            <div className="relative pt-2">
+              <motion.div
+                variants={container}
+                initial={reduce ? false : "hidden"}
+                animate="visible"
+                className="max-w-3xl"
               >
-                AI Automation Agency
-              </motion.p>
-              <motion.h1
-                variants={item}
-                className="text-5xl sm:text-7xl lg:text-8xl font-extrabold leading-[0.95] tracking-tight"
-              >
-                Automate <br />
-                the <span className="text-primary">Boring.</span>
-              </motion.h1>
-              <motion.p variants={item} className="mt-8 text-xl sm:text-2xl font-semibold max-w-2xl">
-                Wake up your business with AI-powered automation. Generate images, scrape competitors,
-                and scale without the grind.
-              </motion.p>
-              <motion.div variants={item} className="mt-10 flex flex-wrap gap-4">
-                <a href={ctaHref}>
-                  <Button size="lg">{isAuthenticated ? "Go to Dashboard →" : "Start Automating →"}</Button>
-                </a>
-                <a href="#features">
-                  <Button size="lg" variant="outline">
-                    See what it does
-                  </Button>
-                </a>
+                <motion.p
+                  variants={item}
+                  className="text-xs font-semibold uppercase tracking-[0.16em] text-highlight"
+                >
+                  AI automation agency · since 2026
+                </motion.p>
+                <motion.h1
+                  variants={item}
+                  className="font-serif text-6xl sm:text-8xl lg:text-9xl font-semibold leading-[0.95] tracking-tight mt-5"
+                >
+                  Automate <br />
+                  the <span className="text-primary">boring.</span>
+                </motion.h1>
+                <motion.p
+                  variants={item}
+                  className="mt-8 text-lg sm:text-xl text-muted-foreground max-w-xl leading-relaxed"
+                >
+                  Wake up your business with AI workflows — generate images, scrape competitors, and
+                  scale without the grind. Validated before they ever touch production.
+                </motion.p>
+                <motion.div variants={item} className="mt-10 flex flex-wrap gap-4" id="start">
+                  <PrimaryCta authed="Go to dashboard →" guest="Start automating →" />
+                  <a href="#features">
+                    <Button size="lg" variant="outline">
+                      See what it does
+                    </Button>
+                  </a>
+                </motion.div>
+                <motion.div
+                  variants={item}
+                  className="mt-9 flex flex-wrap gap-6 text-sm text-faint"
+                >
+                  <span><b className="text-muted-foreground font-semibold">25</b> templates</span>
+                  <span><b className="text-muted-foreground font-semibold">5</b> verticals</span>
+                  <span><b className="text-muted-foreground font-semibold">$750</b> floor · install in days</span>
+                </motion.div>
               </motion.div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* Automation Feed marquee */}
-        <section className="bg-secondary border-y-2 border-border overflow-hidden py-5" aria-hidden>
+        <section className="bg-secondary border-y border-border overflow-hidden py-5" aria-hidden>
           <div className="flex w-max animate-marquee">
             <MarqueeTrack />
             <MarqueeTrack />
@@ -161,55 +144,60 @@ export default function Home() {
 
         {/* Features */}
         <section id="features" className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28">
+          <motion.p
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="text-xs font-semibold uppercase tracking-[0.16em] text-highlight mb-4"
+          >
+            What's inside
+          </motion.p>
           <motion.h2
             initial={reduce ? false : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="text-4xl sm:text-5xl font-extrabold mb-14"
+            className="font-serif text-4xl sm:text-5xl font-semibold mb-14 tracking-tight"
           >
             Built for <span className="text-primary">scale.</span>
           </motion.h2>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div id="how" className="grid gap-5 md:grid-cols-3">
             {FEATURES.map((f, i) => (
               <motion.article
                 key={f.title}
-                initial={reduce ? false : { opacity: 0, y: 30, scale: 0.97 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                initial={reduce ? false : { opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.5, ease: EASE, delay: i * 0.08 }}
-                className="border-2 border-border bg-card p-8 hover:bg-secondary transition-colors"
+                className="relative crosshair rounded-2xl border border-border bg-card p-8 hover:border-faint transition-colors"
               >
-                <div className="text-5xl mb-5" aria-hidden>
+                <div className="text-4xl mb-5" aria-hidden>
                   {f.icon}
                 </div>
-                <h3 className="text-2xl font-extrabold mb-3">{f.title}</h3>
+                <h3 className="text-2xl font-bold mb-3 tracking-tight">{f.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{f.body}</p>
               </motion.article>
             ))}
           </div>
         </section>
 
+        {/* Koala mascot showcase */}
+        <KoalaShowcase />
+
         {/* Footer CTA */}
-        <section className="bg-primary text-primary-foreground border-t-2 border-border">
+        <section className="border-y border-border bg-card">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center">
-            <h2 className="text-4xl sm:text-5xl font-extrabold mb-8">Ready to automate?</h2>
-            <a href={ctaHref}>
-              <Button size="lg" variant="outline" className="bg-card">
-                {isAuthenticated ? "Open Dashboard →" : "Start Free →"}
-              </Button>
-            </a>
+            <h2 className="font-serif text-4xl sm:text-5xl font-semibold mb-8 tracking-tight">
+              Ready to automate the <span className="text-primary">boring?</span>
+            </h2>
+            <PrimaryCta authed="Open dashboard →" guest="Start free →" />
           </div>
         </section>
-
-        <footer className="bg-card border-t-2 border-border">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
-            <span className="font-extrabold text-primary text-lg">Yawn</span>
-            <span>Automate the Boring. Wake Up Your Business.</span>
-          </div>
-        </footer>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

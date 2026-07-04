@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { trpc } from "@/lib/trpc";
+import { getAccessToken } from "@/lib/supabase";
 import App from "@/App";
 import "@/index.css";
 
@@ -10,7 +11,16 @@ function Root() {
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
     trpc.createClient({
-      links: [httpBatchLink({ url: "/trpc" })],
+      links: [
+        httpBatchLink({
+          url: "/trpc",
+          // Attach the Supabase access token so the server can authorize the user.
+          async headers() {
+            const token = await getAccessToken();
+            return token ? { authorization: `Bearer ${token}` } : {};
+          },
+        }),
+      ],
     }),
   );
 

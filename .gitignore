@@ -8,3 +8,7 @@ api/.data
 backups
 *.log
 .DS_Store
+.claude/settings.local.json
+.supabase
+supabase/.temp
+.env*.local

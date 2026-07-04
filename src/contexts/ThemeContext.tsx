@@ -2,11 +2,11 @@ import { createContext, useContext, type ReactNode } from "react";
 
 type Theme = "light" | "dark";
 
-const ThemeContext = createContext<{ theme: Theme }>({ theme: "light" });
+const ThemeContext = createContext<{ theme: Theme }>({ theme: "dark" });
 
 export function ThemeProvider({
   children,
-  defaultTheme = "light",
+  defaultTheme = "dark",
 }: {
   children: ReactNode;
   defaultTheme?: Theme;

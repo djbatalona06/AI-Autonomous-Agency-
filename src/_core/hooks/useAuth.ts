@@ -1,25 +1,9 @@
-import { trpc } from "@/lib/trpc";
-import { getLoginUrl } from "@/const";
+import { useContext } from "react";
+import { AuthContext, type AuthValue } from "@/contexts/AuthContext";
 
-export function useAuth() {
-  const utils = trpc.useUtils();
-  const { data: user, isLoading } = trpc.auth.me.useQuery(undefined, {
-    retry: false,
-    staleTime: 60_000,
-  });
-
-  const logoutMutation = trpc.auth.logout.useMutation({
-    onSuccess: async () => {
-      await utils.auth.me.invalidate();
-      window.location.href = "/";
-    },
-  });
-
-  return {
-    user: user ?? null,
-    isAuthenticated: !!user,
-    isLoading,
-    loginUrl: getLoginUrl(),
-    logout: () => logoutMutation.mutate(),
-  };
+/** Supabase-backed auth. Must be used within <AuthProvider> (mounted in App). */
+export function useAuth(): AuthValue {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
+  return ctx;
 }
