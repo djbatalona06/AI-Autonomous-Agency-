@@ -3,10 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Yawn — AI Automation Agency</title>
+    <!--
+      Static fallback for crawlers that don't execute JavaScript (most AI
+      bots, incl. GPTBot/ClaudeBot). Once React mounts, react-helmet-async
+      takes over and these are removed (see App.tsx) so JS-executing clients
+      never see duplicate title/description tags competing with the
+      per-route ones.
+    -->
+    <title id="seed-title">Yawn — AI Automation Agency</title>
     <meta
+      id="seed-description"
       name="description"
-      content="Automate the Boring. Wake Up Your Business. AI image generation, web crawling, and competitive intelligence." />
+      content="Yawn is an AI automation agency that builds lead follow-up, order operations, and back-office workflows for sales teams, e-commerce stores, small businesses, and real estate wholesalers." />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#0a0b0d" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

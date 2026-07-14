@@ -13,7 +13,12 @@ export interface AuthValue {
   isLoading: boolean;
   displayName: string;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error?: string; needsConfirm?: boolean }>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string,
+    howHeard?: string,
+  ) => Promise<{ error?: string; needsConfirm?: boolean }>;
   signOut: () => Promise<void>;
   openAuth: () => void;
   closeAuth: () => void;
@@ -78,11 +83,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return {};
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, fullName: string) => {
+  const signUp = useCallback(async (email: string, password: string, fullName: string, howHeard?: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: { data: { full_name: fullName, how_heard: howHeard || undefined } },
     });
     if (error) return { error: error.message };
     return { needsConfirm: !data.session };
