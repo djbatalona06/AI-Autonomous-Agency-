@@ -3,6 +3,7 @@ import { Check } from "lucide-react";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import { SiteNav, SiteFooter } from "@/components/SiteChrome";
 import { Button } from "@/components/ui/button";
+import { Seo } from "@/components/Seo";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -44,6 +45,11 @@ export default function Pricing() {
   const reduce = usePrefersReducedMotion();
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="Pricing"
+        description="Yawn's AI automation pricing: $750–$1,500 template installs, $1,500–$5,000 custom builds, and $500–$1,000/mo ops retainers. No hidden retainers — straight pricing per project."
+        path="/pricing"
+      />
       <SiteNav />
       <main className="pt-16">
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-24">

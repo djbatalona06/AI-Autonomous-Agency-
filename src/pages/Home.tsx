@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { ParticleField } from "@/components/ParticleField";
 import { KoalaShowcase } from "@/components/KoalaShowcase";
 import { SiteNav, SiteFooter } from "@/components/SiteChrome";
+import { Seo } from "@/components/Seo";
+import { BRAND } from "@/data/brand";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -77,6 +79,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo title={BRAND.name} description={BRAND.description} path="/" />
       <SiteNav />
 
       <main className="pt-16">
@@ -110,8 +113,10 @@ export default function Home() {
                   variants={item}
                   className="mt-8 text-lg sm:text-xl text-muted-foreground max-w-xl leading-relaxed"
                 >
-                  Wake up your business with AI workflows — generate images, scrape competitors, and
-                  scale without the grind. Validated before they ever touch production.
+                  Yawn builds the AI automations that catch what your team can't: instant lead
+                  follow-up, order and invoice chasing, and daily briefs — so leads, carts, and
+                  invoices stop slipping through the cracks. Every workflow is validated before it
+                  ever touches production.
                 </motion.p>
                 <motion.div variants={item} className="mt-10 flex flex-wrap gap-4" id="start">
                   <PrimaryCta authed="Go to dashboard →" guest="Start automating →" />

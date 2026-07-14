@@ -12,6 +12,7 @@ export function Mark() {
 
 const NAV_LINKS = [
   { href: "/catalog", label: "[ verticals ]" },
+  { href: "/tutorials", label: "[ tutorials ]" },
   { href: "/pricing", label: "[ pricing ]" },
   { href: "/#features", label: "[ why us ]" },
 ];
@@ -65,6 +66,7 @@ export function SiteFooter() {
         </span>
         <div className="flex items-center gap-4">
           <Link href="/catalog" className="hover:text-foreground transition-colors">Catalog</Link>
+          <Link href="/tutorials" className="hover:text-foreground transition-colors">Tutorials</Link>
           <Link href="/pricing" className="hover:text-foreground transition-colors">Pricing</Link>
           <span>Automate the Boring.</span>
         </div>

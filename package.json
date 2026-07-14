@@ -8,8 +8,9 @@
     "dev": "concurrently -k -n server,client -c magenta,cyan \"npm:dev:server\" \"npm:dev:client\"",
     "dev:client": "vite",
     "dev:server": "tsx watch server/index.ts",
-    "build": "vite build && node scripts/build-api.mjs",
+    "build": "tsx scripts/generate-sitemap.ts && vite build && node scripts/build-api.mjs",
     "build:api": "node scripts/build-api.mjs",
+    "build:sitemap": "tsx scripts/generate-sitemap.ts",
     "start": "cross-env NODE_ENV=production tsx server/index.ts",
     "typecheck": "tsc --noEmit",
     "preview": "npm run build && npm start"
@@ -29,6 +30,7 @@
     "nanoid": "^5.0.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-helmet-async": "^3.0.0",
     "react-markdown": "^9.0.1",
     "remark-gfm": "^4.0.0",
     "sonner": "^1.7.1",

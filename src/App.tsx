@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Route, Switch } from "wouter";
+import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -10,6 +12,8 @@ import Home from "@/pages/Home";
 import Catalog from "@/pages/Catalog";
 import CatalogVertical from "@/pages/CatalogVertical";
 import Pricing from "@/pages/Pricing";
+import Tutorials from "@/pages/Tutorials";
+import TutorialDetail from "@/pages/TutorialDetail";
 import Dashboard from "@/pages/Dashboard";
 import ImageStudio from "@/pages/ImageStudio";
 import WebCrawler from "@/pages/WebCrawler";
@@ -34,6 +38,8 @@ function Router() {
       <Route path="/catalog" component={Catalog} />
       <Route path="/catalog/:code" component={CatalogVertical} />
       <Route path="/pricing" component={Pricing} />
+      <Route path="/tutorials" component={Tutorials} />
+      <Route path="/tutorials/:slug" component={TutorialDetail} />
       <Route path="/dashboard" component={protect(Dashboard)} />
       <Route path="/dashboard/history" component={protect(ProjectHistory)} />
       <Route path="/dashboard/settings" component={protect(Settings)} />
@@ -45,18 +51,29 @@ function Router() {
   );
 }
 
+/** Removes the static index.html fallback title/description once react-helmet-async is managing the head. */
+function useDropSeedMeta() {
+  useEffect(() => {
+    document.getElementById("seed-title")?.remove();
+    document.getElementById("seed-description")?.remove();
+  }, []);
+}
+
 export default function App() {
+  useDropSeedMeta();
   return (
-    <ErrorBoundary>
-      <ThemeProvider defaultTheme="dark">
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-            <ChatAgent />
-          </TooltipProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+    <HelmetProvider>
+      <ErrorBoundary>
+        <ThemeProvider defaultTheme="dark">
+          <AuthProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+              <ChatAgent />
+            </TooltipProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
+    </HelmetProvider>
   );
 }

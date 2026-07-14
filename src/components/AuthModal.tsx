@@ -8,6 +8,15 @@ import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 type Mode = "in" | "up";
 type Msg = { kind: "err" | "ok" | "info"; text: string } | null;
 
+const HOW_HEARD_OPTIONS = [
+  { value: "", label: "Prefer not to say" },
+  { value: "google", label: "Google / search engine" },
+  { value: "ai_assistant", label: "AI assistant (ChatGPT, Claude, Perplexity, etc.)" },
+  { value: "referral", label: "Referral from a friend or colleague" },
+  { value: "social", label: "Social media" },
+  { value: "other", label: "Other" },
+];
+
 const MSG_STYLES: Record<NonNullable<Msg>["kind"], string> = {
   err: "bg-destructive/10 border-destructive/40 text-[#ffb3c0]",
   ok: "bg-success/10 border-success/40 text-[#9af0c4]",
@@ -23,6 +32,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [howHeard, setHowHeard] = useState("");
   const [msg, setMsg] = useState<Msg>(null);
   const [busy, setBusy] = useState(false);
 
@@ -49,7 +59,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
       onClose();
       navigate("/dashboard");
     } else {
-      const { error, needsConfirm } = await signUp(email.trim(), password, fullName.trim());
+      const { error, needsConfirm } = await signUp(email.trim(), password, fullName.trim(), howHeard);
       if (error) {
         setMsg({ kind: "err", text: error });
         setBusy(false);
@@ -149,6 +159,25 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
                       placeholder="Jane Doe"
                       className="w-full bg-background border border-border rounded-xl px-3.5 py-3 text-sm outline-none focus:border-primary transition-colors"
                     />
+                  </div>
+                )}
+                {mode === "up" && (
+                  <div>
+                    <label htmlFor="howHeard" className="block text-sm text-muted-foreground font-semibold mb-1.5">
+                      How did you hear about us?
+                    </label>
+                    <select
+                      id="howHeard"
+                      value={howHeard}
+                      onChange={(e) => setHowHeard(e.target.value)}
+                      className="w-full bg-background border border-border rounded-xl px-3.5 py-3 text-sm outline-none focus:border-primary transition-colors"
+                    >
+                      {HOW_HEARD_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )}
                 <div>

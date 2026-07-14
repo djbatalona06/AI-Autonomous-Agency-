@@ -5,6 +5,8 @@ import { getVertical, STATUS_LABEL, type TemplateCard } from "@/data/verticals";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import { SiteNav, SiteFooter } from "@/components/SiteChrome";
 import { Button } from "@/components/ui/button";
+import { Seo } from "@/components/Seo";
+import { BRAND } from "@/data/brand";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -63,9 +65,36 @@ export default function CatalogVertical() {
   }
 
   const Icon = vertical.icon;
+  const path = `/catalog/${vertical.code.toLowerCase()}`;
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    serviceType: `${vertical.name} AI Automation`,
+    provider: { "@type": "ProfessionalService", name: BRAND.legalName },
+    audience: { "@type": "Audience", audienceType: vertical.buyer },
+    description: vertical.blurb,
+    url: `${BRAND.url}${path}`,
+  };
+  const faqJsonLd = vertical.faqs.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: vertical.faqs.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      }
+    : null;
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title={`${vertical.name} Automation for ${vertical.buyer}`}
+        description={vertical.blurb}
+        path={path}
+        jsonLd={faqJsonLd ? [serviceJsonLd, faqJsonLd] : [serviceJsonLd]}
+      />
       <SiteNav />
       <main className="pt-16">
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-14 sm:pt-20 pb-24">
@@ -100,6 +129,22 @@ export default function CatalogVertical() {
             <a href="/#start"><Button size="lg">Book a build for this →</Button></a>
             <Link href="/pricing"><Button size="lg" variant="outline">See pricing</Button></Link>
           </div>
+
+          {vertical.faqs.length > 0 && (
+            <div className="mt-20 max-w-2xl">
+              <h2 className="font-serif text-2xl sm:text-3xl font-semibold tracking-tight mb-6">
+                Common questions
+              </h2>
+              <div className="space-y-5">
+                {vertical.faqs.map((f) => (
+                  <div key={f.q} className="rounded-xl border border-border bg-card p-5">
+                    <h3 className="font-semibold text-base mb-1.5">{f.q}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{f.a}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       </main>
       <SiteFooter />

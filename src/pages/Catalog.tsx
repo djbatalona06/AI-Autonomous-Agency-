@@ -5,6 +5,7 @@ import { VERTICALS, type Vertical } from "@/data/verticals";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { SiteNav, SiteFooter } from "@/components/SiteChrome";
+import { Seo } from "@/components/Seo";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -74,6 +75,11 @@ export default function Catalog() {
   const { openAuth } = useAuth();
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="Catalog"
+        description="Browse Yawn's 5 buyer verticals — Sales, E-commerce, Productivity, Small Business, and Wholesaling/REI — and 25 priced AI automation templates built for each."
+        path="/catalog"
+      />
       <SiteNav />
       <main className="pt-16">
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-24">
