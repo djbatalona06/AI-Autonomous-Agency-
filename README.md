@@ -1,4 +1,4 @@
-# Yawn — AI Automation Agency
+# Yawn — AI Automation Agency v.1.0.1
 
 ![Yawn Agency Background](assets/images/YawnAgencyBackground.png)
 
