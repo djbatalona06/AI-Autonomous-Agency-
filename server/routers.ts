@@ -12,6 +12,8 @@ import {
 import { generateImage } from "./_core/imageGeneration";
 import { invokeLLM } from "./_core/llm";
 import { scrapeUrl } from "./_core/scrape";
+import { SsrfError } from "./_core/ssrf";
+import { wrapUntrusted, INJECTION_GUARD } from "./_core/aiSafety";
 
 export const appRouter = router({
   system: systemRouter,
@@ -47,17 +49,34 @@ export const appRouter = router({
     scrape: protectedProcedure
       .input(z.object({ url: z.string().url() }))
       .mutation(async ({ input, ctx }) => {
-        const { title, text } = await scrapeUrl(input.url);
+        let scraped;
+        try {
+          scraped = await scrapeUrl(input.url);
+        } catch (err) {
+          // SSRF guard rejections are user input problems, not server faults:
+          // surface a safe BAD_REQUEST rather than leaking a 500/stack.
+          if (err instanceof SsrfError) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: err.message });
+          }
+          throw err;
+        }
+        const { title, text } = scraped;
         const rawContent = `# ${title}\n\n${text}`;
+
+        // The scraped page is untrusted: wrap it in injection-resistant
+        // delimiters and add the guard to the system prompt so page content
+        // cannot hijack the model's instructions.
+        const untrusted = wrapUntrusted(text);
 
         const summaryRes = await invokeLLM({
           messages: [
             {
               role: "system",
               content:
-                "You are a web research assistant. Summarise the main content of the page in concise markdown with a short bullet list.",
+                "You are a web research assistant. Summarise the main content of the page in concise markdown with a short bullet list. " +
+                INJECTION_GUARD,
             },
-            { role: "user", content: `Summarise this page (${input.url}):\n\n${text}` },
+            { role: "user", content: `Summarise this page (${input.url}):\n\n${untrusted}` },
           ],
         });
         const markdownSummary = summaryRes.choices[0]?.message.content ?? "";
@@ -67,9 +86,10 @@ export const appRouter = router({
             {
               role: "system",
               content:
-                "You are a competitive intelligence analyst. Return ONLY JSON with fields: keyTopics (string[]), toneAnalysis (string), marketingInsights (string[]).",
+                "You are a competitive intelligence analyst. Return ONLY JSON with fields: keyTopics (string[]), toneAnalysis (string), marketingInsights (string[]). " +
+                INJECTION_GUARD,
             },
-            { role: "user", content: `Analyse this content:\n\n${text}` },
+            { role: "user", content: `Analyse this content:\n\n${untrusted}` },
           ],
         });
         let competitiveIntelligence: Record<string, unknown> = {};
@@ -150,9 +170,12 @@ export const appRouter = router({
             {
               role: "system",
               content:
-                "You are Yawn's friendly in-app assistant for an AI automation agency. Help users with image generation, web crawling, competitive intelligence, and automation. Be concise and practical.",
+                "You are Yawn's friendly in-app assistant for an AI automation agency. Help users with image generation, web crawling, competitive intelligence, and automation. Be concise and practical. " +
+                INJECTION_GUARD,
             },
-            { role: "user", content: input.message },
+            // User chat input is untrusted: wrap it so it cannot override the
+            // system instructions or extract them.
+            { role: "user", content: wrapUntrusted(input.message) },
           ],
         });
         return { reply: res.choices[0]?.message.content ?? "" };
