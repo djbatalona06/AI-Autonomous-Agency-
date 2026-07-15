@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { COOKIE_NAME } from "../shared/const";
 import { sessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -11,7 +12,7 @@ import {
 } from "./db";
 import { generateImage } from "./_core/imageGeneration";
 import { invokeLLM } from "./_core/llm";
-import { scrapeUrl } from "./_core/scrape";
+import { scrapeUrl, SsrfBlockedError } from "./_core/scrape";
 
 export const appRouter = router({
   system: systemRouter,
@@ -47,7 +48,16 @@ export const appRouter = router({
     scrape: protectedProcedure
       .input(z.object({ url: z.string().url() }))
       .mutation(async ({ input, ctx }) => {
-        const { title, text } = await scrapeUrl(input.url);
+        let title: string;
+        let text: string;
+        try {
+          ({ title, text } = await scrapeUrl(input.url));
+        } catch (err) {
+          if (err instanceof SsrfBlockedError) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: err.message });
+          }
+          throw err;
+        }
         const rawContent = `# ${title}\n\n${text}`;
 
         const summaryRes = await invokeLLM({
