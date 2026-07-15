@@ -1,0 +1,68 @@
+name: n8n Workflow Scout
+
+# Daily brainstorming feed: scrapes n8n.io/workflows, asks Claude for >=5 node
+# designs per business vertical (sales, ecommerce, wholesaling/REI,
+# productivity, small business), writes docs/n8n-brainstorming/<date>.md, and
+# inserts the same rows into public.n8n_workflow_ideas. Opens a draft PR
+# rather than pushing straight to main. See docs/n8n-brainstorming/README.md.
+#
+# Required repo secrets:
+#   ANTHROPIC_API_KEY          - drives the categorization + design pass
+#   SUPABASE_SERVICE_ROLE_KEY  - bypasses RLS to insert into n8n_workflow_ideas
+# Optional:
+#   FIRECRAWL_API_KEY          - recommended; n8n.io has Cloudflare bot
+#                                 protection that often 403s a plain fetch
+
+on:
+  schedule:
+    # 00:07 UTC daily — a few minutes off midnight to avoid the top-of-hour
+    # scheduler pile-up, still effectively "12am".
+    - cron: "7 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: n8n-workflow-scout
+  cancel-in-progress: false
+
+jobs:
+  scout:
+    name: Scrape + brainstorm + PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run scout
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          SUPABASE_URL: https://odibvergwcllhsbzbgwa.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/n8n-workflow-scout.mjs
+
+      - name: Open draft PR with today's brief
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "n8n Workflow Scout: daily brainstorming brief"
+          branch: n8n-scout/daily-brief
+          delete-branch: true
+          draft: true
+          title: "n8n Workflow Scout — daily brainstorming brief"
+          body: |
+            Automated daily scrape of n8n.io/workflows, translated into >=5
+            node designs per vertical (sales, ecommerce, wholesaling/REI,
+            productivity, small business). See `docs/n8n-brainstorming/`.
+
+            Rows were also inserted into `public.n8n_workflow_ideas` (skipped
+            if `SUPABASE_SERVICE_ROLE_KEY` isn't set).
+          add-paths: |
+            docs/n8n-brainstorming/*.md
