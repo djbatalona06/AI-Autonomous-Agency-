@@ -4,7 +4,9 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import { Button } from "@/components/ui/button";
 import { ParticleField } from "@/components/ParticleField";
-import { KoalaShowcase } from "@/components/KoalaShowcase";
+import { HeroKoala } from "@/components/HeroKoala";
+import { HeroMetrics, MetricChip } from "@/components/HeroMetrics";
+import { AboutOwner } from "@/components/AboutOwner";
 import { SiteNav, SiteFooter } from "@/components/SiteChrome";
 import { Seo } from "@/components/Seo";
 import { BRAND } from "@/data/brand";
@@ -89,12 +91,12 @@ export default function Home() {
             <ParticleField />
           </div>
           <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-20">
-            <div className="relative pt-2">
+            <div className="grid items-center gap-12 lg:grid-cols-[1fr_0.92fr]">
               <motion.div
                 variants={container}
                 initial={reduce ? false : "hidden"}
                 animate="visible"
-                className="max-w-3xl"
+                className="max-w-xl"
               >
                 <motion.p
                   variants={item}
@@ -135,8 +137,21 @@ export default function Home() {
                   <span><b className="text-muted-foreground font-semibold">$750</b> floor · install in days</span>
                 </motion.div>
               </motion.div>
+
+              {/* Right: koala mascot co-star with floating busywork chips */}
+              <div className="relative mt-4 lg:mt-0">
+                <MetricChip label="9 unread DMs" index={1} className="absolute -left-4 top-6 z-20 hidden lg:inline-flex" />
+                <MetricChip label="Invoice past due" index={2} className="absolute -right-3 top-28 z-20 hidden lg:inline-flex" />
+                <MetricChip label="12 new pings" index={0} className="absolute left-8 -bottom-4 z-20 hidden lg:inline-flex" />
+                <HeroKoala />
+              </div>
             </div>
           </div>
+        </section>
+
+        {/* Dashboard preview — busywork chips, five lanes, option wheel */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+          <HeroMetrics />
         </section>
 
         {/* Automation Feed marquee */}
@@ -188,8 +203,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Koala mascot showcase */}
-        <KoalaShowcase />
+        {/* About the owner */}
+        <AboutOwner />
 
         {/* Footer CTA */}
         <section className="border-y border-border bg-card">

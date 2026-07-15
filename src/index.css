@@ -32,6 +32,13 @@
   --color-destructive: #ff5470;
   --color-destructive-foreground: #1a0a04;
 
+  /* Aurora accents — purple → pink → blue. Used by the particle field, hero
+     glow, BorderGlow, koala wand, and metric chips. Orange stays the CTA
+     primary so the rest of the site keeps its identity. */
+  --color-glow-purple: #c084fc;
+  --color-glow-pink: #f472b6;
+  --color-glow-blue: #38bdf8;
+
   /* Stackgrid rounded scale (was 0px brutalist) */
   --radius-sm: 10px;
   --radius-md: 14px;
@@ -64,10 +71,11 @@
 }
 
 /* ── Stackgrid helpers ────────────────────────────────────────────────────── */
-/* Warm hero glow behind the particle field */
+/* Aurora hero glow behind the particle field — purple wash bleeding to blue */
 .hero-glow {
   background:
-    radial-gradient(1200px 600px at 70% -10%, #1a1410 0%, transparent 60%),
+    radial-gradient(1100px 620px at 78% -12%, color-mix(in srgb, var(--color-glow-purple) 22%, transparent) 0%, transparent 60%),
+    radial-gradient(900px 520px at 12% 8%, color-mix(in srgb, var(--color-glow-blue) 14%, transparent) 0%, transparent 62%),
     var(--color-background);
 }
 /* Dashed grid section frame */
@@ -104,6 +112,87 @@
 .animate-marquee {
   animation: yawn-marquee 26s linear infinite;
   will-change: transform;
+}
+
+/* ── Koala n8n wand sparkle ────────────────────────────────────────────────── */
+@keyframes wand-spark {
+  0%,
+  100% {
+    transform: scale(0.7);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+/* Slow radiant halo pulse around the wand tip / koala glow */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.85;
+  }
+}
+
+/* ── BorderGlow — pointer-reactive aurora border ──────────────────────────── */
+/* A gradient ring (::before) plus a cursor spotlight (::after) that brightens
+   the ring where the pointer is. Both are masked to a thin border ring using
+   the standard mask-composite trick, so the fill only paints the edge. */
+.border-glow {
+  position: relative;
+  isolation: isolate;
+}
+.border-glow::before,
+.border-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+/* Resting aurora ring */
+.border-glow::before {
+  background: var(--bg-gradient);
+  opacity: 0.4;
+  z-index: 1;
+}
+/* Cursor spotlight — a soft pink-white glow localized under the pointer */
+.border-glow::after {
+  background: radial-gradient(
+    var(--glow-radius) var(--glow-radius) at var(--gx) var(--gy),
+    color-mix(in srgb, var(--color-glow-pink) 85%, #fff) 0%,
+    transparent 62%
+  );
+  opacity: var(--go, 0);
+  transition: opacity 0.25s ease-out;
+  z-index: 2;
+}
+.border-glow--animated::before {
+  background-size: 220% 220%;
+  animation: aurora-slide 9s ease-in-out infinite;
+}
+@keyframes aurora-slide {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 /* ── Respect reduced-motion (backstop for any non-JS animation) ───────────── */

@@ -3,18 +3,39 @@ import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 
 type Node = { x: number; y: number; vx: number; vy: number; c: string };
 
-const DOT = "#6b7280"; // faint
-const INK = "#9aa3af"; // muted
-const ORANGE = "#ff5c35";
-const YELLOW = "#ffd23f";
+/** Aurora accent palette (purple → pink → blue) — mirrors --color-glow-* tokens. */
+const AURORA = ["#c084fc", "#f472b6", "#38bdf8"];
+const LINK = "148, 163, 184"; // slate-400 rgb for faint node-to-node links
+const CURSOR = "192, 132, 252"; // glow-purple rgb for cursor links
+
+type ParticleFieldProps = {
+  className?: string;
+  /** Node colors, cycled by index. Defaults to the purple/pink/blue aurora. */
+  colors?: string[];
+  /** Area (px²) per node — smaller = denser. Node count is capped for perf. */
+  density?: number;
+  /** RGB triple ("r, g, b") for node-to-node connector lines. */
+  linkColor?: string;
+  /** RGB triple ("r, g, b") for the line drawn from each node to the cursor. */
+  cursorColor?: string;
+};
 
 /**
  * Mouse-tracking particle field (constellation). Drifting nodes connect with
  * thin lines when near each other or the cursor, and gently repel from the
  * pointer. Canvas-based, DPR-capped, pauses when the tab is hidden. Under
  * `prefers-reduced-motion` it renders a single static sparse frame.
+ *
+ * Colors, density, and link/cursor line colors are configurable; defaults land
+ * on the aurora palette so the hero reads purple/pink/blue out of the box.
  */
-export function ParticleField({ className }: { className?: string }) {
+export function ParticleField({
+  className,
+  colors = AURORA,
+  density = 14000,
+  linkColor = LINK,
+  cursorColor = CURSOR,
+}: ParticleFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduce = usePrefersReducedMotion();
 
@@ -33,7 +54,7 @@ export function ParticleField({ className }: { className?: string }) {
     const mouse = { x: -9999, y: -9999, active: false };
     let raf = 0;
 
-    const palette = (i: number) => (i % 11 === 0 ? ORANGE : i % 7 === 0 ? YELLOW : i % 2 === 0 ? INK : DOT);
+    const palette = (i: number) => colors[i % colors.length];
 
     function build() {
       const parent = canvas.parentElement;
@@ -45,7 +66,7 @@ export function ParticleField({ className }: { className?: string }) {
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const target = Math.min(90, Math.round((width * height) / 14000));
+      const target = Math.min(90, Math.round((width * height) / density));
       nodes = Array.from({ length: target }, (_, i) => ({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -88,7 +109,7 @@ export function ParticleField({ className }: { className?: string }) {
           const dist = Math.hypot(dx, dy);
           if (dist < linkDist) {
             const a = (1 - dist / linkDist) * 0.22;
-            ctx.strokeStyle = `rgba(154,163,175,${a.toFixed(3)})`;
+            ctx.strokeStyle = `rgba(${linkColor},${a.toFixed(3)})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(n.x, n.y);
@@ -102,7 +123,7 @@ export function ParticleField({ className }: { className?: string }) {
           const dist = Math.hypot(n.x - mouse.x, n.y - mouse.y);
           if (dist < 160) {
             const a = (1 - dist / 160) * 0.5;
-            ctx.strokeStyle = `rgba(255,92,53,${a.toFixed(3)})`;
+            ctx.strokeStyle = `rgba(${cursorColor},${a.toFixed(3)})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(n.x, n.y);
@@ -113,7 +134,8 @@ export function ParticleField({ className }: { className?: string }) {
 
         ctx.fillStyle = n.c;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.c === ORANGE || n.c === YELLOW ? 2.2 : 1.5, 0, Math.PI * 2);
+        // Slightly larger dots for the lead accent color for a touch of depth.
+        ctx.arc(n.x, n.y, n.c === colors[0] ? 2.2 : 1.5, 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -169,7 +191,7 @@ export function ParticleField({ className }: { className?: string }) {
       window.removeEventListener("pointerleave", onLeave);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [reduce]);
+  }, [reduce, colors, density, linkColor, cursorColor]);
 
   return (
     <canvas
