@@ -1,0 +1,448 @@
+/**
+ * n8n.io workflow brainstorm backlog — populated by the daily scrape
+ * (.github/workflows/n8n-brainstorm-scrape.yml) and docs/n8n-brainstorm/*.md.
+ * Candidate node designs land here before being promoted into a real
+ * TemplateCard in `verticals.ts`.
+ */
+
+export type BrainstormVerticalCode = "SAL" | "ECM" | "WHL" | "PRD" | "SMB";
+
+export interface BrainstormSource {
+  name: string;
+  url?: string;
+}
+
+export interface BrainstormEntry {
+  id: string;
+  verticalCode: BrainstormVerticalCode;
+  title: string;
+  /** id of the TemplateCard in verticals.ts this reinforces, if any */
+  relatedCardId?: string;
+  /** true if this has no matching card yet — a candidate for a new slot */
+  newCandidate?: boolean;
+  source: BrainstormSource;
+  nodeDesign: string[];
+  summary: string;
+  dateAdded: string;
+}
+
+export const N8N_BRAINSTORM: BrainstormEntry[] = [
+  {
+    id: "SAL-B01",
+    verticalCode: "SAL",
+    title: "AI Lead Enrichment & CRM Router",
+    relatedCardId: "SAL-01",
+    source: { name: "Lead Enrichment Pipeline (n8n.io category: Sales)" },
+    nodeDesign: [
+      "Webhook / Typeform Trigger",
+      "HTTP Request — Clearbit/Apollo enrichment",
+      "Code — lead score 0-100",
+      "Switch — route by score/company size",
+      "HubSpot/Pipedrive — create-or-update contact",
+      "Slack — notify owning rep",
+    ],
+    summary: "Every inbound lead enriched, scored, and routed to a rep with zero manual entry.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "SAL-B02",
+    verticalCode: "SAL",
+    title: "Cold Outreach Multichannel Sequencer",
+    relatedCardId: "SAL-02",
+    source: { name: "Multichannel Outreach Workflow" },
+    nodeDesign: [
+      "Schedule Trigger",
+      "Google Sheets — prospect list",
+      "HTTP Request — LinkedIn/PhantomBuster activity check",
+      "IF — already contacted this week?",
+      "Gmail/SendGrid — send",
+      "Wait, then update Sheets status",
+    ],
+    summary: "Syncs email + LinkedIn outreach so the same prospect never gets double-messaged.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "SAL-B03",
+    verticalCode: "SAL",
+    title: "AI Proposal / Quote Generator",
+    relatedCardId: "SAL-04",
+    source: { name: "AI proposal generator pattern (agency template roundups)" },
+    nodeDesign: [
+      "CRM Trigger — deal stage = Proposal",
+      "OpenAI — draft from notes + line items",
+      "HTML/PDF render",
+      "CRM — attach document",
+      "Slack/Email — queue for one-click send + e-sign",
+    ],
+    summary: "Turns deal notes + line items into a branded proposal PDF, ready to send.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "SAL-B04",
+    verticalCode: "SAL",
+    title: "Meeting-Booked → CRM + AI Call-Prep",
+    relatedCardId: "SAL-03",
+    source: { name: "Calendly-to-CRM + AI attendee research pattern" },
+    nodeDesign: [
+      "Calendly/Google Calendar Trigger",
+      "HTTP Request — Clearbit/LinkedIn enrich attendee",
+      "OpenAI — summarize + talking points",
+      "CRM — update deal stage",
+      "Slack DM + Email — prep brief to rep",
+    ],
+    summary: "The instant a call is booked, the rep gets a one-page AI prep brief.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "SAL-B05",
+    verticalCode: "SAL",
+    title: "Stale-Deal / Pipeline-Rot Digest",
+    relatedCardId: "SAL-05",
+    source: { name: "Slack-to-CRM Logger / deal-alert pattern" },
+    nodeDesign: [
+      "Schedule Trigger (daily)",
+      "CRM query — deals with no activity > N days",
+      "Code — group by owner",
+      "Slack — digest per owner",
+    ],
+    summary: "A scheduled digest flags every deal past its activity threshold, grouped by owner.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "ECM-B01",
+    verticalCode: "ECM",
+    title: "AI Abandoned Checkout Recovery",
+    relatedCardId: "ECM-01",
+    source: { name: "CartRescue: AI Abandoned-Checkout Recovery" },
+    nodeDesign: [
+      "Shopify Webhook — checkout/create",
+      "Wait 1h",
+      "HTTP Request — Shopify Orders API (converted?)",
+      "IF — purchased?",
+      "Gmail/Klaviyo — 3-touch sequence (1h/24h/72h, discount on touch 3)",
+      "Google Sheets — log",
+    ],
+    summary: "Chases every abandoned cart on a 3-touch cadence and stops the moment they buy.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "ECM-B02",
+    verticalCode: "ECM",
+    title: "Post-Purchase Review & UGC Funnel",
+    relatedCardId: "ECM-02",
+    source: { name: "Review Request After Service pattern" },
+    nodeDesign: [
+      "Shopify Order Trigger — fulfilled",
+      "Wait 7 days",
+      "Gmail — review + photo ask",
+      "IF — in-app rating < 4 → route to support instead of public review",
+      "Google Sheets — log",
+    ],
+    summary: "Times a review ask to happy buyers, routes unhappy ones to support first.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "ECM-B03",
+    verticalCode: "ECM",
+    title: "Low-Stock + Restock Waitlist Blast",
+    relatedCardId: "ECM-04",
+    source: { name: "Restock Alert: Back-in-Stock Waitlist Notifier" },
+    nodeDesign: [
+      "Schedule Trigger",
+      "Shopify/WooCommerce — inventory levels",
+      "IF — below threshold",
+      "Telegram/Slack — alert owner",
+      "Airtable — waitlist lookup",
+      "Klaviyo/Gmail — back-in-stock blast",
+    ],
+    summary: "Real-time low-stock alerts plus an automatic waitlist blast on restock.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "ECM-B04",
+    verticalCode: "ECM",
+    title: "Competitor Price Intelligence Monitor",
+    newCandidate: true,
+    source: { name: "Competitor Price Intelligence (n8ntemplatestore.com, \"Top rated\")" },
+    nodeDesign: [
+      "Schedule Trigger",
+      "HTTP Request/scraper — competitor product pages",
+      "Code — diff vs. last-seen price",
+      "Google Sheets — log",
+      "Slack — alert on undercut",
+    ],
+    summary: "No card yet — proposed ECM-06. Ongoing monitoring, better suited as a retainer add-on.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "ECM-B05",
+    verticalCode: "ECM",
+    title: "AI Win-Back / Reactivation Sequence",
+    relatedCardId: "ECM-05",
+    source: { name: "Win-back / reactivation pattern (Shopify + LLM node)" },
+    nodeDesign: [
+      "Schedule Trigger",
+      "Shopify — customers past reorder window",
+      "OpenAI — personalize offer from purchase history",
+      "Klaviyo/Gmail — send",
+      "Google Sheets — log response",
+    ],
+    summary: "Finds lapsed customers and sends AI-personalized win-back offers.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "WHL-B01",
+    verticalCode: "WHL",
+    title: "Skip-Trace + Lead-Scoring Intake",
+    relatedCardId: "WHL-03",
+    source: {
+      name: "Real estate lead generation with BatchData skip tracing & CRM integration",
+      url: "https://n8n.io/workflows/3666-real-estate-lead-generation-with-batchdata-skip-tracing-and-crm-integration/",
+    },
+    nodeDesign: [
+      "Schedule + Manual dual Trigger",
+      "HTTP Request — BatchData property search",
+      "Code — filter absentee/5yrs+/tax-delinquent, score 0-100",
+      "HTTP Request — skip trace (phone/email/mailing)",
+      "Parallel output — Excel + HubSpot/CRM + email summary",
+    ],
+    summary: "Close-to-ready-made reference build; could shortcut WHL-03's dev time.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "WHL-B02",
+    verticalCode: "WHL",
+    title: "Cash-Buyer Dispo Match + Blast",
+    relatedCardId: "WHL-02",
+    source: { name: "Dispo-matching pattern (wholesaling automation guides)" },
+    nodeDesign: [
+      "Webhook — new deal submitted",
+      "Airtable/CRM — query cash-buyer DB",
+      "Code — match buy-box criteria",
+      "Twilio SMS + SendGrid — blast matched buyers only",
+      "CRM — log",
+    ],
+    summary: "Matches a new deal against the buyer database instead of blasting the whole list.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "WHL-B03",
+    verticalCode: "WHL",
+    title: "County / Motivated-List Ingestion + Dedupe",
+    relatedCardId: "WHL-04",
+    source: { name: "PropStream/county-export ingestion pattern" },
+    nodeDesign: [
+      "Schedule Trigger (weekly)",
+      "HTTP Request/CSV import — county list or PropStream export",
+      "Code — normalize + dedupe vs. CRM",
+      "BatchData — enrich",
+      "CRM — insert new records only",
+    ],
+    summary: "Weekly lists pulled, normalized, deduped, and enriched — only genuinely-new records drop in.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "WHL-B04",
+    verticalCode: "WHL",
+    title: "Deal Analyzer Intake → ARV/MAO Brief",
+    relatedCardId: "WHL-05",
+    source: { name: "Zillow Investment Scanner + AI Scoring pattern, adapted for ARV/MAO" },
+    nodeDesign: [
+      "Webhook — address submitted",
+      "HTTP Request — comps via Apify/Zillow scrape",
+      "Code — ARV, MAO, rehab formula",
+      "PDF generation",
+      "CRM log + Slack/email brief",
+    ],
+    summary: "Submit an address, get a consistent deal brief with ARV/MAO/rehab computed.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "WHL-B05",
+    verticalCode: "WHL",
+    title: "Open-House / Inbound-Call → 7-Day AI Follow-Up",
+    newCandidate: true,
+    source: { name: "Open House CRM Sync + 7-Day Auto Follow-Up" },
+    nodeDesign: [
+      "Webhook — sign-in sheet/call intake",
+      "Code — lead scoring",
+      "CRM sync — HubSpot/FUB/Monday.com",
+      "OpenAI-personalized SMS + email cadence (Twilio + SendGrid) over 7 days",
+      "CRM — flip to Hot on any reply",
+    ],
+    summary: "No card yet — proposed WHL-06. Same shape as the WHL-01 flagship, for inbound acquisitions leads instead of outbound seller leads.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "PRD-B01",
+    verticalCode: "PRD",
+    title: "AI Email Triage & Draft Replies",
+    relatedCardId: "PRD-01",
+    source: {
+      name: "AI-powered email triage & auto-response system with OpenAI Agents and Gmail",
+      url: "https://n8n.io/workflows/9157-ai-powered-email-triage-and-auto-response-system-with-openai-agents-and-gmail/",
+    },
+    nodeDesign: [
+      "Gmail Trigger",
+      "Text Classifier/OpenAI — urgent/follow-up/info/junk",
+      "Switch — 4 paths",
+      "OpenAI — draft reply",
+      "Gmail draft + Google Sheets queue",
+      "Slack — ping for urgent path",
+    ],
+    summary: "Pre-sorts every email and drafts a ready-to-edit reply for the ones that matter.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "PRD-B02",
+    verticalCode: "PRD",
+    title: "Meeting Transcript → Action Items → Tasks",
+    relatedCardId: "PRD-02",
+    source: {
+      name: "AI meeting summary & action item tracker with Notion, Slack, and Gmail",
+      url: "https://n8n.io/workflows/10286-ai-meeting-summary-and-action-item-tracker-with-notion-slack-and-gmail/",
+    },
+    nodeDesign: [
+      "Webhook — Zoom/Otter/Fireflies transcript",
+      "OpenAI — extract summary, decisions, action items w/ owners + due dates",
+      "Split",
+      "Notion/ClickUp/Linear — create task",
+      "Google Calendar — due-date event",
+      "Slack — recap",
+    ],
+    summary: "Converts a call's action items into real tasks the moment the call ends.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "PRD-B03",
+    verticalCode: "PRD",
+    title: "7 AM AI Daily Brief — hardening ideas",
+    relatedCardId: "PRD-03",
+    source: {
+      name: "AI-powered calendar & meeting digest",
+      url: "https://n8n.io/workflows/4385-ai-powered-calendar-and-meeting-digest-with-gmail-and-gpt-4oclaude-daily-brief/",
+    },
+    nodeDesign: [
+      "Schedule Trigger (7 AM)",
+      "Google Calendar (today's events) + Gmail (unread/urgent) + Todoist/Asana (tasks due)",
+      "OpenAI — synthesize prioritized brief",
+      "Slack DM / WhatsApp / Email — send",
+    ],
+    summary: "PRD-03 is already built — these are hardening ideas (WhatsApp branch, weather/news enrichment), not a rebuild.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "PRD-B04",
+    verticalCode: "PRD",
+    title: "Doc & Report Generator on Schedule",
+    relatedCardId: "PRD-04",
+    source: { name: "Scheduled report → Google Doc pattern" },
+    nodeDesign: [
+      "Schedule Trigger",
+      "Google Sheets/DB — pull live metrics",
+      "OpenAI — narrative summary",
+      "Google Docs — populate template",
+      "Drive save + Slack link",
+    ],
+    summary: "A finished, formatted Google Doc generated on schedule from a template + live data.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "PRD-B05",
+    verticalCode: "PRD",
+    title: "Inbound File → Structured Data → Sheet",
+    relatedCardId: "PRD-05",
+    source: { name: "Expense receipt / invoice email → spreadsheet pattern" },
+    nodeDesign: [
+      "Gmail/Drive Trigger — new attachment",
+      "HTTP Request — LlamaParse/OCR",
+      "OpenAI — extract + validate fields",
+      "IF — confidence below threshold → flag row for a human",
+      "Google Sheets — append",
+    ],
+    summary: "Any inbound file is read, fields extracted + validated, low-confidence ones flagged.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "SMB-B01",
+    verticalCode: "SMB",
+    title: "Client Intake → Booking + Confirmation",
+    relatedCardId: "SMB-01",
+    source: { name: "Appointment Follow-Up Workflow (n8n community thread)" },
+    nodeDesign: [
+      "Webhook — form/Calendly",
+      "CRM — create-or-update contact",
+      "Google Calendar — book/check availability",
+      "Gmail/SMS — confirmation",
+      "Slack — notify owner",
+    ],
+    summary: "Every inquiry becomes a booked appointment and a logged contact, zero double entry.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "SMB-B02",
+    verticalCode: "SMB",
+    title: "Invoice → Payment → Auto Follow-Up",
+    relatedCardId: "SMB-02",
+    source: { name: "InvoiceChase: Automated AR Follow-up" },
+    nodeDesign: [
+      "Stripe/QuickBooks Webhook — invoice created",
+      "Wait (day 1/7/14)",
+      "IF — paid?",
+      "Gmail — branded reminder",
+      "Slack — escalation on day 14 if unpaid",
+    ],
+    summary: "Every unpaid invoice chases itself with polite branded reminders.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "SMB-B03",
+    verticalCode: "SMB",
+    title: "New-Hire Onboarding Orchestration",
+    relatedCardId: "SMB-03",
+    source: { name: "Provision new employee accounts (featured n8n.io template)" },
+    nodeDesign: [
+      "Google Sheets/BambooHR Trigger — new row",
+      "Gmail — welcome email",
+      "Notion — accounts checklist",
+      "Google Calendar — Day-1 meeting",
+      "Slack DM — manager",
+    ],
+    summary: "Add a hire and the whole Day-1 machine fires automatically.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "SMB-B04",
+    verticalCode: "SMB",
+    title: "Review & Reputation Engine",
+    relatedCardId: "SMB-04",
+    source: { name: "Review Request After Service + review-monitoring pattern" },
+    nodeDesign: [
+      "Schedule/Webhook — job completed → Wait 2 days → Gmail/SMS review ask",
+      "IF — in-app rating < 4 → route to support else → Google/Yelp review link",
+      "Second branch: Schedule Trigger → Google Business Profile (new reviews) → Slack alert",
+    ],
+    summary: "Happy customers get nudged to review; unhappy ones get routed to you first.",
+    dateAdded: "2026-07-19",
+  },
+  {
+    id: "SMB-B05",
+    verticalCode: "SMB",
+    title: "Appointment No-Show Reducer",
+    relatedCardId: "SMB-05",
+    source: { name: "Appointment Reminder SMS pattern" },
+    nodeDesign: [
+      "Schedule Trigger",
+      "Calendar query — appointments tomorrow / in 2h",
+      "Twilio SMS — one-tap confirm/reschedule",
+      "IF — no confirm by cutoff → follow-up nudge to rebook",
+      "Google Sheets — log no-show rate",
+    ],
+    summary: "Reminders at 24h + 2h, and no-shows get nudged to rebook instead of vanishing.",
+    dateAdded: "2026-07-19",
+  },
+];
+
+export function getBrainstormByVertical(code: BrainstormVerticalCode): BrainstormEntry[] {
+  return N8N_BRAINSTORM.filter((e) => e.verticalCode === code);
+}
