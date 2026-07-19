@@ -1,0 +1,111 @@
+name: n8n Template Brainstorm Scrape
+
+# Runs daily at 12:00 AM America/Los_Angeles (07:00 UTC — adjust if the
+# account's local timezone differs or on DST transitions).
+#
+# Required one-time setup: add an ANTHROPIC_API_KEY repository secret
+# (Settings -> Secrets and variables -> Actions) with billing enabled for
+# daily runs. Without it, both jobs below will fail at the Claude Code step.
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  scrape-and-brainstorm:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.detect.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scrape n8n.io and update the brainstorm backlog
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are running the daily n8n workflow brainstorm scrape for the Yawn Agency
+            catalog in this repo (djbatalona06/AI-Autonomous-Agency-).
+
+            Context: `src/data/verticals.ts` holds the live catalog, 5 verticals x 5
+            productized templates each: SAL (Sales), ECM (E-commerce), WHL
+            (Wholesaling / REI, flagship), PRD (Productivity), SMB (Small Business).
+            `docs/n8n-brainstorm/*.md` and `src/data/n8nBrainstorm.ts` hold the running
+            backlog of scraped ideas, one file per vertical plus a typed data file the app
+            can read. Read the existing `n8nBrainstorm.ts` entries first so you don't
+            duplicate what's already logged.
+
+            Task:
+            1. Scrape https://n8n.io/workflows/ (trending, recently-added, and the
+               category pages for sales/lead-generation/marketing/support/other) plus 1-2
+               reputable secondary sources (creator marketplaces, awesome-n8n-templates on
+               GitHub) for workflows that are new or rising in popularity since the last
+               run.
+            2. For each of the 5 verticals, find at least one new template idea worth
+               logging (more if there's real signal — don't pad with filler). For each:
+               translate it into a concrete node-by-node design (trigger -> nodes ->
+               output), tag which existing TemplateCard id in verticals.ts it reinforces,
+               or mark it `newCandidate: true` if nothing in the catalog covers it.
+            3. Append the new entries to the matching `docs/n8n-brainstorm/<vertical>.md`
+               file under a new dated heading, and add matching objects to the
+               `N8N_BRAINSTORM` array in `src/data/n8nBrainstorm.ts` (follow the existing
+               `BrainstormEntry` shape exactly, use today's date for `dateAdded`, and give
+               each new id the next unused `<CODE>-B<NN>` slot for that vertical).
+            4. Do not touch `obsidian-vault/` — a separate job handles that.
+            5. Commit with a message like "n8n brainstorm: daily scrape YYYY-MM-DD" on a
+               branch named `n8n-brainstorm/auto-YYYY-MM-DD`, push it, and open a draft PR
+               (or update the existing open one from a previous day if it's still
+               unmerged) titled "n8n brainstorm — YYYY-MM-DD" summarizing what was added,
+               per vertical, in the PR description.
+            6. If you find nothing new and defensible for a vertical, say so in the PR
+               description rather than inventing filler content.
+
+      - id: detect
+        name: Record whether anything changed
+        run: |
+          if git diff --quiet HEAD~1 HEAD -- docs/n8n-brainstorm src/data/n8nBrainstorm.ts 2>/dev/null; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  obsidian-vault-sync:
+    needs: scrape-and-brainstorm
+    if: needs.scrape-and-brainstorm.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref }}
+          fetch-depth: 0
+
+      - name: File today's entries into the Obsidian vault
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            A prior step in this workflow just added new entries to
+            `src/data/n8nBrainstorm.ts` (check `dateAdded` for today's date to find them —
+            diff against the previous commit on this branch if unsure which are new).
+
+            For each new entry, create one note in
+            `obsidian-vault/n8n-templates/<VerticalFolder>/` named
+            `<dateAdded>-<id>-<slugified-title>.md`, matching the exact format of the
+            existing notes in that folder (YAML frontmatter with id/title/vertical/
+            related_card/new_candidate/date_added/tags, then a body with the source line,
+            summary, and a numbered "## Node design" list). Vertical folders: Sales,
+            Ecommerce, Wholesaling-REI, Productivity, Small-Business.
+
+            Then add a link to each new note into that vertical's `<Vertical> Index.md`
+            under "## Node designs", using the same wikilink format as the existing
+            entries (append `newCandidate` items with the " 🆕 new-candidate" suffix).
+
+            Commit these additions to the same branch this workflow checked out (do not
+            create a new branch or PR — the scrape-and-brainstorm job already opened one)
+            with a message like "obsidian vault: sync YYYY-MM-DD" and push.
