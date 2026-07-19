@@ -14046,7 +14046,7 @@ var require_mime_types = __commonJS({
     exports.contentType = contentType;
     exports.extension = extension;
     exports.extensions = /* @__PURE__ */ Object.create(null);
-    exports.lookup = lookup;
+    exports.lookup = lookup2;
     exports.types = /* @__PURE__ */ Object.create(null);
     populateMaps(exports.extensions, exports.types);
     function charset(type) {
@@ -14088,7 +14088,7 @@ var require_mime_types = __commonJS({
       }
       return exts[0];
     }
-    function lookup(path2) {
+    function lookup2(path2) {
       if (!path2 || typeof path2 !== "string") {
         return false;
       }
@@ -19319,7 +19319,7 @@ var require_view = __commonJS({
       this.engine = opts.engines[this.ext];
       this.path = this.lookup(fileName);
     }
-    View.prototype.lookup = function lookup(name) {
+    View.prototype.lookup = function lookup2(name) {
       var path3;
       var roots = [].concat(this.root);
       debug('lookup "%s"', name);
@@ -22749,7 +22749,7 @@ var require_request = __commonJS({
     "use strict";
     var accepts = require_accepts();
     var deprecate = require_depd()("express");
-    var isIP = __require("net").isIP;
+    var isIP2 = __require("net").isIP;
     var typeis = require_type_is();
     var http = __require("http");
     var fresh = require_fresh();
@@ -22855,7 +22855,7 @@ var require_request = __commonJS({
       var hostname = this.hostname;
       if (!hostname) return [];
       var offset = this.app.get("subdomain offset");
-      var subdomains2 = !isIP(hostname) ? hostname.split(".").reverse() : [hostname];
+      var subdomains2 = !isIP2(hostname) ? hostname.split(".").reverse() : [hostname];
       return subdomains2.slice(offset);
     });
     defineGetter(req, "path", function path2() {
@@ -44235,7 +44235,14 @@ var ENV = {
   // Supabase (auth + data). Anon key is public by design; the server verifies
   // user JWTs with it via supabase.auth.getUser — no service_role required.
   supabaseUrl: process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? "https://odibvergwcllhsbzbgwa.supabase.co",
-  supabaseAnonKey: process.env.SUPABASE_ANON_KEY ?? process.env.VITE_SUPABASE_ANON_KEY ?? ""
+  supabaseAnonKey: process.env.SUPABASE_ANON_KEY ?? process.env.VITE_SUPABASE_ANON_KEY ?? "",
+  // Security edge (see server/_core/security.ts). CORS is default-deny; list
+  // production origins here (comma-separated). Localhost dev origins are allowed
+  // automatically outside production.
+  corsAllowedOrigins: (process.env.CORS_ALLOWED_ORIGINS ?? "").split(",").map((s) => s.trim()).filter(Boolean),
+  rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS ?? 15 * 6e4),
+  rateLimitAuthMax: Number(process.env.RATE_LIMIT_AUTH_MAX ?? 50),
+  rateLimitApiMax: Number(process.env.RATE_LIMIT_API_MAX ?? 300)
 };
 
 // server/_core/cookies.ts
@@ -44591,7 +44598,16 @@ function chatReply(question) {
 }
 
 // server/_core/scrape.ts
+import { lookup } from "node:dns/promises";
+import { isIP } from "node:net";
+var SsrfBlockedError = class extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "SsrfBlockedError";
+  }
+};
 async function scrapeUrl(url) {
+  await assertPublicUrl(url);
   if (ENV.firecrawlApiKey) {
     try {
       return await scrapeWithFirecrawl(url);
@@ -44643,6 +44659,72 @@ function htmlToText(html) {
 function decodeEntities(s) {
   return s.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#x27;/g, "'");
 }
+async function assertPublicUrl(rawUrl) {
+  let parsed;
+  try {
+    parsed = new URL(rawUrl);
+  } catch {
+    throw new SsrfBlockedError("Invalid URL.");
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new SsrfBlockedError(`Unsupported URL scheme: ${parsed.protocol}`);
+  }
+  const host = parsed.hostname.replace(/^\[|\]$/g, "");
+  if (!host || host.toLowerCase() === "localhost" || host.toLowerCase().endsWith(".localhost")) {
+    throw new SsrfBlockedError("Refusing to fetch a loopback host.");
+  }
+  let addresses;
+  if (isIP(host)) {
+    addresses = [host];
+  } else {
+    try {
+      const records = await lookup(host, { all: true });
+      addresses = records.map((r) => r.address);
+    } catch {
+      throw new SsrfBlockedError("Could not resolve host.");
+    }
+  }
+  if (addresses.length === 0) {
+    throw new SsrfBlockedError("Host did not resolve to any address.");
+  }
+  for (const addr of addresses) {
+    if (!isPublicAddress(addr)) {
+      throw new SsrfBlockedError("URL resolves to a non-public address.");
+    }
+  }
+}
+function isPublicAddress(addr) {
+  const kind = isIP(addr);
+  if (kind === 4) return isPublicIPv4(addr);
+  if (kind === 6) return isPublicIPv6(addr);
+  return false;
+}
+function isPublicIPv4(addr) {
+  const parts = addr.split(".").map((n) => Number(n));
+  if (parts.length !== 4 || parts.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) {
+    return false;
+  }
+  const [a, b] = parts;
+  if (a === 0) return false;
+  if (a === 10) return false;
+  if (a === 127) return false;
+  if (a === 169 && b === 254) return false;
+  if (a === 172 && b >= 16 && b <= 31) return false;
+  if (a === 192 && b === 168) return false;
+  if (a === 100 && b >= 64 && b <= 127) return false;
+  if (a >= 224) return false;
+  return true;
+}
+function isPublicIPv6(addr) {
+  const ip = addr.toLowerCase().split("%")[0];
+  if (ip === "::1" || ip === "::") return false;
+  if (ip.startsWith("fe80")) return false;
+  if (ip.startsWith("fc") || ip.startsWith("fd")) return false;
+  if (ip.startsWith("ff")) return false;
+  const mapped = ip.match(/::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+  if (mapped) return isPublicIPv4(mapped[1]);
+  return true;
+}
 
 // server/routers.ts
 var appRouter = router({
@@ -44669,7 +44751,16 @@ var appRouter = router({
   // ── Web Crawler ──
   crawler: router({
     scrape: protectedProcedure.input(external_exports.object({ url: external_exports.string().url() })).mutation(async ({ input, ctx }) => {
-      const { title, text } = await scrapeUrl(input.url);
+      let title;
+      let text;
+      try {
+        ({ title, text } = await scrapeUrl(input.url));
+      } catch (err) {
+        if (err instanceof SsrfBlockedError) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: err.message });
+        }
+        throw err;
+      }
       const rawContent = `# ${title}
 
 ${text}`;
@@ -52669,14 +52760,117 @@ authRouter.get("/logout", (_req, res) => {
   res.redirect("/");
 });
 
+// server/_core/security.ts
+function securityHeaders() {
+  return (_req, res, next) => {
+    res.setHeader("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'");
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("X-Frame-Options", "DENY");
+    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    res.setHeader(
+      "Permissions-Policy",
+      "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+    );
+    res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
+    res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+    res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
+    if (ENV.isProd) {
+      res.setHeader(
+        "Strict-Transport-Security",
+        "max-age=63072000; includeSubDomains; preload"
+      );
+    }
+    next();
+  };
+}
+function corsMiddleware() {
+  const devOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
+  const allowed = /* @__PURE__ */ new Set([
+    ...ENV.corsAllowedOrigins,
+    ...ENV.isProd ? [] : devOrigins
+  ]);
+  return (req, res, next) => {
+    const origin = req.headers.origin;
+    res.setHeader("Vary", "Origin");
+    if (origin && allowed.has(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+      res.setHeader("Access-Control-Allow-Credentials", "true");
+      res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+      res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Content-Type,Authorization"
+      );
+      res.setHeader("Access-Control-Max-Age", "600");
+    }
+    if (req.method === "OPTIONS") {
+      res.statusCode = 204;
+      res.end();
+      return;
+    }
+    next();
+  };
+}
+function rateLimit(opts) {
+  const { windowMs, max, keyPrefix } = opts;
+  const buckets = /* @__PURE__ */ new Map();
+  function sweep(now) {
+    if (buckets.size < 5e3) return;
+    for (const [key, b] of buckets) {
+      if (b.resetAt <= now) buckets.delete(key);
+    }
+  }
+  return (req, res, next) => {
+    const now = Date.now();
+    const key = `${keyPrefix}:${clientIp(req)}`;
+    let bucket = buckets.get(key);
+    if (!bucket || bucket.resetAt <= now) {
+      bucket = { count: 0, resetAt: now + windowMs };
+      buckets.set(key, bucket);
+      sweep(now);
+    }
+    bucket.count += 1;
+    const remaining = Math.max(0, max - bucket.count);
+    const resetSecs = Math.ceil((bucket.resetAt - now) / 1e3);
+    res.setHeader("RateLimit-Limit", String(max));
+    res.setHeader("RateLimit-Remaining", String(remaining));
+    res.setHeader("RateLimit-Reset", String(resetSecs));
+    if (bucket.count > max) {
+      res.setHeader("Retry-After", String(resetSecs));
+      res.status(429).json({
+        error: "Too many requests. Please slow down and try again shortly."
+      });
+      return;
+    }
+    next();
+  };
+}
+function clientIp(req) {
+  const fwd = req.headers["x-forwarded-for"];
+  if (typeof fwd === "string" && fwd.length > 0) {
+    return fwd.split(",")[0].trim();
+  }
+  if (Array.isArray(fwd) && fwd.length > 0) {
+    return fwd[0].trim();
+  }
+  return req.ip ?? req.socket.remoteAddress ?? "unknown";
+}
+
 // server/app.ts
 function createApp() {
   const app = (0, import_express2.default)();
-  app.use(import_express2.default.json());
+  app.set("trust proxy", true);
+  app.use(securityHeaders());
+  app.use(corsMiddleware());
+  app.use(import_express2.default.json({ limit: "100kb" }));
   app.use((0, import_cookie_parser.default)());
-  app.use("/api/auth", authRouter);
+  app.use(
+    "/api/auth",
+    rateLimit({ windowMs: ENV.rateLimitWindowMs, max: ENV.rateLimitAuthMax, keyPrefix: "auth" }),
+    authRouter
+  );
   app.use(
     "/trpc",
+    rateLimit({ windowMs: ENV.rateLimitWindowMs, max: ENV.rateLimitApiMax, keyPrefix: "trpc" }),
     createExpressMiddleware({ router: appRouter, createContext })
   );
   return app;

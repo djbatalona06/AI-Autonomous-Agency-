@@ -18,6 +18,8 @@ together.
 | Document | Purpose |
 | --- | --- |
 | [security-controls-matrix.md](security-controls-matrix.md) | Master mapping: requirement → status → evidence → owner. |
+| [compliance-framework.md](compliance-framework.md) | Regulatory/legal framework: privacy laws, OWASP mapping, AI/n8n liability, breach timelines. |
+| [compliance-calendar.md](compliance-calendar.md) | Recurring obligations with due dates; source for the nightly compliance agent. |
 | [data-classification.md](data-classification.md) | Data sensitivity tiers and handling rules. |
 | [asset-inventory.md](asset-inventory.md) | Systems, data stores, and dependencies we run. |
 | [vendor-register.md](vendor-register.md) | Subprocessors, data shared, risk, review dates. |

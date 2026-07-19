@@ -45,7 +45,12 @@ evidence, and owner. Status legend:
 
 | Control | Evidence |
 | --- | --- |
-| Security headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) | `server/_core/security.ts` |
+| Security headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) | API: `server/_core/security.ts`; served app: `vercel.json` `headers` (CSP + HSTS) |
+| Default-deny CORS allow-list (`CORS_ALLOWED_ORIGINS`) | `server/_core/security.ts` (`corsMiddleware`) |
+| Per-IP rate limiting on `/api/auth` + `/trpc` | `server/_core/security.ts` (`rateLimit`), wired in `server/app.ts` |
+| Request body-size cap (100 kB) | `server/app.ts` (`express.json({ limit })`) |
+| SSRF guard on outbound scrape fetches | `server/_core/scrape.ts` (`assertPublicUrl`) |
+| Regulatory/legal compliance framework | `docs/security/compliance-framework.md`, `compliance-calendar.md` |
 | Account lockout (5 attempts / 15 min) | `server/_core/authService.ts` |
 | Tokenized password reset (1h expiry, no enumeration) | `server/_core/authService.ts` |
 | Signed session cookies with expiry + constant-time verify | `server/_core/cookies.ts` |
