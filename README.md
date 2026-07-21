@@ -104,7 +104,17 @@ server/              Express + tRPC API
 shared/              constants shared by client + server
 supabase/            Supabase migrations and configuration
 public/              Static assets, including animations/yawn-koala and yawn-koala.png
+docs/n8n-brainstorm/ Daily-scraped n8n.io template ideas, one file per catalog vertical
+obsidian-vault/      Same brainstorm backlog, filed as one Obsidian note per idea
 ```
+
+### n8n template brainstorm pipeline
+
+`.github/workflows/n8n-brainstorm-scrape.yml` scrapes n8n.io/workflows daily and logs new
+template ideas against the 5 catalog verticals (Sales, E-commerce, Wholesaling/REI,
+Productivity, Small Business) into `docs/n8n-brainstorm/`, `src/data/n8nBrainstorm.ts`, and
+`obsidian-vault/n8n-templates/`. See `docs/n8n-brainstorm/README.md` for how it's wired up
+and what setup it needs (an `ANTHROPIC_API_KEY` repo secret).
 
 ---
 

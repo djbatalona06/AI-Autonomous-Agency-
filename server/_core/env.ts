@@ -18,6 +18,17 @@ export const ENV = {
   supabaseUrl:
     process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? "https://odibvergwcllhsbzbgwa.supabase.co",
   supabaseAnonKey: process.env.SUPABASE_ANON_KEY ?? process.env.VITE_SUPABASE_ANON_KEY ?? "",
+
+  // Security edge (see server/_core/security.ts). CORS is default-deny; list
+  // production origins here (comma-separated). Localhost dev origins are allowed
+  // automatically outside production.
+  corsAllowedOrigins: (process.env.CORS_ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
+  rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS ?? 15 * 60_000),
+  rateLimitAuthMax: Number(process.env.RATE_LIMIT_AUTH_MAX ?? 50),
+  rateLimitApiMax: Number(process.env.RATE_LIMIT_API_MAX ?? 300),
 };
 
 export type AppUser = {

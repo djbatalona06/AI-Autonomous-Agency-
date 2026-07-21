@@ -18,6 +18,7 @@ Supabase Postgres best-practices skill:
 |---|---|
 | `20260703120000_auth_and_rate_limit.sql` | `profiles` (+ auto-create trigger), `login_attempts`, and the `login_status` / `record_login_attempt` lockout RPCs (3 attempts / 15 min). |
 | `20260703120100_project_data.sql` | `image_generations` + `web_scrapes` (per-user, RLS). Replaces the ephemeral JSON store, which does not survive Vercel serverless. |
+| `20260716000000_n8n_workflow_ideas.sql` | `n8n_workflow_ideas` — daily n8n.io scrape results for the automation brainstorming pipeline (admin-only read, service_role-only write). See `docs/n8n-brainstorming/README.md`. |
 
 ## ⚠️ Remote history reconciliation (action needed)
 

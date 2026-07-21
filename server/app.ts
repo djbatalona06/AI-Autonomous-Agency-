@@ -4,6 +4,8 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter } from "./routers";
 import { createContext } from "./context";
 import { authRouter } from "./_core/auth";
+import { ENV } from "./_core/env";
+import { corsMiddleware, rateLimit, securityHeaders } from "./_core/security";
 
 /**
  * Builds the API Express app (no `listen`, no static serving) so it can be
@@ -15,12 +17,29 @@ import { authRouter } from "./_core/auth";
 export function createApp(): Express {
   const app = express();
 
-  app.use(express.json());
+  // Trust the platform proxy so `req.ip` / rate-limit keying use the real
+  // client address from `x-forwarded-for` (Vercel / local dev proxy).
+  app.set("trust proxy", true);
+
+  // ── Edge hardening (defense in depth) ──
+  // See docs/security/security-controls-matrix.md and compliance-framework.md.
+  app.use(securityHeaders());
+  app.use(corsMiddleware());
+
+  // Bound request bodies to blunt trivial memory-exhaustion payloads.
+  app.use(express.json({ limit: "100kb" }));
   app.use(cookieParser());
 
-  app.use("/api/auth", authRouter);
+  // Per-IP rate limits. Auth is the most abuse-prone surface, so it gets the
+  // tighter budget. (In-memory / per-instance — see security.ts caveat.)
+  app.use(
+    "/api/auth",
+    rateLimit({ windowMs: ENV.rateLimitWindowMs, max: ENV.rateLimitAuthMax, keyPrefix: "auth" }),
+    authRouter,
+  );
   app.use(
     "/trpc",
+    rateLimit({ windowMs: ENV.rateLimitWindowMs, max: ENV.rateLimitApiMax, keyPrefix: "trpc" }),
     createExpressMiddleware({ router: appRouter, createContext }),
   );
 
