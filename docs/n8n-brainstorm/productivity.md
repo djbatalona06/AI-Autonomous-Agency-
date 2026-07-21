@@ -49,3 +49,19 @@ Vertical code `PRD`. Cross-reference: `src/data/verticals.ts` → `VERTICALS.fin
 **New-candidate watch:** nothing distinct enough surfaced beyond `PRD-01..05` this run —
 next pass should look at Slack-thread-to-task and "AI personal assistant" multi-agent
 orchestrator patterns (seen in n8n.io/workflows/4723) as a possible higher-tier bundle.
+
+---
+
+### 2026-07-21 batch
+
+6. **Voice Memo → Structured Brief & Task Capture** — *new candidate, no card yet
+   (proposed `PRD-06`)*
+   - *Inspired by:* the "capture → transcribe → structure" voice-memo pattern documented in
+     2026 founder-productivity write-ups, paired with n8n's built-in Speech-to-Text node.
+   - *Node design:* Telegram/WhatsApp voice-note Trigger (or Google Drive new-audio-file
+     trigger) → Speech-to-Text (Whisper) → OpenAI (structure into a brief: goal, context,
+     next steps, owner) → Notion/Google Docs (create the brief) → ClickUp/Todoist (create a
+     task per action item) → Slack/Telegram confirmation.
+   - *Why it's worth building:* solopreneur and agency-owner clients think out loud in the
+     car/on walks — this is the only card in `PRD` that captures ideas at the point of
+     speech rather than after they've already sat down at a desk.

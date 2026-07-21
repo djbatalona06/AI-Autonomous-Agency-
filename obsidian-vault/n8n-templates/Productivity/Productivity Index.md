@@ -13,3 +13,4 @@ tags: [n8n-brainstorm, index, vertical/prd]
 - [[2026-07-19-PRD-B03-7-AM-AI-Daily-Brief-hardening-ideas|7 AM AI Daily Brief — hardening ideas]]
 - [[2026-07-19-PRD-B04-Doc-Report-Generator-on-Schedule|Doc & Report Generator on Schedule]]
 - [[2026-07-19-PRD-B05-Inbound-File-Structured-Data-Sheet|Inbound File → Structured Data → Sheet]]
+- [[2026-07-21-PRD-B06-Voice-Memo-Structured-Brief-Task-Capture|Voice Memo → Structured Brief & Task Capture]] 🆕 new-candidate
