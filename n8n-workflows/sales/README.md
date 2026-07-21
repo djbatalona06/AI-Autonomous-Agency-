@@ -1,44 +1,112 @@
+# Sales — Node Designs (SAL)
+
+Vertical code `SAL` · buyer: SDR/AE teams, agencies running outbound, solo closers.
+Mirrors `src/data/verticals.ts` → `VERTICALS.find(v => v.code === "SAL")`. Card IDs below match the app's catalog IDs 1:1 — promoting one from `spec`/`slot` to `built` is a one-line status change in that file plus dropping the finished `workflow.json` into this folder.
+
+Complexity tiers and pricing follow the agency's Rung 2 sizing rubric (`references/business-model.md` in the `n8n-automation-business` skill): Simple $1,500–$2,000 / Medium $2,000–$3,500 / Complex $3,500–$5,000.
+
 ---
-title: Sales — n8n Node Designs
-tags: [n8n, vertical/sales, automation-agency]
-aliases: [Sales Workflows]
-parent: "[[../_index|n8n Workflow Brainstorm]]"
-updated: 2026-07-18
+
+## SAL-01 — Lead Capture → CRM Auto-Intake
+**Price:** $750–$1,000 · **Tier:** Rung 1 template install · **Status:** spec
+
+**Trigger:** Webhook (Typeform / Jotform / Gravity Forms submit)
+
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Form Webhook | `n8n-nodes-base.webhook` | Receive raw submission |
+| 2 | Normalize Fields | `n8n-nodes-base.set` (Edit Fields) | Map form fields → canonical lead schema |
+| 3 | Enrich Contact | `n8n-nodes-base.httpRequest` (Clearbit/Hunter.io) | Append company, title, socials |
+| 4 | Dedupe Check | `n8n-nodes-base.if` | Query CRM by email/domain before create |
+| 5 | Create/Update CRM Contact | HubSpot / Pipedrive / Airtable node | Upsert lead record |
+| 6 | Slack Notify Rep | `n8n-nodes-base.slack` | Ping the owning rep in seconds |
+| 7 | Error Handler | `n8n-nodes-base.errorTrigger` → Slack #alerts | Catch enrichment/CRM failures |
+
+```json
+{"nodes":["Webhook","Edit Fields (Set)","HTTP Request","If","HubSpot","Slack","Error Trigger"]}
+```
+
 ---
 
-# Sales
+## SAL-02 — AI Multi-Touch Lead Follow-Up
+**Price:** $1,500–$2,500 · **Tier:** Medium · **Status:** spec
 
-5 node designs seeded from n8n.io/workflows (sales category, 1,555+ templates) and the CRM/Lead Generation/Lead Nurturing sub-categories. Cross-reference: `templates/template-1-lead-capture` in the agency's private repo covers the simplest of these already.
+**Trigger:** CRM "New Lead" webhook or polling trigger
 
-## 1. Company Research Auto-Briefer
-- **Trigger:** Calendar event created (Google Calendar) or CRM stage-change webhook
-- **Node chain:** Calendar/Webhook Trigger → HTTP Request (news/company search API) → OpenAI (summarize into a 5-bullet call brief) → Slack DM to rep → CRM note append
-- **Fit:** Rung 1 template install, $750–$1,000. Simple, 2 integrations, no branching.
-- **Inspired by:** [Scrape recent news about a company before a call](https://n8n.io/workflows/2110-scrape-recent-news-about-a-company-before-a-call/)
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | New Lead Trigger | CRM webhook | Fires on lead creation |
+| 2 | AI Personalize Opener | `n8n-nodes-base.openAi` / AI Agent | Generate opener from lead source + context |
+| 3 | Send Email (Touch 1) | Gmail/SendGrid node | Immediate first touch |
+| 4 | Send SMS (Touch 1) | Twilio node | Parallel channel, same cadence |
+| 5 | Wait 3 Days | `n8n-nodes-base.wait` | Cadence delay |
+| 6 | Conditional: Replied? | `n8n-nodes-base.if` | Checks CRM activity/reply flag |
+| 7 | Loop Remaining Touches | `n8n-nodes-base.splitInBatches` | Days 7 and 14 touches |
+| 8 | Mark Lead Hot | CRM update node | Flip status on any reply |
 
-## 2. Lead Enrichment & Auto-Router
-- **Trigger:** Webhook (web form / ad landing page)
-- **Node chain:** Webhook Trigger → HTTP Request (Clearbit/Apollo enrichment) → OpenAI (lead score 1–10) → Switch (route by score: hot/warm/cold) → CRM create (HubSpot/Pipedrive) → Slack alert on hot
-- **Fit:** Rung 2 Medium, $2,000–$3,500. Branching + AI scoring + 3 integrations.
-- **Inspired by:** [Generate leads with Google Maps](https://n8n.io/workflows/2605-generate-leads-with-google-maps/), [OpenAI GPT-3 company enrichment](https://n8n.io/workflows/1862-openai-gpt-3-company-enrichment-from-website-content/)
+```json
+{"nodes":["Webhook","AI Agent","Gmail","Twilio","Wait","If","Loop Over Items (Split in Batches)","CRM Update"]}
+```
+*Inspiration: same AI-personalization + multi-channel + wait/conditional pattern as the flagship `WHL-01` build, adapted from B2C real-estate cadence to B2B SDR cadence.*
 
-## 3. Cold Outreach Personalizer
-- **Trigger:** Schedule Trigger (reads a prospect list) or Google Sheets row added
-- **Node chain:** Schedule/Sheets Trigger → HTTP Request (LinkedIn/enrichment data) → OpenAI/Claude (draft personalized opener) → Gmail draft (human-in-loop send) → Sheets log
-- **Fit:** Rung 1–2 boundary, $1,250–$2,000 depending on whether send is automatic or drafted-for-review.
-- **Inspired by:** [Generate personalized sales emails with LinkedIn data & Claude 3.7](https://n8n.io/workflows/5691-generate-personalized-sales-emails-with-linkedin-data-and-claude-37-via-openrouter/)
+---
 
-## 4. No-Reply Follow-Up Sequencer
-- **Trigger:** Schedule Trigger (daily sweep of an email log)
-- **Node chain:** Schedule Trigger → Google Sheets (read send log) → IF (no reply after N days) → Gmail send follow-up → Update Sheets status → Slack notify rep when thread goes cold (no response after final touch)
-- **Fit:** Rung 1 template install, $750–$1,000.
-- **Inspired by:** [Gmail campaign sender: bulk-send + auto follow-up if no reply](https://n8n.io/workflows/2137-gmail-campaign-sender-bulk-send-emails-and-follow-up-automatically-if-no-reply/)
+## SAL-03 — Meeting-Booked → CRM + AI Call-Prep
+**Price:** $2,000–$3,000 · **Tier:** Medium · **Status:** spec
 
-## 5. Quote-to-Close Nudge
-- **Trigger:** Webhook (quote/proposal sent event from CRM or PandaDoc/DocuSign)
-- **Node chain:** Webhook Trigger → Wait (day 1) → HTTP Request (check quote status) → IF not accepted → Gmail reminder → Loop (day 7, day 14) → Slack escalation to rep on day 14 if still unpaid/unsigned
-- **Fit:** Rung 2 Simple, $1,500–$2,000. Linear with wait/loop logic.
-- **Inspired by:** [Send scheduled quote follow-up emails with Gmail and Google Sheets](https://n8n.io/workflows/16975-send-scheduled-quote-follow-up-emails-with-gmail-and-google-sheets/)
+**Trigger:** Calendar booking webhook (Calendly/Cal.com)
 
-## Pipeline Log
-<!-- Daily cron appends new candidates below this line. Do not remove. -->
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Booking Webhook | `n8n-nodes-base.webhook` | Cal.com/Calendly "invitee.created" |
+| 2 | Advance CRM Deal Stage | CRM update node | Move deal to "Meeting Booked" |
+| 3 | Fetch Prospect Context | `n8n-nodes-base.httpRequest` | Pull CRM notes, past emails, company data |
+| 4 | AI Agent — Call Prep Brief | AI Agent node | Summarize into a one-page prep doc |
+| 5 | Post to Slack | `n8n-nodes-base.slack` | DM the rep the brief |
+| 6 | Email Brief | Gmail node | Backup copy in inbox |
+
+```json
+{"nodes":["Webhook","HTTP Request","AI Agent","Edit Fields (Set)","Slack","Gmail"]}
+```
+*Inspiration: node shape mirrors the scraped "RAG chatbot for company documents using Google Drive and Gemini" (n8n.io/workflows/2753) — swap the document corpus for CRM/deal notes.*
+
+---
+
+## SAL-04 — AI Proposal / Quote Generator
+**Price:** $3,500–$4,500 · **Tier:** Complex · **Status:** slot (open build slot)
+
+**Trigger:** Manual/CRM button trigger on a "Ready to Quote" deal
+
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Deal Trigger | CRM webhook/manual | Rep marks deal ready |
+| 2 | Fetch Deal + Line Items | `n8n-nodes-base.httpRequest` | Pull CRM deal notes and pricing table |
+| 3 | AI Agent — Draft Proposal | AI Agent node | Generate on-brand proposal copy |
+| 4 | Render PDF | `n8n-nodes-base.htmlToPdf` / PDF service | Branded document output |
+| 5 | Upload to Drive | `n8n-nodes-base.googleDrive` | Store + get shareable link |
+| 6 | Log to CRM | CRM update node | Attach proposal + status |
+| 7 | Queue for Send | Gmail draft / e-sign (DocuSign/PandaDoc) node | One-click send + e-sign |
+
+```json
+{"nodes":["Webhook","HTTP Request","AI Agent","HTML to PDF","Google Drive","CRM Update","Gmail"]}
+```
+
+---
+
+## SAL-05 — Stale-Deal / Pipeline-Rot Alerter
+**Price:** $850–$1,200 · **Tier:** Rung 1 template install · **Status:** spec
+
+**Trigger:** Schedule (daily/weekly)
+
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Schedule Trigger | `n8n-nodes-base.scheduleTrigger` | Daily run |
+| 2 | Query Open Deals | `n8n-nodes-base.httpRequest` | Pull deals + last-activity timestamp |
+| 3 | Filter Past Threshold | `n8n-nodes-base.filter` | Deals with no activity > N days |
+| 4 | Group by Owner | `n8n-nodes-base.aggregate` | Build per-rep digest |
+| 5 | Format Digest | `n8n-nodes-base.set` | Compose Slack blocks |
+| 6 | Send Digest | `n8n-nodes-base.slack` | One message per owning rep |
+
+```json
+{"nodes":["Schedule Trigger","HTTP Request","Filter","Aggregate","Edit Fields (Set)","Slack"]}
+```

@@ -1,44 +1,105 @@
+# E-commerce — Node Designs (ECM)
+
+Vertical code `ECM` · buyer: Shopify/Woo store owners doing $5K+/mo.
+Mirrors `src/data/verticals.ts` → `VERTICALS.find(v => v.code === "ECM")`.
+
 ---
-title: Ecommerce — n8n Node Designs
-tags: [n8n, vertical/ecommerce, automation-agency]
-aliases: [Ecommerce Workflows]
-parent: "[[../_index|n8n Workflow Brainstorm]]"
-updated: 2026-07-18
+
+## ECM-01 — Abandoned Cart Recovery
+**Price:** $1,000–$1,500 · **Tier:** Rung 1/2 border · **Status:** spec
+
+**Trigger:** Shopify `checkouts/create` + `checkouts/update` webhook
+
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Cart Webhook | `n8n-nodes-base.webhook` (Shopify) | Fires on abandoned checkout |
+| 2 | Wait 1hr | `n8n-nodes-base.wait` | Touch 1 delay |
+| 3 | Conditional: Purchased? | `n8n-nodes-base.if` | Stop if order completed |
+| 4 | Send Email (Touch 1) | Gmail/Klaviyo node | Reminder, no discount |
+| 5 | Wait 24hr → Touch 2 | `n8n-nodes-base.wait` + email | Second reminder |
+| 6 | Wait 72hr → Touch 3 + Discount | `n8n-nodes-base.wait` + email | Discount code included |
+| 7 | Log to Sheet | `n8n-nodes-base.googleSheets` | Recovery funnel tracking |
+
+```json
+{"nodes":["Webhook","Wait","If","Gmail","Wait","Gmail","Wait","Edit Fields (Set)","Gmail","Google Sheets"]}
+```
+
 ---
 
-# Ecommerce
+## ECM-02 — Post-Purchase Review & UGC Request
+**Price:** $1,100–$1,600 · **Tier:** Simple/Medium · **Status:** spec
 
-5 node designs seeded from n8n.io/workflows and n8n's own "6 e-commerce workflows" blog series, aligned with `templates/template-5-abandoned-cart` in the private repo. Target client: Shopify/WooCommerce store owners doing $5K+/mo.
+**Trigger:** Shopify `orders/fulfilled` webhook
 
-## 1. Abandoned Cart Recovery (3-touch)
-- **Trigger:** Shopify Webhook (`checkout/create`)
-- **Node chain:** Webhook Trigger → Wait (1 hr) → HTTP Request (Shopify Orders API, check conversion) → IF not converted → Gmail/Brevo Email 1 (cart contents) → Wait 24h → Email 2 → Wait 48h → Email 3 (discount code) → Google Sheets log (recovery rate)
-- **Fit:** Rung 1 template install, $1,000–$1,500. Already Template 5 — reuse directly.
-- **Inspired by:** [5 n8n Shopify Automation Workflows](https://us.bkwebdesigns.com/n8n-shopify-automation-workflows/)
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Fulfillment Webhook | `n8n-nodes-base.webhook` | Order delivered signal |
+| 2 | Wait N Days | `n8n-nodes-base.wait` | Post-delivery buffer |
+| 3 | Send Review Request | Email/SMS node | Ask for review + photo |
+| 4 | Capture Response | `n8n-nodes-base.webhook` (form) | Star rating + text |
+| 5 | Switch: Rating Sentiment | `n8n-nodes-base.switch` | Happy vs unhappy branch |
+| 6a | Route to Public Review | HTTP Request (Shopify/Judge.me API) | Post rating publicly |
+| 6b | Route to Support | `n8n-nodes-base.slack` | Unhappy customers caught privately |
 
-## 2. Order Fulfillment Automation
-- **Trigger:** Shopify Trigger (new order)
-- **Node chain:** Shopify Trigger → Shopify node (List Fulfillment Orders → get fulfillment order ID) → Shopify node (mark fulfillment order as fulfilled) → IF error/partial → Slack alert → Sheets log
-- **Fit:** Rung 1 template install, $750–$1,000. Simple, near turnkey.
-- **Inspired by:** [Automatic Shopify order fulfillment process](https://n8n.io/workflows/3296-automatic-shopify-order-fulfillment-process/)
+```json
+{"nodes":["Webhook","Wait","Gmail","Webhook","Switch","HTTP Request","Slack"]}
+```
 
-## 3. Post-Purchase Nurture Sequence
-- **Trigger:** Shopify Trigger (order created)
-- **Node chain:** Shopify Trigger → Gmail (branded order confirmation) → Wait 3 days → Gmail (usage-tips email) → Wait 4 days → Gmail (review request, links to Judge.me/Loox/native reviews) → Sheets log
-- **Fit:** Rung 1 template install, $1,000–$1,250.
-- **Inspired by:** [5 n8n Shopify Automation Workflows](https://us.bkwebdesigns.com/n8n-shopify-automation-workflows/)
+---
 
-## 4. Oversell Sentinel (Inventory Drift Alarm)
-- **Trigger:** Schedule Trigger (hourly)
-- **Node chain:** Schedule Trigger → HTTP Request (Shopify Admin API, stock per SKU) → Compare vs. threshold/other channels → IF low/oversold → Slack + Email alert → Sheets log
-- **Fit:** Rung 2 Simple, $1,500–$2,000. Multi-channel inventory checks add complexity.
-- **Inspired by:** [Oversell Sentinel: Multichannel Inventory Drift Alarm](https://www.n8ntemplatestore.com/templates/category/ecommerce) (n8ntemplatestore.com)
+## ECM-03 — Order-Status & Shipping-Update Comms
+**Price:** $750–$1,000 · **Tier:** Rung 1 · **Status:** built ✅
 
-## 5. OrderShield — High-Risk & Fake Order Triage
-- **Trigger:** Shopify/WooCommerce Webhook (new order)
-- **Node chain:** Webhook Trigger → HTTP Request (fraud/risk score API) → IF high risk → Hold order + Slack alert to owner for manual review → Else → auto-continue to fulfillment path
-- **Fit:** Rung 2 Simple, $1,500–$2,000. High client value (prevents chargebacks) — good upsell after Template 5.
-- **Inspired by:** [OrderShield: High-Risk & Fake Order Triage](https://www.n8ntemplatestore.com/templates/category/ecommerce) (n8ntemplatestore.com)
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Shipping Webhook | `n8n-nodes-base.webhook` (ShipStation/Shopify) | Milestone event (label created, in transit, delivered) |
+| 2 | Switch: Milestone Type | `n8n-nodes-base.switch` | Branch per status |
+| 3 | Render Branded Template | `n8n-nodes-base.set` | Merge tracking data into copy |
+| 4 | Send Email | Gmail/SendGrid node | Branded status email |
+| 5 | Log Event | `n8n-nodes-base.googleSheets` | Ticket-deflection tracking |
 
-## Pipeline Log
-<!-- Daily cron appends new candidates below this line. Do not remove. -->
+```json
+{"nodes":["Webhook","Switch","Edit Fields (Set)","Gmail","Google Sheets"]}
+```
+*Already built and shipped — kept here as the reference pattern for the other four.*
+
+---
+
+## ECM-04 — Low-Stock + Restock Alert
+**Price:** $2,000–$3,000 · **Tier:** Medium · **Status:** spec
+
+**Trigger:** Schedule (hourly) + inventory webhook
+
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Schedule/Inventory Trigger | `n8n-nodes-base.scheduleTrigger` | Poll Shopify inventory levels |
+| 2 | Fetch Inventory | `n8n-nodes-base.httpRequest` | Shopify Admin API |
+| 3 | Filter Below Threshold | `n8n-nodes-base.filter` | SKUs under reorder point |
+| 4 | Alert Owner | `n8n-nodes-base.slack` | Real-time low-stock ping |
+| 5 | Watch Restock | `n8n-nodes-base.if` | Detect quantity back above 0 |
+| 6 | Blast Waitlist | Klaviyo/Gmail node | "Back in stock" email to waitlist |
+
+```json
+{"nodes":["Schedule Trigger","HTTP Request","Filter","Slack","If","Gmail"]}
+```
+
+---
+
+## ECM-05 — AI Win-Back / Reactivation
+**Price:** $1,800–$2,800 · **Tier:** Medium · **Status:** spec
+
+**Trigger:** Schedule (weekly)
+
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Schedule Trigger | `n8n-nodes-base.scheduleTrigger` | Weekly run |
+| 2 | Query Customers | `n8n-nodes-base.httpRequest` | Shopify customers past typical reorder window |
+| 3 | Fetch Order History | `n8n-nodes-base.httpRequest` | Pull last purchased items per customer |
+| 4 | AI Agent — Personalize Offer | AI Agent node | Reference exact prior purchase |
+| 5 | Send Win-Back Email | Klaviyo/Gmail node | Personalized offer send |
+| 6 | Log to Sheet | `n8n-nodes-base.googleSheets` | Reactivation funnel tracking |
+
+```json
+{"nodes":["Schedule Trigger","HTTP Request","HTTP Request","AI Agent","Gmail","Google Sheets"]}
+```
+*Inspiration: personalization-from-history pattern mirrors the scraped "Talk to your Google Sheets using ChatGPT-5" (n8n.io/workflows/7639) — same AI Agent-over-tabular-data shape, applied to order history instead of ad-hoc Sheet Q&A.*

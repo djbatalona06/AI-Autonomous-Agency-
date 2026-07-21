@@ -1,44 +1,113 @@
+# Wholesaling / REI — Node Designs (WHL)
+
+Vertical code `WHL` · buyer: wholesalers, investors, acquisition & dispo teams. **Flagship vertical** — theWRENCH / Vertex Supply warm-network play (see `n8n-automation-business` skill → `references/templates.md` Template 6).
+
+Mirrors `src/data/verticals.ts` → `VERTICALS.find(v => v.code === "WHL")`.
+
+> **Scrape note:** n8n's public template gallery skews SaaS/marketing/AI-ops — it has essentially no real-estate/wholesaling-specific templates. These five designs are agency-original builds (not lifted from the gallery), with node shapes borrowed from adjacent trending patterns where noted. This matches the skill's own guidance that WHL-01 is the highest-margin *custom* build, not an installable template.
+
 ---
-title: "Wholesaling / REI — n8n Node Designs"
-tags: [n8n, vertical/wholesaling-rei, automation-agency, high-margin]
-aliases: [Wholesaling Workflows, Real Estate Investor Workflows]
-parent: "[[../_index|n8n Workflow Brainstorm]]"
-updated: 2026-07-18
+
+## WHL-01 — AI Lead Follow-Up Sequence
+**Price:** $1,250–$1,750 · **Tier:** Complex (5 integrations, AI, multi-channel) · **Status:** built ✅ · flagship ⭐
+
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Lead Webhook | `n8n-nodes-base.webhook` | Podio/REISift/InvestorLift/PropStream/direct |
+| 2 | AI Agent — Personalize Opener | AI Agent (OpenAI) | Generate opener from property address + source |
+| 3 | Send SMS (Day 1) | Twilio node | Immediate first touch |
+| 4 | Send Email (Day 1) | SendGrid node | Parallel channel |
+| 5 | Wait → Day 3 Email | `n8n-nodes-base.wait` + SendGrid | Cadence continues |
+| 6 | Wait → Day 7 Voicemail + SMS | `n8n-nodes-base.wait` + Slybroadcast + Twilio | Multi-channel touch |
+| 7 | Conditional: Responded? | `n8n-nodes-base.if` | Checks CRM reply flag |
+| 8 | Update CRM Status | CRM node | Mark "Hot" on any response |
+| 9 | Wait → Day 14 Email | `n8n-nodes-base.wait` + SendGrid | Final cadence touch |
+| 10 | Log Activity | `n8n-nodes-base.googleSheets` | Full-cadence audit trail |
+
+```json
+{"nodes":["Webhook","AI Agent","Twilio","SendGrid","Wait","Slybroadcast","If","CRM Update","Wait","Google Sheets"]}
+```
+*Already built and shipped — the reference pattern this entire vertical is built around.*
+
 ---
 
-# Wholesaling / REI ⭐
+## WHL-02 — Cash-Buyer Dispo Blast + Match
+**Price:** $2,000–$3,500 · **Tier:** Medium/Complex · **Status:** spec
 
-Highest-margin vertical — primary warm-network play for theWRENCH, Vertex Supply, and existing wholesale buyer/seller relationships (see `templates/template-6-ai-lead-followup` in the private repo, $1,250–$1,750 installed). 5 node designs below extend that template with real n8n.io candidates.
+**Trigger:** Webhook (new deal under contract)
 
-## 1. Property Lead Skip-Trace & Scorer
-- **Trigger:** Schedule Trigger or Webhook (batch pull)
-- **Node chain:** Trigger → HTTP Request (BatchData Property Search API — location, value range, equity %, absentee ownership) → Code node (lead scoring on equity %, years owned, tax status) → HTTP Request (skip trace owner contact) → Format node → Excel/Sheets export + CRM push (HubSpot/Salesforce) → Gmail summary email
-- **Fit:** Rung 2 Medium, $2,500–$3,500. 3+ integrations, scoring logic.
-- **Inspired by:** [Real estate lead generation with BatchData skip tracing & CRM integration](https://n8n.io/workflows/3666-real-estate-lead-generation-with-batchdata-skip-tracing-and-crm-integration/)
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | New Deal Webhook | `n8n-nodes-base.webhook` | Deal marked under contract |
+| 2 | Fetch Cash-Buyer DB | `n8n-nodes-base.googleSheets` / Postgres | Buy-box criteria per buyer |
+| 3 | AI Agent — Match Buy Box | AI Agent node | Score deal against each buyer's criteria |
+| 4 | Filter Matches | `n8n-nodes-base.filter` | Only buyers whose box fits |
+| 5 | Loop Over Matches | `n8n-nodes-base.splitInBatches` | One send per matched buyer |
+| 6 | Send Blast | Email/SMS node | Property details + comps |
+| 7 | Log Responses | `n8n-nodes-base.googleSheets` | Track buyer interest |
 
-## 2. Hot / Warm / Cold AI Qualifier + Voice Call
-- **Trigger:** Webhook (inbound lead — website form or WhatsApp)
-- **Node chain:** Webhook Trigger → OpenAI/GPT-4o (extract budget/timeline/property type from free text, score 1–10) → Switch (Hot 8–10 / Warm 5–7 / Cold 1–4) → **Hot:** VAPI outbound AI voice call → wait for call → pull transcript → GPT-4o generate personalized proposal → HTML format → Gmail send; **Warm:** automated nurture email; **Cold:** log only → Google Sheets log (all tiers)
-- **Fit:** Rung 2 Complex, $3,500–$5,000. Multi-path orchestration, AI, voice, 5+ integrations — DJ's highest-ticket REI build.
-- **Inspired by:** [Real Estate AI Lead Qualifier + Voice Agent + Proposal Generator](https://community.n8n.io/t/real-estate-ai-lead-qualifier-voice-agent-proposal-generator-gpt-4o-vapi-gmail-sheets/300394)
+```json
+{"nodes":["Webhook","Google Sheets","AI Agent","Filter","Loop Over Items (Split in Batches)","Gmail","Google Sheets"]}
+```
 
-## 3. Multi-Channel Follow-Up Cadence (Template 6 extension)
-- **Trigger:** Webhook (new lead — Podio/REISift/InvestorLift/PropStream export/direct webhook)
-- **Node chain:** Webhook Trigger → OpenAI (AI-personalized opener from property address + source) → Day 1: Twilio SMS + SendGrid email → Wait → Day 3: email → Day 7: Slybroadcast voicemail drop + SMS → Day 14: email → CRM status update to "Hot" on any response → Google Sheets activity log
-- **Fit:** Rung 2 Complex, $1,250–$1,750 (this IS Template 6 — already built; log as the baseline to compare new candidates against).
-- **Source:** existing `templates/template-6-ai-lead-followup`
+---
 
-## 4. Open House CRM Sync + 7-Day Auto Follow-Up
-- **Trigger:** Webhook (sign-in app, e.g. SignSnap Home)
-- **Node chain:** Webhook Trigger → Score lead → HubSpot/Follow Up Boss/Monday.com sync → 7-day SMS + email nurture sequence (Wait/Loop nodes) → Sheets log
-- **Fit:** Rung 2 Simple–Medium, $2,000–$3,000. Good fit for brokers in the wholesale network, not just wholesalers.
-- **Inspired by:** [6 n8n Real Estate Templates: One for Every Pillar](https://nextautomation.us/resources/free-templates/6-real-estate-n8n-templates-20260209)
+## WHL-03 — Skip-Trace / Owner-Lookup Intake
+**Price:** $2,000–$3,000 · **Tier:** Medium · **Status:** spec
 
-## 5. Zillow/MLS Investment Deal Scanner
-- **Trigger:** Apify Actor Trigger (scheduled scrape)
-- **Node chain:** Apify Trigger → Scrape live Zillow/MLS listings → Code node (clean/normalize) → OpenAI (AI investment scoring 1–100 on equity/ARV/cash-flow heuristics) → Google Sheets store → Slack alert when score > 80
-- **Fit:** Rung 2 Complex, $3,000–$4,500. AI scoring + scraping infra — pairs well with the skip-trace design (#1) as an upsell pair.
-- **Inspired by:** [6 n8n Real Estate Templates: One for Every Pillar](https://nextautomation.us/resources/free-templates/6-real-estate-n8n-templates-20260209)
+**Trigger:** Webhook (new lead / list import)
 
-## Pipeline Log
-<!-- Daily cron appends new candidates below this line. Do not remove. -->
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Lead Intake Webhook | `n8n-nodes-base.webhook` | New raw lead/address |
+| 2 | Dedupe Against CRM | `n8n-nodes-base.if` | Skip already-known owners |
+| 3 | Skip-Trace API Call | `n8n-nodes-base.httpRequest` | Owner phone/email/mailing lookup |
+| 4 | Normalize Fields | `n8n-nodes-base.set` | Canonical owner record shape |
+| 5 | Create CRM Contact | CRM node | Drop into follow-up pipeline |
+| 6 | Queue for Follow-Up | Trigger `WHL-01` | Hand off to lead follow-up sequence |
+
+```json
+{"nodes":["Webhook","If","HTTP Request","Edit Fields (Set)","CRM Create","Execute Workflow"]}
+```
+
+---
+
+## WHL-04 — County / Motivated-List Ingestion + Dedupe
+**Price:** $850–$1,250 · **Tier:** Rung 1 · **Status:** spec
+
+**Trigger:** Schedule (weekly)
+
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Schedule Trigger | `n8n-nodes-base.scheduleTrigger` | Weekly pull |
+| 2 | Fetch County/List Source | `n8n-nodes-base.httpRequest` | Probate, pre-foreclosure, code-violation feeds |
+| 3 | Normalize Records | `n8n-nodes-base.set` | Canonical address/owner schema |
+| 4 | Dedupe Against CRM | `n8n-nodes-base.filter` | Drop already-known records |
+| 5 | Enrich New Records | `n8n-nodes-base.httpRequest` | Skip-trace the genuinely-new ones |
+| 6 | Drop Into Pipeline | CRM create node | New leads land in the queue |
+
+```json
+{"nodes":["Schedule Trigger","HTTP Request","Edit Fields (Set)","Filter","HTTP Request","CRM Create"]}
+```
+*Inspiration: source-monitor → normalize → filter → alert shape borrowed from the live trending template "Monitor crypto news risk with CoinDesk RSS, OpenAI, Gmail, and Google Sheets" (n8n.io/workflows/17174) — same feed-monitoring pattern, retargeted from RSS news to county records.*
+
+---
+
+## WHL-05 — Deal Analyzer Intake → ARV/MAO Brief
+**Price:** $3,500–$4,500 · **Tier:** Complex · **Status:** slot (open build slot)
+
+**Trigger:** Webhook (address submitted)
+
+| # | Node | Type | Purpose |
+|---|------|------|---------|
+| 1 | Address Webhook | `n8n-nodes-base.webhook` | Rep submits an address |
+| 2 | Fetch Comps | `n8n-nodes-base.httpRequest` | Comp API (ATTOM/PropStream) |
+| 3 | AI Agent — Compute ARV/MAO | AI Agent node | Consistent comp-weighted valuation |
+| 4 | Estimate Rehab | `n8n-nodes-base.httpRequest` / AI Agent | Condition-based rehab estimate |
+| 5 | Render PDF Brief | `n8n-nodes-base.htmlToPdf` | Comps + ARV + MAO + rehab, one page |
+| 6 | Save to Drive | `n8n-nodes-base.googleDrive` | Store the brief |
+| 7 | Log for Team | `n8n-nodes-base.googleSheets` | Deal-analysis audit trail |
+
+```json
+{"nodes":["Webhook","HTTP Request","AI Agent","HTTP Request","HTML to PDF","Google Drive","Google Sheets"]}
+```
