@@ -49,3 +49,21 @@ Vertical code `WHL` (flagship ⭐). Cross-reference: `src/data/verticals.ts` →
    - *Why flag it:* it's the same shape as the flagship `WHL-01` but for the acquisitions
      side of the funnel (inbound calls/open-house sign-ins) rather than outbound seller
      leads — a natural upsell once `WHL-01` is installed.
+
+---
+
+### 2026-07-21 batch
+
+6. **Inbound Lead Auto-Router by Intent (Rent / Sell / Buy) + AI Personalization** — *new
+   candidate, complements the `WHL-01` flagship as a front-door router (proposed `WHL-07`)*
+   - *Inspired by:* the "real estate property follow-up automation" pattern circulating in
+     n8n practitioner communities this month — routes a single inbound webhook to
+     rent/sale/purchase branches with a personalized opener per branch, then calendar +
+     CRM + Slack.
+   - *Node design:* Webhook (site form/Facebook Lead Ads) → AI Agent (classify intent:
+     rent / sell / buy / investor) → Switch (route by intent) → OpenAI (personalize opener
+     referencing the property/source) → CRM create-or-update → Google Calendar (book a
+     showing if the branch calls for one) → Slack notify the right agent.
+   - *Why now:* wholesalers and small brokerages keep getting one generic form for very
+     different lead types — a $1,500–$2,000 Rung 2 Simple sell as the on-ramp ahead of the
+     full `WHL-01` nurture sequence.

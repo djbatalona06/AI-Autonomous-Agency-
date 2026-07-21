@@ -54,3 +54,18 @@ marketplaces, translated into a Yawn-sellable shape.
 **New-candidate watch (not yet a card):** nothing distinct enough surfaced this run beyond
 what's already scoped in `SAL-01..05` — next run should widen the search to AI SDR /
 inbox-to-CRM logging patterns.
+
+---
+
+### 2026-07-21 batch
+
+6. **AI Reply-Tracking Follow-Up Nudger** — proposed `SAL-06` (new candidate)
+   - *Inspired by:* "B2B lead follow-up automation with Gemini AI, Gmail and Google Sheets" —
+     [n8n.io/workflows/11283](https://n8n.io/workflows/11283-b2b-lead-follow-up-automation-with-gemini-ai-gmail-and-google-sheets).
+   - *Node design:* Schedule Trigger → Google Sheets (read intro-email log) → IF (no reply
+     after N days) → Gemini/OpenAI (draft a casual, personalized reminder from thread
+     context) → Gmail (send as reply on the original thread, not a cold new email) →
+     Google Sheets (update status).
+   - *Why it's distinct from `SAL-B02`:* that one dedupes email vs. LinkedIn touches;
+     this one is purely thread-aware reply detection + same-thread nudge — a cheap
+     $750–$1,000 add-on for any client already on Template 1 or 2.

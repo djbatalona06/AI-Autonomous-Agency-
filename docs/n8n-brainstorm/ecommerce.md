@@ -47,3 +47,19 @@ Vertical code `ECM`. Cross-reference: `src/data/verticals.ts` → `VERTICALS.fin
 **New-candidate watch:** Competitor Price Intelligence Monitor above — worth scoping as
 `ECM-06` if a store owner asks for it; otherwise keep it as a retainer add-on rather than a
 standalone Rung 1/2 card (it's ongoing monitoring, not a one-time build).
+
+---
+
+### 2026-07-21 batch
+
+6. **AI Customer Support Chatbot with Order Memory** — *new candidate, no card yet
+   (proposed `ECM-07`, since `ECM-06` is already claimed by the price monitor above)*
+   - *Inspired by:* "AI-Powered E-commerce Customer Support Chatbot with GPT-4 and Supabase"
+     — [n8n.io/workflows/7256](https://n8n.io/workflows/7256-ai-powered-e-commerce-customer-support-chatbot-with-gpt-4-and-supabase/).
+   - *Node design:* Chat Widget/Webhook Trigger → Supabase (retrieve order + customer
+     history for context) → OpenAI/GPT-4 Agent (answer with memory of the conversation and
+     order state) → IF (needs a human — refund/complaint) → Slack/Zendesk escalate, else →
+     respond directly in the chat.
+   - *Why flag it:* every current ECM card is trigger-driven automation behind the scenes;
+     this is the first live, customer-facing AI surface — good anchor for a Rung 2 Medium
+     build ($2,000–$3,500) with a retainer story (model/prompt tuning as ongoing work).

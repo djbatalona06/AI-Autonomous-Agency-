@@ -43,3 +43,18 @@ Vertical code `SMB`. Cross-reference: `src/data/verticals.ts` → `VERTICALS.fin
 **New-candidate watch:** nothing distinct enough surfaced beyond `SMB-01..05` this run —
 next pass should look at the "Contract Signed → Project Kickoff" and "Expense Receipt →
 Spreadsheet" patterns as possible retainer add-ons rather than standalone cards.
+
+---
+
+### 2026-07-21 batch
+
+6. **WhatsApp AI Customer Support Autoresponder** — *new candidate, no card yet (proposed
+   `SMB-06`)*
+   - *Inspired by:* "Automate WhatsApp customer support with voice transcription, FAQ and
+     appointment scheduling" — [n8n.io/workflows/8454](https://n8n.io/workflows/8454-automate-whatsapp-customer-support-with-voice-transcription-faq-and-appointment-scheduling).
+   - *Node design:* WhatsApp Trigger (message in, text or voice note) → Speech-to-Text (if
+     voice) → AI Agent (answer FAQ or classify as booking request) → IF (booking) → Google
+     Calendar check/book → WhatsApp reply → Google Sheets log.
+   - *Why it's distinct from `SMB-01`:* that card assumes a web form/Calendly front door;
+     this one meets the customer on WhatsApp directly — a strong fit for local-service SMBs
+     whose customers already text them instead of filling out forms.
