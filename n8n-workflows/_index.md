@@ -30,8 +30,8 @@ Daily-refreshed map of the automation agency's template pipeline, sourced from [
 
 | Vertical | Designs seeded | Last scrape |
 |---|---|---|
-| Sales | 5 | 2026-07-18 |
-| Ecommerce | 5 | 2026-07-18 |
-| Wholesaling / REI | 5 | 2026-07-18 |
-| Productivity | 5 | 2026-07-18 |
-| Small Business | 5 | 2026-07-18 |
+| Sales | 7 | 2026-07-22 |
+| Ecommerce | 7 | 2026-07-22 |
+| Wholesaling / REI | 7 | 2026-07-22 |
+| Productivity | 7 | 2026-07-22 |
+| Small Business | 7 | 2026-07-22 |
