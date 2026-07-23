@@ -14,3 +14,4 @@ tags: [n8n-brainstorm, index, vertical/prd]
 - [[2026-07-19-PRD-B04-Doc-Report-Generator-on-Schedule|Doc & Report Generator on Schedule]]
 - [[2026-07-19-PRD-B05-Inbound-File-Structured-Data-Sheet|Inbound File → Structured Data → Sheet]]
 - [[2026-07-21-PRD-B06-Voice-Memo-Structured-Brief-Task-Capture|Voice Memo → Structured Brief & Task Capture]] 🆕 new-candidate
+- [[2026-07-23-PRD-B08-Notion-AI-Assistant-via-MCP-for-Task-Content-Management|Notion AI Assistant via MCP for Task & Content Management]] 🆕 new-candidate

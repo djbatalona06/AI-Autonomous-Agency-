@@ -58,3 +58,20 @@ Spreadsheet" patterns as possible retainer add-ons rather than standalone cards.
    - *Why it's distinct from `SMB-01`:* that card assumes a web form/Calendly front door;
      this one meets the customer on WhatsApp directly — a strong fit for local-service SMBs
      whose customers already text them instead of filling out forms.
+
+---
+
+### 2026-07-23 batch
+
+7. **AI Request-to-Quote PDF Generator** — proposed `SMB-07` (new candidate)
+   - *Inspired by:* "Automated request-to-quote with OpenAI, Google Sheets & CraftMyPDF" —
+     [n8n.io/workflows/8239](https://n8n.io/workflows/8239-automated-request-to-quote-with-openai-google-sheets-and-craftmypdf/).
+   - *Node design:* Form Trigger ("Request a Quote": requirements, budget, need-by date) →
+     Google Sheets (load product/service catalog: SKU, price, stock, min qty) → OpenAI
+     (select line items, build a strict JSON quote, respects stock/min qty and a discount
+     cap) → Code (compute totals, VAT, invoice number, due date) → CraftMyPDF (render a
+     branded PDF quote) → Email/SMTP (send the customer the quote automatically).
+   - *Why it's distinct:* nothing in `SMB-B01..B06` gets a priced quote out the door —
+     `SMB-01` books the appointment, `SMB-02` chases the invoice after the fact; this fills
+     the gap in between. Clean $1,500–$2,000 Rung 2 Simple sell for any service business
+     still quoting by hand or spreadsheet.

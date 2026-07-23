@@ -14,3 +14,4 @@ tags: [n8n-brainstorm, index, vertical/sal]
 - [[2026-07-19-SAL-B04-Meeting-Booked-CRM-AI-Call-Prep|Meeting-Booked → CRM + AI Call-Prep]]
 - [[2026-07-19-SAL-B05-Stale-Deal-Pipeline-Rot-Digest|Stale-Deal / Pipeline-Rot Digest]]
 - [[2026-07-21-SAL-B06-AI-Reply-Tracking-Follow-Up-Nudger|AI Reply-Tracking Follow-Up Nudger]] 🆕 new-candidate
+- [[2026-07-23-SAL-B08-Real-Time-Sales-Pipeline-Analytics-Stalled-Deal-Alerts|Real-Time Sales Pipeline Analytics & Stalled-Deal Alerts]] 🆕 new-candidate
