@@ -14,3 +14,4 @@ tags: [n8n-brainstorm, index, vertical/smb]
 - [[2026-07-19-SMB-B04-Review-Reputation-Engine|Review & Reputation Engine]]
 - [[2026-07-19-SMB-B05-Appointment-No-Show-Reducer|Appointment No-Show Reducer]]
 - [[2026-07-21-SMB-B06-WhatsApp-AI-Customer-Support-Autoresponder|WhatsApp AI Customer Support Autoresponder]] 🆕 new-candidate
+- [[2026-07-24-SMB-B09-Contractor-Vendor-License-Verification-for-Lead-Lists|Contractor/Vendor License Verification for Lead Lists]] 🆕 new-candidate

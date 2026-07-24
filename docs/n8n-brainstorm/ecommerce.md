@@ -63,3 +63,26 @@ standalone Rung 1/2 card (it's ongoing monitoring, not a one-time build).
    - *Why flag it:* every current ECM card is trigger-driven automation behind the scenes;
      this is the first live, customer-facing AI surface — good anchor for a Rung 2 Medium
      build ($2,000–$3,500) with a retainer story (model/prompt tuning as ongoing work).
+
+---
+
+### 2026-07-24 batch
+
+*(Numbered `ECM-B09` to skip past `ECM-B07`/`ECM-B08`, which only exist in still-open
+draft PRs #39/#40, not yet on `main`.)*
+
+9. **Brand Impersonation & Deepfake Threat Hunter** — proposed `ECM-09` (new candidate)
+   - *Inspired by:* "Hunt brand impersonation and deepfake threats with Claude, Google
+     Sheets and SendGrid" —
+     [n8n.io/workflows/17360](https://n8n.io/workflows/17360-hunt-brand-impersonation-and-deepfake-threats-with-claude-google-sheets-and-sendgrid/).
+   - *Node design:* Schedule Trigger (every 4 hrs) → Set (brand context: domains, handles,
+     keywords, logo description) → HTTP Request (brand-monitoring/social-listening API) →
+     AI Agent/Claude (classify impersonation risk, assign type + rationale) → Code
+     (composite threat score from AI score + reach + account-age + image-similarity
+     signals) → Google Sheets (append `ImpersonationScans` tracker) → IF (critical tier or
+     AI-voice-scam) → SendGrid (alert email to the brand-protection inbox).
+   - *Why it's distinct:* nothing in `ECM-B01..B08` is a security/brand-protection
+     surface — every existing card automates the store's own lifecycle (cart, reviews,
+     stock, pricing, win-back, support). This is the first card that watches the *outside*
+     world for counterfeiters and deepfake ad scams running under the client's brand —
+     good Rung 2 Medium retainer sell for any DTC brand that's been hit by knockoffs.

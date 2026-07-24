@@ -67,3 +67,30 @@ Vertical code `WHL` (flagship ⭐). Cross-reference: `src/data/verticals.ts` →
    - *Why now:* wholesalers and small brokerages keep getting one generic form for very
      different lead types — a $1,500–$2,000 Rung 2 Simple sell as the on-ramp ahead of the
      full `WHL-01` nurture sequence.
+
+---
+
+### 2026-07-24 batch
+
+*(Numbered `WHL-B09` to skip past `WHL-B07`/`WHL-B08`, which only exist in still-open
+draft PRs #39/#40, not yet on `main`.)*
+
+9. **Automated Off-Market Property Lead Generation (BatchData + CRM)** — proposed `WHL-09`
+   (new candidate)
+   - *Inspired by:* "Automated property lead generation with BatchData and CRM
+     integration" —
+     [n8n.io/workflows/3665](https://n8n.io/workflows/3665-automated-property-lead-generation-with-batchdata-and-crm-integration/).
+   - *Node design:* Schedule Trigger → HTTP Request (BatchData API property search on
+     saved criteria) → Code (diff against the previous scan to isolate new/changed
+     listings) → Filter (high-equity, absentee-owner, distressed signals) → HTTP Request
+     (pull full owner + property detail for qualified hits) → Gmail (formatted alert:
+     property details, equity %, Google Maps link) → Slack/Teams (team notification).
+   - *Why flag this one specially:* the `2026-07-20` scrape log explicitly noted "gallery
+     has no real-estate-specific templates at all" for this vertical and told the daily
+     agent to stop expecting direct hits. **That was wrong** — this is a real, live,
+     purpose-built real-estate template on n8n.io (property/owner data, equity filtering,
+     off-market deal alerts), not a pattern match from an adjacent category. Correcting the
+     coverage-gap note: `WHL` does have direct n8n.io hits; today's search just hadn't
+     surfaced one yet. Given `BatchData` overlaps the `WHL-B01` skip-trace pipeline's data
+     needs, this is a strong candidate to fold into `WHL-01`/`WHL-B01` as an alternate data
+     source rather than ship as a standalone card.
