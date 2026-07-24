@@ -65,3 +65,26 @@ orchestrator patterns (seen in n8n.io/workflows/4723) as a possible higher-tier 
    - *Why it's worth building:* solopreneur and agency-owner clients think out loud in the
      car/on walks — this is the only card in `PRD` that captures ideas at the point of
      speech rather than after they've already sat down at a desk.
+
+---
+
+### 2026-07-24 batch
+
+*(Numbered `PRD-B09` to skip past `PRD-B07`/`PRD-B08`, which only exist in still-open
+draft PRs #39/#40, not yet on `main`.)*
+
+9. **n8n Workflow Backup & Sync to GitHub (Semantic SHAs)** — proposed `PRD-09` (new
+   candidate)
+   - *Inspired by:* "Back up and sync workflow JSONs with GitHub using semantic SHAs" —
+     [n8n.io/workflows/17352](https://n8n.io/workflows/17352-back-up-and-sync-workflow-jsons-with-github-using-semantic-shas/).
+   - *Node design:* Schedule/Manual Trigger → n8n API (list all workflows) → Filter
+     (drop archived) → Code (deterministic SHA-256 per workflow from nodes/connections/
+     settings) → GitHub (check target repo exists; create it if not) → GitHub (list
+     existing backup files, diff against current SHAs to find new/changed/renamed/deleted)
+     → GitHub (create/update files, delete stale ones).
+   - *Why it's distinct:* this is meta — Yawn's own ops tooling, not a client vertical
+     card, but it's the exact gap in this repo's own pipeline: every n8n build this agency
+     ships today lives only in the client's n8n instance until someone manually exports
+     it. This template turns that into an automatic nightly GitHub backup — a candidate to
+     run against Yawn's own delivery instance first, then resell as a "workflow version
+     control" retainer add-on to clients who host multiple workflows.

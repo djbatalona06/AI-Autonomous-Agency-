@@ -14,3 +14,4 @@ tags: [n8n-brainstorm, index, vertical/ecm]
 - [[2026-07-19-ECM-B04-Competitor-Price-Intelligence-Monitor|Competitor Price Intelligence Monitor]] 🆕 new-candidate
 - [[2026-07-19-ECM-B05-AI-Win-Back-Reactivation-Sequence|AI Win-Back / Reactivation Sequence]]
 - [[2026-07-21-ECM-B06-AI-Customer-Support-Chatbot-with-Order-Memory|AI Customer Support Chatbot with Order Memory]] 🆕 new-candidate
+- [[2026-07-24-ECM-B09-Brand-Impersonation-Deepfake-Threat-Hunter|Brand Impersonation & Deepfake Threat Hunter]] 🆕 new-candidate
