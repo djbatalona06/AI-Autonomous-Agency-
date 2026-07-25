@@ -63,3 +63,28 @@ standalone Rung 1/2 card (it's ongoing monitoring, not a one-time build).
    - *Why flag it:* every current ECM card is trigger-driven automation behind the scenes;
      this is the first live, customer-facing AI surface — good anchor for a Rung 2 Medium
      build ($2,000–$3,500) with a retainer story (model/prompt tuning as ongoing work).
+
+---
+
+### 2026-07-25 batch
+
+*(Note: `ECM-B07`/`ECM-B08`/`ECM-B09` exist only in still-open draft PRs #39/#40/#41 and
+aren't on `main` yet. This entry is numbered `ECM-B10` to avoid colliding with any of them.)*
+
+7. **Order Confirmation + Team Notification Starter** — *new candidate, no card yet
+   (proposed slot number TBD — depends which of `ECM-06`/`07`/`08`/`09` land first)*
+   - *Inspired by:* "Automate e-commerce order processing with email notifications &
+     webhooks" —
+     [n8n.io/workflows/7518](https://n8n.io/workflows/7518-automate-e-commerce-order-processing-with-email-notifications-and-webhooks/)
+     (4.6/5 across 27 reviews, explicitly built for beginners).
+   - *Node design:* Webhook (new-order event from Shopify/WooCommerce/BigCommerce/Etsy) →
+     Set (store config: name, contact, branding) → validation (required fields present) →
+     Gmail (branded customer confirmation) → Gmail (internal team/fulfillment alert) →
+     error-handling branch on incomplete payload → Respond to Webhook (ack back to the
+     platform).
+   - *Why it's distinct:* every other ECM card assumes the store already has *something*
+     wired up (cart tracking, review flow, inventory sync). This is the pre-req step below
+     all of them — the first thing a brand-new store owner needs — and its "beginner,
+     5-minute setup, built-in nodes only" framing is a near-perfect **Rung 1 Template
+     Install** ($750, 14-day warranty): cheapest possible ECM on-ramp, cross-sell straight
+     into `ECM-01` (abandoned checkout) once the store has volume.
