@@ -75,3 +75,25 @@ Spreadsheet" patterns as possible retainer add-ons rather than standalone cards.
      `SMB-01` books the appointment, `SMB-02` chases the invoice after the fact; this fills
      the gap in between. Clean $1,500–$2,000 Rung 2 Simple sell for any service business
      still quoting by hand or spreadsheet.
+
+---
+
+### 2026-07-24 batch
+
+*(Numbered `SMB-B09` to skip past `SMB-B07`/`SMB-B08`, which only exist in still-open
+draft PRs #39/#40, not yet on `main`.)*
+
+9. **Contractor/Vendor License Verification for Lead Lists** — proposed `SMB-09` (new
+   candidate)
+   - *Inspired by:* "Verify US contractor licenses in lead lists with Apify" —
+     [n8n.io/workflows/17355](https://n8n.io/workflows/17355-verify-us-contractor-licenses-in-lead-lists-with-apify/).
+   - *Node design:* Manual/Webhook Trigger (lead list: company, state, optional license#)
+     → Switch (map state → correct Apify license-lookup actor, or flag unsupported states)
+     → Apify (run the state licensing-portal lookup) → Code (match returned record via
+     exact license# or normalized name) → Set (verdict: verified / expired / review /
+     not-found / unverifiable) → Filter (split verified-active from needs-review).
+   - *Why it's distinct:* nothing in `SMB-B01..B08` vets a third party before a small
+     business hands them work or a referral — this fills that gap for any local-service
+     SMB (contractors, property managers, referral networks) that subcontracts work and
+     needs a paper trail proving the sub was licensed. Direct cross-sell to `WHL` clients
+     too — wholesalers/investors vetting rehab contractors before a deal closes.

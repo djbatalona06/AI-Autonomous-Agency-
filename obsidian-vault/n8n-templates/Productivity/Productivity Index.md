@@ -16,3 +16,4 @@ tags: [n8n-brainstorm, index, vertical/prd]
 - [[2026-07-21-PRD-B06-Voice-Memo-Structured-Brief-Task-Capture|Voice Memo → Structured Brief & Task Capture]] 🆕 new-candidate
 - [[2026-07-22-PRD-B07-Notion-Workspace-Dedup-Audit-Bot|Notion Workspace Dedup & Audit-Log Bot]] 🆕 new-candidate
 - [[2026-07-23-PRD-B08-Notion-AI-Assistant-via-MCP-for-Task-Content-Management|Notion AI Assistant via MCP for Task & Content Management]] 🆕 new-candidate
+- [[2026-07-24-PRD-B09-n8n-Workflow-Backup-Sync-to-GitHub-Semantic-SHAs|n8n Workflow Backup & Sync to GitHub (Semantic SHAs)]] 🆕 new-candidate
