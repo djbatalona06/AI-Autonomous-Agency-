@@ -34,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
 
@@ -50,7 +50,7 @@ jobs:
         run: node scripts/n8n-workflow-scout.mjs
 
       - name: Open draft PR with today's brief
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "n8n Workflow Scout: daily brainstorming brief"
           branch: n8n-scout/daily-brief
