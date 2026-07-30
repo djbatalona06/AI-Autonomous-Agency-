@@ -72,6 +72,22 @@ inbox-to-CRM logging patterns.
 
 ---
 
+### 2026-07-23 batch
+
+7. **Real-Time Sales Pipeline Analytics & Stalled-Deal Alerts** — proposed `SAL-07` (new
+   candidate)
+   - *Inspired by:* "Real-time sales pipeline analytics with Bright Data, OpenAI, and
+     Google Sheets" —
+     [n8n.io/workflows/5974](https://n8n.io/workflows/5974-real-time-sales-pipeline-analytics-with-bright-data-openai-and-google-sheets/).
+   - *Node design:* Schedule Trigger → HTTP Request (CRM API — HubSpot/Salesforce/Pipedrive
+     pull) → OpenAI (anomaly detection: stalled deals, win-rate shifts) → Slack (real-time
+     alert to reps/managers) → Google Sheets (archive daily snapshot for trend analysis).
+   - *Why it's distinct:* none of `SAL-B01..B07` give an always-on view across the whole
+     pipeline — this is a dashboard-free retainer add-on ($500–$1,000/mo tier filler) for
+     any client already on `SAL-01`/`SAL-B01`.
+
+---
+
 ### 2026-07-24 batch
 
 *(Note: two more daily batches — 2026-07-22 and 2026-07-23 — exist as still-open draft PRs

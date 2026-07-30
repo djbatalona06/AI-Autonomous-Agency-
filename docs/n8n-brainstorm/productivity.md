@@ -68,6 +68,26 @@ orchestrator patterns (seen in n8n.io/workflows/4723) as a possible higher-tier 
 
 ---
 
+### 2026-07-23 batch
+
+7. **Notion AI Assistant via MCP for Task & Content Management** — proposed `PRD-07` (new
+   candidate)
+   - *Inspired by:* "Create a Notion AI assistant with Google Gemini for managing tasks &
+     content" —
+     [n8n.io/workflows/4857](https://n8n.io/workflows/4857-create-a-notion-ai-assistant-with-google-gemini-for-managing-tasks-and-content/).
+     Preview screenshot published by the template author:
+     ![Notion AI assistant workflow canvas](https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_06_10_at_15_11_56_44128748dc.png)
+   - *Node design:* Chat Trigger (chat UI, or Telegram/Slack front-end) → AI Agent
+     (Gemini/Claude) parses the request → Notion MCP Server (community node) creates/
+     retrieves/updates pages & databases → Switch (route by action type) → chat response
+     confirming the action.
+   - *Why it's distinct:* `PRD-B01..B06` all write *into* a tool on a trigger; this is the
+     first two-way, conversational surface — turns the client's own Notion workspace into
+     an agent instead of a target. Setup is a single MCP connection, which makes it cheap
+     retainer-tier work once built once.
+
+---
+
 ### 2026-07-24 batch
 
 *(Numbered `PRD-B09` to skip past `PRD-B07`/`PRD-B08`, which only exist in still-open
