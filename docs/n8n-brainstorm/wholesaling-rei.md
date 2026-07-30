@@ -67,3 +67,21 @@ Vertical code `WHL` (flagship ⭐). Cross-reference: `src/data/verticals.ts` →
    - *Why now:* wholesalers and small brokerages keep getting one generic form for very
      different lead types — a $1,500–$2,000 Rung 2 Simple sell as the on-ramp ahead of the
      full `WHL-01` nurture sequence.
+
+---
+
+### 2026-07-23 batch
+
+7. **SMS-Based AI Real Estate Lead Qualifier** — proposed `WHL-08` (new candidate)
+   - *Inspired by:* "Qualify real estate leads via SMS with GPT-4o, Twilio, and Google
+     Sheets" —
+     [n8n.io/workflows/6332](https://n8n.io/workflows/6332-qualify-real-estate-leads-via-sms-with-gpt-4o-twilio-and-google-sheets/).
+   - *Node design:* Webhook (website lead-capture form submitted) → Twilio SMS (instant
+     reply, opens AI conversation) → AI Agent/GPT-4o (asks budget/location/timeline
+     pre-qualifying questions) → Supabase/Postgres (store chat history keyed to phone
+     number) → Google Sheets (log qualified lead summary) → CRM/Slack (hand off to the
+     acquisitions rep).
+   - *Why it's distinct:* `WHL-B01` scores inbound property lists, `WHL-B05`/`B06` handle
+     open-house and intent-routed leads — none of them qualify a brand-new web lead by SMS
+     conversation in the first sixty seconds. Cheap on-ramp ahead of the `WHL-01` flagship
+     nurture, and it's a real, live n8n.io template (not a pattern match).

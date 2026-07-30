@@ -15,3 +15,4 @@ tags: [n8n-brainstorm, index, vertical/whl]
 - [[2026-07-19-WHL-B05-Open-House-Inbound-Call-7-Day-AI-Follow-Up|Open-House / Inbound-Call → 7-Day AI Follow-Up]] 🆕 new-candidate
 - [[2026-07-21-WHL-B06-Inbound-Lead-Auto-Router-by-Intent-Rent-Sell-Buy-AI-Personalization|Inbound Lead Auto-Router by Intent (Rent/Sell/Buy) + AI Personalization]] 🆕 new-candidate
 - [[2026-07-22-WHL-B07-Post-Closing-Testimonial-Reputation-Engine|Post-Closing Testimonial & Reputation Engine]] 🆕 new-candidate
+- [[2026-07-23-WHL-B08-SMS-Based-AI-Real-Estate-Lead-Qualifier|SMS-Based AI Real Estate Lead Qualifier]] 🆕 new-candidate

@@ -63,3 +63,19 @@ standalone Rung 1/2 card (it's ongoing monitoring, not a one-time build).
    - *Why flag it:* every current ECM card is trigger-driven automation behind the scenes;
      this is the first live, customer-facing AI surface — good anchor for a Rung 2 Medium
      build ($2,000–$3,500) with a retainer story (model/prompt tuning as ongoing work).
+
+---
+
+### 2026-07-23 batch
+
+8. **Auto-Segment Customers by Purchase Behavior** — proposed `ECM-08` (new candidate)
+   - *Inspired by:* "Segment retail customers by purchase behavior with CRM and Google
+     Sheets" —
+     [n8n.io/workflows/12870](https://n8n.io/workflows/12870-segment-retail-customers-by-purchase-behavior-with-crm-and-google-sheets/).
+   - *Node design:* Webhook (new order/customer-update event from Shopify/WooCommerce/CRM)
+     → Code (normalize order count, lifetime spend, last-order date, category) → Switch
+     (classify new / repeat / VIP / inactive) → CRM/email platform (sync segment tag) →
+     Google Sheets (log the segmentation event).
+   - *Why it's distinct:* nothing in `ECM-B01..B07` builds ongoing lifecycle segmentation —
+     this feeds targeted campaigns and pairs naturally with `ECM-B05`'s win-back sequence
+     (segment first, then trigger the right sequence per tier).

@@ -10,6 +10,8 @@ export type BrainstormVerticalCode = "SAL" | "ECM" | "WHL" | "PRD" | "SMB";
 export interface BrainstormSource {
   name: string;
   url?: string;
+  /** n8n.io template preview screenshot, when the source page publishes one */
+  previewImageUrl?: string;
 }
 
 export interface BrainstormEntry {
@@ -535,6 +537,104 @@ export const N8N_BRAINSTORM: BrainstormEntry[] = [
     ],
     summary: "No card yet — proposed SMB-06. Meets local-service customers on WhatsApp instead of a web form.",
     dateAdded: "2026-07-21",
+  },
+  {
+    id: "SAL-B08",
+    verticalCode: "SAL",
+    title: "Real-Time Sales Pipeline Analytics & Stalled-Deal Alerts",
+    newCandidate: true,
+    source: {
+      name: "Real-time sales pipeline analytics with Bright Data, OpenAI, and Google Sheets",
+      url: "https://n8n.io/workflows/5974-real-time-sales-pipeline-analytics-with-bright-data-openai-and-google-sheets/",
+    },
+    nodeDesign: [
+      "Schedule Trigger",
+      "HTTP Request — CRM API (HubSpot/Salesforce/Pipedrive) pull pipeline data",
+      "OpenAI — anomaly detection (stalled deals, win-rate shifts)",
+      "Slack — real-time alert to reps/managers",
+      "Google Sheets — archive daily snapshot for trend analysis",
+    ],
+    summary: "No card yet — proposed SAL-07. None of B01–B07 give an always-on view across the whole pipeline; a dashboard-free retainer add-on for clients already on SAL-01/B01.",
+    dateAdded: "2026-07-23",
+  },
+  {
+    id: "ECM-B08",
+    verticalCode: "ECM",
+    title: "Auto-Segment Customers by Purchase Behavior",
+    newCandidate: true,
+    source: {
+      name: "Segment retail customers by purchase behavior with CRM and Google Sheets",
+      url: "https://n8n.io/workflows/12870-segment-retail-customers-by-purchase-behavior-with-crm-and-google-sheets/",
+    },
+    nodeDesign: [
+      "Webhook — new order/customer-update event (Shopify/WooCommerce/CRM)",
+      "Code — normalize order count, lifetime spend, last-order date, category",
+      "Switch — classify new / repeat / VIP / inactive",
+      "CRM/email platform — sync segment tag",
+      "Google Sheets — log the segmentation event",
+    ],
+    summary: "No card yet — proposed ECM-08. Ongoing lifecycle segmentation feeding targeted campaigns — pairs naturally with ECM-B05's win-back sequence.",
+    dateAdded: "2026-07-23",
+  },
+  {
+    id: "WHL-B08",
+    verticalCode: "WHL",
+    title: "SMS-Based AI Real Estate Lead Qualifier",
+    newCandidate: true,
+    source: {
+      name: "Qualify real estate leads via SMS with GPT-4o, Twilio, and Google Sheets",
+      url: "https://n8n.io/workflows/6332-qualify-real-estate-leads-via-sms-with-gpt-4o-twilio-and-google-sheets/",
+    },
+    nodeDesign: [
+      "Webhook — website lead-capture form submitted",
+      "Twilio SMS — instant reply, opens AI conversation",
+      "AI Agent (GPT-4o) — asks budget/location/timeline pre-qualifying questions",
+      "Supabase/Postgres — store chat history keyed to phone number",
+      "Google Sheets — log qualified lead summary",
+      "CRM/Slack — hand off to the acquisitions rep",
+    ],
+    summary: "No card yet — proposed WHL-08. Instant SMS pre-qualification the moment a web lead lands, before any human touch — a cheap on-ramp ahead of the WHL-01 flagship nurture.",
+    dateAdded: "2026-07-23",
+  },
+  {
+    id: "PRD-B08",
+    verticalCode: "PRD",
+    title: "Notion AI Assistant via MCP for Task & Content Management",
+    newCandidate: true,
+    source: {
+      name: "Create a Notion AI assistant with Google Gemini for managing tasks & content",
+      url: "https://n8n.io/workflows/4857-create-a-notion-ai-assistant-with-google-gemini-for-managing-tasks-and-content/",
+      previewImageUrl: "https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Screenshot_2025_06_10_at_15_11_56_44128748dc.png",
+    },
+    nodeDesign: [
+      "Chat Trigger (chat UI, or Telegram/Slack front-end)",
+      "AI Agent (Gemini/Claude) — parses the request",
+      "Notion MCP Server (community node) — create/retrieve/update pages & databases",
+      "Switch — route by action type (create/search/update)",
+      "Chat response — confirm the action back to the user",
+    ],
+    summary: "No card yet — proposed PRD-07. Turns Notion into a conversational agent instead of a one-way write target; setup is a single MCP connection, retainer-friendly.",
+    dateAdded: "2026-07-23",
+  },
+  {
+    id: "SMB-B08",
+    verticalCode: "SMB",
+    title: "AI Request-to-Quote PDF Generator",
+    newCandidate: true,
+    source: {
+      name: "Automated request-to-quote with OpenAI, Google Sheets & CraftMyPDF",
+      url: "https://n8n.io/workflows/8239-automated-request-to-quote-with-openai-google-sheets-and-craftmypdf/",
+    },
+    nodeDesign: [
+      "Form Trigger — \"Request a Quote\" (requirements, budget, need-by date)",
+      "Google Sheets — load product/service catalog (SKU, price, stock, min qty)",
+      "OpenAI — select line items, build a strict JSON quote (respects stock/min qty, discount cap)",
+      "Code — compute totals, VAT, invoice number, due date",
+      "CraftMyPDF — render a branded PDF quote",
+      "Email (SMTP) — send the customer the quote automatically",
+    ],
+    summary: "No card yet — proposed SMB-07. The missing \"quote out the door instantly\" step ahead of SMB-01's booking flow — a clean $1,500–$2,000 Rung 2 Simple sell for any service business still quoting by hand.",
+    dateAdded: "2026-07-23",
   },
 ];
 

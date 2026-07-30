@@ -15,3 +15,4 @@ tags: [n8n-brainstorm, index, vertical/ecm]
 - [[2026-07-19-ECM-B05-AI-Win-Back-Reactivation-Sequence|AI Win-Back / Reactivation Sequence]]
 - [[2026-07-21-ECM-B06-AI-Customer-Support-Chatbot-with-Order-Memory|AI Customer Support Chatbot with Order Memory]] 🆕 new-candidate
 - [[2026-07-22-ECM-B07-AI-Seasonal-Product-Photo-Restyler|AI Seasonal Product Photo/Video Restyler]] 🆕 new-candidate
+- [[2026-07-23-ECM-B08-Auto-Segment-Customers-by-Purchase-Behavior|Auto-Segment Customers by Purchase Behavior]] 🆕 new-candidate
