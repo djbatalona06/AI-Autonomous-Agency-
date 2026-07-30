@@ -70,6 +70,51 @@ Vertical code `WHL` (flagship ⭐). Cross-reference: `src/data/verticals.ts` →
 
 ---
 
+### 2026-07-23 batch
+
+7. **SMS-Based AI Real Estate Lead Qualifier** — proposed `WHL-08` (new candidate)
+   - *Inspired by:* "Qualify real estate leads via SMS with GPT-4o, Twilio, and Google
+     Sheets" —
+     [n8n.io/workflows/6332](https://n8n.io/workflows/6332-qualify-real-estate-leads-via-sms-with-gpt-4o-twilio-and-google-sheets/).
+   - *Node design:* Webhook (website lead-capture form submitted) → Twilio SMS (instant
+     reply, opens AI conversation) → AI Agent/GPT-4o (asks budget/location/timeline
+     pre-qualifying questions) → Supabase/Postgres (store chat history keyed to phone
+     number) → Google Sheets (log qualified lead summary) → CRM/Slack (hand off to the
+     acquisitions rep).
+   - *Why it's distinct:* `WHL-B01` scores inbound property lists, `WHL-B05`/`B06` handle
+     open-house and intent-routed leads — none of them qualify a brand-new web lead by SMS
+     conversation in the first sixty seconds. Cheap on-ramp ahead of the `WHL-01` flagship
+     nurture, and it's a real, live n8n.io template (not a pattern match).
+
+---
+
+### 2026-07-24 batch
+
+*(Numbered `WHL-B09` to skip past `WHL-B07`/`WHL-B08`, which only exist in still-open
+draft PRs #39/#40, not yet on `main`.)*
+
+9. **Automated Off-Market Property Lead Generation (BatchData + CRM)** — proposed `WHL-09`
+   (new candidate)
+   - *Inspired by:* "Automated property lead generation with BatchData and CRM
+     integration" —
+     [n8n.io/workflows/3665](https://n8n.io/workflows/3665-automated-property-lead-generation-with-batchdata-and-crm-integration/).
+   - *Node design:* Schedule Trigger → HTTP Request (BatchData API property search on
+     saved criteria) → Code (diff against the previous scan to isolate new/changed
+     listings) → Filter (high-equity, absentee-owner, distressed signals) → HTTP Request
+     (pull full owner + property detail for qualified hits) → Gmail (formatted alert:
+     property details, equity %, Google Maps link) → Slack/Teams (team notification).
+   - *Why flag this one specially:* the `2026-07-20` scrape log explicitly noted "gallery
+     has no real-estate-specific templates at all" for this vertical and told the daily
+     agent to stop expecting direct hits. **That was wrong** — this is a real, live,
+     purpose-built real-estate template on n8n.io (property/owner data, equity filtering,
+     off-market deal alerts), not a pattern match from an adjacent category. Correcting the
+     coverage-gap note: `WHL` does have direct n8n.io hits; today's search just hadn't
+     surfaced one yet. Given `BatchData` overlaps the `WHL-B01` skip-trace pipeline's data
+     needs, this is a strong candidate to fold into `WHL-01`/`WHL-B01` as an alternate data
+     source rather than ship as a standalone card.
+
+---
+
 ### 2026-07-25 batch
 
 *(Note: `WHL-B07`/`WHL-B08`/`WHL-B09` exist only in still-open draft PRs #39/#40/#41 and

@@ -72,6 +72,44 @@ inbox-to-CRM logging patterns.
 
 ---
 
+### 2026-07-23 batch
+
+7. **Real-Time Sales Pipeline Analytics & Stalled-Deal Alerts** — proposed `SAL-07` (new
+   candidate)
+   - *Inspired by:* "Real-time sales pipeline analytics with Bright Data, OpenAI, and
+     Google Sheets" —
+     [n8n.io/workflows/5974](https://n8n.io/workflows/5974-real-time-sales-pipeline-analytics-with-bright-data-openai-and-google-sheets/).
+   - *Node design:* Schedule Trigger → HTTP Request (CRM API — HubSpot/Salesforce/Pipedrive
+     pull) → OpenAI (anomaly detection: stalled deals, win-rate shifts) → Slack (real-time
+     alert to reps/managers) → Google Sheets (archive daily snapshot for trend analysis).
+   - *Why it's distinct:* none of `SAL-B01..B07` give an always-on view across the whole
+     pipeline — this is a dashboard-free retainer add-on ($500–$1,000/mo tier filler) for
+     any client already on `SAL-01`/`SAL-B01`.
+
+---
+
+### 2026-07-24 batch
+
+*(Note: two more daily batches — 2026-07-22 and 2026-07-23 — exist as still-open draft PRs
+\#39 and \#40 and aren't in this file yet on `main`. This entry is numbered `SAL-B09` to
+avoid colliding with `SAL-B07`/`SAL-B08` once those merge.)*
+
+9. **Google-Maps Local-Business Enrichment → Territory Prospecting List** — proposed
+   `SAL-09` (new candidate)
+   - *Inspired by:* "Enrich Google Maps business and lead data with CoreClaw and Google
+     Sheets" —
+     [n8n.io/workflows/17362](https://n8n.io/workflows/17362-enrich-google-maps-business-and-lead-data-with-coreclaw-and-google-sheets/).
+   - *Node design:* Schedule Trigger (every 30 min) → Google Sheets (read unprocessed rows
+     from a "Query" tab: keyword + base location) → HTTP Request (start CoreClaw Google
+     Maps scrape+enrich job) → Wait/poll until the run succeeds → HTTP Request (fetch
+     results) → Split Out (per business) → Google Sheets (append business details tab +
+     enriched contact tab).
+   - *Why it's distinct:* `SAL-B01` enriches *inbound* form leads (Clearbit/Hunter); this
+     builds outbound prospecting lists from scratch by geography/keyword — a fit for SDR
+     teams and agencies doing territory-based cold outreach, not just lead-in enrichment.
+
+---
+
 ### 2026-07-25 batch
 
 *(Note: `SAL-B07`/`SAL-B08`/`SAL-B09` exist only in still-open draft PRs #39/#40/#41 and
