@@ -6,6 +6,16 @@ name: n8n Template Brainstorm Scrape
 # Required one-time setup: add an ANTHROPIC_API_KEY repository secret
 # (Settings -> Secrets and variables -> Actions) with billing enabled for
 # daily runs. Without it, both jobs below will fail at the Claude Code step.
+#
+# 2026-07-30: every scheduled run from 07-20 through 07-29 failed with
+# "Could not fetch an OIDC token... Unable to get ACTIONS_ID_TOKEN_REQUEST_URL
+# env variable" — claude-code-action falls back to minting its own GitHub App
+# token via OIDC when no github_token is supplied, and that exchange has been
+# failing here despite `id-token: write` being set. Passing github_token
+# explicitly (below) makes the action use GITHUB_TOKEN directly and skips the
+# OIDC exchange entirely. If runs still fail after this, the OIDC token
+# request itself is being blocked at the repo/org level (Settings -> Actions
+# -> General) and needs an admin to check there.
 on:
   schedule:
     - cron: "0 7 * * *"
@@ -30,6 +40,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
             You are running the daily n8n workflow brainstorm scrape for the Yawn Agency
             catalog in this repo (djbatalona06/AI-Autonomous-Agency-).
@@ -90,6 +101,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
             A prior step in this workflow just added new entries to
             `src/data/n8nBrainstorm.ts` (check `dateAdded` for today's date to find them —
