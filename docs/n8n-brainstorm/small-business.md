@@ -97,3 +97,27 @@ draft PRs #39/#40, not yet on `main`.)*
      SMB (contractors, property managers, referral networks) that subcontracts work and
      needs a paper trail proving the sub was licensed. Direct cross-sell to `WHL` clients
      too — wholesalers/investors vetting rehab contractors before a deal closes.
+
+---
+
+### 2026-07-25 batch
+
+*(Note: `SMB-B07`/`SMB-B08`/`SMB-B09` exist only in still-open draft PRs #39/#40/#41 and
+aren't on `main` yet. This entry is numbered `SMB-B10` to avoid colliding with any of them.)*
+
+7. **Insurance Quote Lead Routing** — *new candidate, no card yet (proposed slot number
+   TBD — depends which of `SMB-06`/`07`/`08`/`09` land first)*
+   - *Inspired by:* "Route insurance quote leads with OpenAI, Airtable, Sheets, Teams,
+     Slack and Twilio" —
+     [n8n.io/workflows/17075](https://n8n.io/workflows/17075-route-insurance-quote-leads-with-openai-airtable-sheets-teams-slack-and-twilio/).
+   - *Node design:* Webhook (quote-form submission) → Code (normalize payload) → Airtable
+     and/or Google Sheets lookup (dedupe vs. recent email/phone) → OpenAI (lead score,
+     priority, underwriting flags, missing-info, next steps) → Switch (hot/warm/cold) →
+     Microsoft Teams and/or Slack alert (hot/warm) → Twilio SMS to agent (hot only) →
+     Airtable/Sheets (log the quote + status).
+   - *Why it's distinct:* nothing in `SMB-01..06` targets insurance agencies specifically —
+     this is a "buyers choose their own stack" template (Teams *or* Slack, Airtable *or*
+     Sheets) that fits Yawn's local-service SMB buyer profile well: an independent insurance
+     agent losing quotes to slow follow-up is the same pain as `SMB-01`'s booking-confirmation
+     buyer, just in a regulated vertical with underwriting-flag nuance built into the AI
+     scoring step.

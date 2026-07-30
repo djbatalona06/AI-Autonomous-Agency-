@@ -107,3 +107,28 @@ avoid colliding with `SAL-B07`/`SAL-B08` once those merge.)*
    - *Why it's distinct:* `SAL-B01` enriches *inbound* form leads (Clearbit/Hunter); this
      builds outbound prospecting lists from scratch by geography/keyword — a fit for SDR
      teams and agencies doing territory-based cold outreach, not just lead-in enrichment.
+
+---
+
+### 2026-07-25 batch
+
+*(Note: `SAL-B07`/`SAL-B08`/`SAL-B09` exist only in still-open draft PRs #39/#40/#41 and
+aren't on `main` yet. This entry is numbered `SAL-B10` to avoid colliding with any of them.)*
+
+7. **Full Lead-to-Meeting AI Pipeline** — reinforces `SAL-01`/`SAL-02`/`SAL-03`
+   - *Inspired by:* "Run a full lead-to-meeting pipeline with Google Sheets, Gmail, Gemini
+     and OpenAI" —
+     [n8n.io/workflows/17383](https://n8n.io/workflows/17383-run-a-full-lead-to-meeting-pipeline-with-google-sheets-gmail-gemini-and-openai/)
+     (new on n8n.io within the last 24 hours, 4.6/5 across 27 reviews).
+   - *Node design:* Webhook (new lead) → HTTP Request (Apollo org-enrich) → Gemini (score +
+     tier: hot/warm/poor_fit) → Google Sheets (leads CRM tab) → Switch by tier → Gemini
+     (personalized first-touch) → Gmail + UltraMsg (email/SMS send) → Webhook (inbound
+     reply) → OpenAI (classify intent: book_meeting/objection/not_interested) → branch to
+     booking-link email / AI objection-handling reply / closed-lost → Schedule Trigger
+     (non-responder follow-ups, pre-call Slack brief, weekly conversion report, no-show
+     re-engagement).
+   - *Why it's worth logging even though it overlaps existing cards:* it's the single most
+     complete reference build seen yet for the full `SAL-01→SAL-02→SAL-03` chain in one
+     workflow — the reply-intent classifier (book/object/decline) and the no-show
+     re-engagement branch are both new patterns not yet reflected in any `SAL-0X` card.
+     Worth pulling apart into standalone add-ons rather than one $3k+ monolith sale.

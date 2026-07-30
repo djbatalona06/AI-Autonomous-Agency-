@@ -102,3 +102,28 @@ draft PRs #39/#40, not yet on `main`.)*
      stock, pricing, win-back, support). This is the first card that watches the *outside*
      world for counterfeiters and deepfake ad scams running under the client's brand —
      good Rung 2 Medium retainer sell for any DTC brand that's been hit by knockoffs.
+
+---
+
+### 2026-07-25 batch
+
+*(Note: `ECM-B07`/`ECM-B08`/`ECM-B09` exist only in still-open draft PRs #39/#40/#41 and
+aren't on `main` yet. This entry is numbered `ECM-B10` to avoid colliding with any of them.)*
+
+7. **Order Confirmation + Team Notification Starter** — *new candidate, no card yet
+   (proposed slot number TBD — depends which of `ECM-06`/`07`/`08`/`09` land first)*
+   - *Inspired by:* "Automate e-commerce order processing with email notifications &
+     webhooks" —
+     [n8n.io/workflows/7518](https://n8n.io/workflows/7518-automate-e-commerce-order-processing-with-email-notifications-and-webhooks/)
+     (4.6/5 across 27 reviews, explicitly built for beginners).
+   - *Node design:* Webhook (new-order event from Shopify/WooCommerce/BigCommerce/Etsy) →
+     Set (store config: name, contact, branding) → validation (required fields present) →
+     Gmail (branded customer confirmation) → Gmail (internal team/fulfillment alert) →
+     error-handling branch on incomplete payload → Respond to Webhook (ack back to the
+     platform).
+   - *Why it's distinct:* every other ECM card assumes the store already has *something*
+     wired up (cart tracking, review flow, inventory sync). This is the pre-req step below
+     all of them — the first thing a brand-new store owner needs — and its "beginner,
+     5-minute setup, built-in nodes only" framing is a near-perfect **Rung 1 Template
+     Install** ($750, 14-day warranty): cheapest possible ECM on-ramp, cross-sell straight
+     into `ECM-01` (abandoned checkout) once the store has volume.

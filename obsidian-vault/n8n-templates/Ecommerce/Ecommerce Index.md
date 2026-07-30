@@ -17,3 +17,4 @@ tags: [n8n-brainstorm, index, vertical/ecm]
 - [[2026-07-22-ECM-B07-AI-Seasonal-Product-Photo-Restyler|AI Seasonal Product Photo/Video Restyler]] 🆕 new-candidate
 - [[2026-07-23-ECM-B08-Auto-Segment-Customers-by-Purchase-Behavior|Auto-Segment Customers by Purchase Behavior]] 🆕 new-candidate
 - [[2026-07-24-ECM-B09-Brand-Impersonation-Deepfake-Threat-Hunter|Brand Impersonation & Deepfake Threat Hunter]] 🆕 new-candidate
+- [[2026-07-25-ECM-B10-Order-Confirmation-Team-Notification-Starter|Order Confirmation + Team Notification Starter]] 🆕 new-candidate

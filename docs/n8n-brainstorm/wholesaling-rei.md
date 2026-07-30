@@ -112,3 +112,28 @@ draft PRs #39/#40, not yet on `main`.)*
      surfaced one yet. Given `BatchData` overlaps the `WHL-B01` skip-trace pipeline's data
      needs, this is a strong candidate to fold into `WHL-01`/`WHL-B01` as an alternate data
      source rather than ship as a standalone card.
+
+---
+
+### 2026-07-25 batch
+
+*(Note: `WHL-B07`/`WHL-B08`/`WHL-B09` exist only in still-open draft PRs #39/#40/#41 and
+aren't on `main` yet. This entry is numbered `WHL-B10` to avoid colliding with any of them.)*
+
+7. **Property Lead Scoring Engine (BatchData)** — reinforces `WHL-03`
+   - *Inspired by:* "Automated real estate property lead scoring with BatchData" —
+     [n8n.io/workflows/3664](https://n8n.io/workflows/3664-automated-real-estate-property-lead-scoring-with-batchdata/)
+     — the companion template to the lead-*generation* build (3665) already logged in a
+     prior batch; same creator, adjacent template IDs.
+   - *Node design:* CRM Webhook (new lead + address) → HTTP Request (BatchData property
+     lookup) → Code (scoring algorithm: property value, square footage, property age,
+     investment/non-owner-occupied status, lot size → weighted 0–100 score) → Switch
+     (classify high-value / qualified / potential / unqualified) → CRM update (enriched
+     property data + score) → IF (high-value) → immediate task creation → Slack notify.
+   - *Why it's worth logging separately from `WHL-B01`:* `WHL-B01` is the intake + skip-trace
+     pipeline; this is purely the *scoring algorithm* half, spelled out in enough detail
+     (exact weighting factors) to drop straight into `WHL-03`'s build instead of writing one
+     from scratch. Also targets a wider buyer list than wholesalers alone — mortgage
+     lenders, home-service contractors, and insurance agents qualifying by property
+     characteristics — worth keeping in mind if Yawn ever sells `WHL-03` outside the core
+     wholesaling niche.

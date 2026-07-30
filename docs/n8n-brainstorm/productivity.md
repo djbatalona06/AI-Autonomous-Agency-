@@ -108,3 +108,25 @@ draft PRs #39/#40, not yet on `main`.)*
      it. This template turns that into an automatic nightly GitHub backup — a candidate to
      run against Yawn's own delivery instance first, then resell as a "workflow version
      control" retainer add-on to clients who host multiple workflows.
+
+---
+
+### 2026-07-25 batch
+
+*(Note: `PRD-B07`/`PRD-B08`/`PRD-B09` exist only in still-open draft PRs #39/#40/#41 and
+aren't on `main` yet. This entry is numbered `PRD-B10` to avoid colliding with any of them.)*
+
+7. **Cost-Optimized Email Triage (Groq/Llama 3.3 variant)** — hardening idea for `PRD-01`
+   - *Inspired by:* "Label Gmail emails by priority with Groq Llama 3.3" —
+     [n8n.io/workflows/17365](https://n8n.io/workflows/17365-label-gmail-emails-by-priority-with-groq-llama-33/)
+     (published 2 days ago).
+   - *Node design:* Gmail Trigger (poll every minute) → HTTP Request (Groq OpenAI-compatible
+     chat completions, Llama 3.3 70B) → Code (parse JSON category, fall back to "Other" on
+     parse failure) → Switch (Action Required / Promotions / Other) → Gmail (apply matching
+     label).
+   - *Why it's worth noting rather than a new card:* `PRD-01` already covers AI email
+     triage end-to-end (draft replies included) — this is not a new build, it's a **cheaper
+     model swap**: Groq's free tier (no credit card) vs. OpenAI's metered API for the
+     classification-only step. Worth keeping as an alternate-stack option for thin-margin
+     Rung 1 clients where API cost eats into the $750–$1,000 price band, or as a fallback
+     when a client is rate-limited on OpenAI.
