@@ -137,3 +137,24 @@ aren't on `main` yet. This entry is numbered `WHL-B10` to avoid colliding with a
      lenders, home-service contractors, and insurance agents qualifying by property
      characteristics — worth keeping in mind if Yawn ever sells `WHL-03` outside the core
      wholesaling niche.
+
+---
+
+### 2026-07-31 batch
+
+*(Note: automated `n8n-brainstorm-scrape.yml` has failed every scheduled run since
+2026-07-20 — see `n8n-workflows/_inbox/2026-07-31-scrape-log.md` for the diagnosis. This
+batch also closes the 07-26→07-30 gap where no manual catch-up ran.)*
+
+11. **Inbound Buyer Chatbot — AI Property Match + Auto-Scheduling** — new candidate, no
+    card yet
+    - *Inspired by:* "Real estate chatbot with AI property matching and automated calendar
+      scheduling" —
+      [n8n.io/workflows/7250](https://n8n.io/workflows/7250-real-estate-chatbot-with-ai-property-matching-and-automated-calendar-scheduling/).
+    - *Node design:* Chat/Webhook Trigger (inbound buyer inquiry) → AI Agent (parse
+      budget/beds/location/investment criteria) → HTTP Request (MLS/inventory query) → Code
+      (match-score properties) → AI Agent (compose match summary) → Google Calendar (check
+      availability) → auto-book showing → CRM (log buyer + matches + booking).
+    - *Why it's distinct:* every existing `WHL-0X`/`WHL-BXX` card is seller-side/outbound
+      (skip-trace, dispo, off-market gen, scoring); this is the first inbound buyer-facing
+      pattern — a second product line alongside the core wholesaler pipeline.

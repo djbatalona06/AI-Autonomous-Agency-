@@ -132,3 +132,25 @@ aren't on `main` yet. This entry is numbered `SAL-B10` to avoid colliding with a
      workflow — the reply-intent classifier (book/object/decline) and the no-show
      re-engagement branch are both new patterns not yet reflected in any `SAL-0X` card.
      Worth pulling apart into standalone add-ons rather than one $3k+ monolith sale.
+
+---
+
+### 2026-07-31 batch
+
+*(Note: automated `n8n-brainstorm-scrape.yml` has failed every scheduled run since
+2026-07-20 — Anthropic account credit balance too low — and no manual catch-up ran between
+07-26 and 07-30, so this batch also closes that 6-day gap. See
+`n8n-workflows/_inbox/2026-07-31-scrape-log.md` for the full diagnosis.)*
+
+11. **Inbound Multi-Channel AI Sales Agent with RAG + Booking** — new candidate, no card yet
+    - *Inspired by:* "Multi-platform AI sales agent with RAG, CRM logging & appointment
+      booking" —
+      [n8n.io/workflows/4508](https://n8n.io/workflows/4508-multi-platform-ai-sales-agent-with-rag-crm-logging-and-appointment-booking/).
+    - *Node design:* Webhook (Website Chat/WhatsApp/Instagram/Facebook) → Switch (normalize
+      channel payload) → Vector Store lookup (product/pricing docs) → AI Agent
+      (RAG-grounded answer + booking-intent detection) → CRM upsert + log conversation → IF
+      (booking intent) → Google Calendar/Cal.com create booking → reply on originating
+      channel.
+    - *Why it's distinct:* every existing `SAL-0X`/`SAL-BXX` card is outbound (enrich,
+      sequence, alert); this is the first always-on *inbound* agent, and it feeds directly
+      into `SAL-03`'s call-prep card once a lead books.

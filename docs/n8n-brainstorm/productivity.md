@@ -130,3 +130,23 @@ aren't on `main` yet. This entry is numbered `PRD-B10` to avoid colliding with a
      classification-only step. Worth keeping as an alternate-stack option for thin-margin
      Rung 1 clients where API cost eats into the $750–$1,000 price band, or as a fallback
      when a client is rate-limited on OpenAI.
+
+---
+
+### 2026-07-31 batch
+
+*(Note: automated `n8n-brainstorm-scrape.yml` has failed every scheduled run since
+2026-07-20 — see `n8n-workflows/_inbox/2026-07-31-scrape-log.md` for the diagnosis. This
+batch also closes the 07-26→07-30 gap where no manual catch-up ran.)*
+
+11. **Pre-Meeting CRM Research + Daily Agenda Briefing** — reinforces `PRD-02`
+    - *Inspired by:* "AI-powered meeting research & daily agenda with Google Calendar, Attio
+      CRM, and Slack" —
+      [n8n.io/workflows/7968](https://n8n.io/workflows/7968-ai-powered-meeting-research-and-daily-agenda-with-google-calendar-attio-crm-and-slack/).
+    - *Node design:* Schedule Trigger (early morning) → Google Calendar (today's meetings) →
+      Loop Over Items → HTTP Request (Attio CRM attendee/deal history) → AI Agent
+      (synthesize talking points) → Aggregate → Slack (post daily agenda + per-meeting
+      brief).
+    - *Why it's distinct from `PRD-B02`:* that card runs *after* a meeting (transcript →
+      action items); this runs *before*, grounded in live CRM history instead of a
+      transcript.

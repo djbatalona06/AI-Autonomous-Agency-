@@ -18,3 +18,4 @@ tags: [n8n-brainstorm, index, vertical/whl]
 - [[2026-07-23-WHL-B08-SMS-Based-AI-Real-Estate-Lead-Qualifier|SMS-Based AI Real Estate Lead Qualifier]] 🆕 new-candidate
 - [[2026-07-24-WHL-B09-Automated-Off-Market-Property-Lead-Generation-BatchData-CRM|Automated Off-Market Property Lead Generation (BatchData + CRM)]] 🆕 new-candidate
 - [[2026-07-25-WHL-B10-Property-Lead-Scoring-Engine-BatchData|Property Lead Scoring Engine (BatchData)]]
+- [[2026-07-31-WHL-B11-Inbound-Buyer-Chatbot-AI-Property-Match-Auto-Scheduling|Inbound Buyer Chatbot — AI Property Match + Auto-Scheduling]] 🆕 new-candidate
