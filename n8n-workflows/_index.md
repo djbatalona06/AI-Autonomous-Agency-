@@ -30,8 +30,13 @@ Daily-refreshed map of the automation agency's template pipeline, sourced from [
 
 | Vertical | Designs seeded | Last scrape |
 |---|---|---|
-| Sales | 7 | 2026-07-22 |
-| Ecommerce | 7 | 2026-07-22 |
-| Wholesaling / REI | 7 | 2026-07-22 |
-| Productivity | 7 | 2026-07-22 |
-| Small Business | 7 | 2026-07-22 |
+| Sales | 11 | 2026-07-31 |
+| Ecommerce | 11 | 2026-07-31 |
+| Wholesaling / REI | 11 | 2026-07-31 |
+| Productivity | 11 | 2026-07-31 |
+| Small Business | 11 | 2026-07-31 |
+
+**Automation health:** both scheduled Actions (`n8n-workflow-scout.yml`,
+`n8n-brainstorm-scrape.yml`) have failed every run since 2026-07-20 — Anthropic account
+credit balance too low. See `_inbox/2026-07-31-scrape-log.md`. Fix the billing issue to
+resume unattended runs.

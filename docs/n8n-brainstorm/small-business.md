@@ -121,3 +121,23 @@ aren't on `main` yet. This entry is numbered `SMB-B10` to avoid colliding with a
      agent losing quotes to slow follow-up is the same pain as `SMB-01`'s booking-confirmation
      buyer, just in a regulated vertical with underwriting-flag nuance built into the AI
      scoring step.
+
+---
+
+### 2026-07-31 batch
+
+*(Note: automated `n8n-brainstorm-scrape.yml` has failed every scheduled run since
+2026-07-20 — see `n8n-workflows/_inbox/2026-07-31-scrape-log.md` for the diagnosis. This
+batch also closes the 07-26→07-30 gap where no manual catch-up ran.)*
+
+11. **RAG-Grounded Customer Support Knowledge-Base Agent** — reinforces `SMB-06`
+    - *Inspired by:* "Smart Customer Support System with GPT-4o, Gmail, Slack & Drive
+      Knowledge Base" —
+      [n8n.io/workflows/4543](https://n8n.io/workflows/4543-smart-customer-support-system-with-gpt-4o-gmail-slack-and-drive-knowledge-base/).
+    - *Node design:* Gmail Trigger (poll every minute) → Google Drive (sync support docs to
+      a vector store) → AI Agent (GPT-4o, RAG — classify + draft grounded reply) → Switch
+      (billing/support/spam/urgent) → Gmail (send or draft) → Slack (escalate urgent/low
+      confidence to a human).
+    - *Why it's distinct from `SMB-B06`:* that card is a simple WhatsApp
+      classify-and-template autoresponder; this grounds every reply in the business's actual
+      docs instead of a static template, escalating only what the docs can't answer.

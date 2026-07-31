@@ -127,3 +127,23 @@ aren't on `main` yet. This entry is numbered `ECM-B10` to avoid colliding with a
      5-minute setup, built-in nodes only" framing is a near-perfect **Rung 1 Template
      Install** ($750, 14-day warranty): cheapest possible ECM on-ramp, cross-sell straight
      into `ECM-01` (abandoned checkout) once the store has volume.
+
+---
+
+### 2026-07-31 batch
+
+*(Note: automated `n8n-brainstorm-scrape.yml` has failed every scheduled run since
+2026-07-20 — see `n8n-workflows/_inbox/2026-07-31-scrape-log.md` for the diagnosis. This
+batch also closes the 07-26→07-30 gap where no manual catch-up ran.)*
+
+11. **Multi-Channel + Ad Retargeting Abandoned Cart Recovery** — reinforces `ECM-01`
+    - *Inspired by:* "Recover Shopify abandoned carts with email, SMS, WhatsApp & Facebook
+      retargeting" —
+      [n8n.io/workflows/11805](https://n8n.io/workflows/11805-recover-shopify-abandoned-carts-with-email-sms-whatsapp-and-facebook-retargeting/).
+    - *Node design:* Shopify Webhook (checkout abandoned) → Wait (1hr/24hr/72hr) → IF
+      (purchased?) → Switch (touch #) → Email + Twilio SMS + WhatsApp (touches 1–2) → HTTP
+      Request (Meta Custom Audiences API — sync abandoner into a Facebook retargeting
+      audience, touch 3) → Google Sheets (log recovery + attributed revenue).
+    - *Why it's distinct:* no existing ECM card syncs abandoners into paid-media
+      retargeting — this is a pure upsell add-on for any `ECM-01` client already running
+      Meta ads.
