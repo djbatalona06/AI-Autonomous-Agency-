@@ -2,6 +2,11 @@
 -- 0003_roles_least_privilege.sql
 -- Yawn AI Agency — least-privilege database roles & grants
 -- -----------------------------------------------------------------------------
+-- ⚠️ SUPERSEDED alongside 0002 — see that file's header. The `yawn_app` role
+-- and GUC identity model below are unused: the app authenticates with Supabase
+-- Auth and reaches Postgres as `authenticated` through PostgREST, carrying each
+-- user's own JWT. Kept for history — do not extend.
+-- -----------------------------------------------------------------------------
 -- Principle: default-deny. We REVOKE everything PUBLIC gets implicitly, then
 -- grant the application role ONLY the table-level privileges it actually uses.
 -- The app role can never run DDL, cannot touch the RESTRICTED tables, and is

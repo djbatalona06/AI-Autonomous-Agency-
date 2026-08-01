@@ -53,19 +53,69 @@ async function scrapeWithFirecrawl(url: string): Promise<ScrapeResult> {
   };
 }
 
+/** Redirect hops to follow before giving up. */
+const MAX_REDIRECTS = 5;
+/** Hard cap on how much of a response body we read into memory. */
+const MAX_BODY_BYTES = 1_000_000;
+
 async function scrapeWithFetch(url: string): Promise<ScrapeResult> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 12_000);
   try {
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: { "user-agent": "Mozilla/5.0 (compatible; YawnBot/1.0)" },
-    });
-    const html = await res.text();
-    return { title: extractTitle(html) ?? url, text: htmlToText(html) };
+    // Follow redirects manually: `assertPublicUrl` only vetted the URL the user
+    // supplied, and a public URL is free to 302 at an internal host or the
+    // cloud-metadata endpoint. Every hop is re-validated before we follow it.
+    let current = url;
+    for (let hop = 0; ; hop++) {
+      const res = await fetch(current, {
+        signal: controller.signal,
+        redirect: "manual",
+        headers: { "user-agent": "Mozilla/5.0 (compatible; YawnBot/1.0)" },
+      });
+
+      const location = res.status >= 300 && res.status < 400 ? res.headers.get("location") : null;
+      if (!location) {
+        const html = await readCapped(res);
+        return { title: extractTitle(html) ?? url, text: htmlToText(html) };
+      }
+
+      if (hop >= MAX_REDIRECTS) {
+        throw new SsrfBlockedError("Too many redirects.");
+      }
+      // `Location` may be relative — resolve it against the URL we just fetched.
+      const next = new URL(location, current).toString();
+      await assertPublicUrl(next);
+      current = next;
+    }
   } finally {
     clearTimeout(timeout);
   }
+}
+
+/** Reads at most MAX_BODY_BYTES of the response body as UTF-8 text. */
+async function readCapped(res: Response): Promise<string> {
+  if (!res.body) return "";
+  const decoder = new TextDecoder("utf-8");
+  const reader = res.body.getReader();
+  let read = 0;
+  let out = "";
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+      const remaining = MAX_BODY_BYTES - read;
+      if (value.byteLength >= remaining) {
+        out += decoder.decode(value.subarray(0, remaining));
+        break;
+      }
+      read += value.byteLength;
+      out += decoder.decode(value, { stream: true });
+    }
+  } finally {
+    await reader.cancel().catch(() => {});
+  }
+  return out;
 }
 
 function extractTitle(html: string): string | null {

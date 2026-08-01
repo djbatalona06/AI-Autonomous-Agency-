@@ -2,6 +2,15 @@
 -- 0002_row_level_security.sql
 -- Yawn AI Agency — Row-Level Security (deny-by-default + per-owner policies)
 -- -----------------------------------------------------------------------------
+-- ⚠️ SUPERSEDED. This file (and 0003) build RLS around `app.current_user_id`
+-- GUCs set by the backend. The app moved to Supabase Auth and no longer sets
+-- those GUCs, so these policies deny everything and nothing depends on them.
+-- The live model is `auth.uid()`-based and lives in:
+--     20260703120000_auth_and_rate_limit.sql   (profiles, login lockout)
+--     20260703120100_project_data.sql          (image_generations, web_scrapes)
+-- Kept for history — do not extend. Retire once the GUC tables are confirmed
+-- absent from every environment.
+-- -----------------------------------------------------------------------------
 -- Defense in depth: even if the application authorization layer (tRPC
 -- protectedProcedure) is bypassed, the database itself refuses to return or
 -- mutate rows that don't belong to the requesting user.

@@ -1,7 +1,5 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { COOKIE_NAME } from "../shared/const";
-import { sessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./trpc";
 import {
@@ -19,10 +17,10 @@ export const appRouter = router({
 
   auth: router({
     me: publicProcedure.query(({ ctx }) => ctx.user),
-    logout: publicProcedure.mutation(({ ctx }) => {
-      ctx.res.clearCookie(COOKIE_NAME, { ...sessionCookieOptions, maxAge: undefined });
-      return { success: true } as const;
-    }),
+    // Sign-out is entirely client-side (`supabase.auth.signOut()` revokes the
+    // refresh token and clears local storage). There is no server-side session
+    // to tear down; this stays only so existing callers keep working.
+    logout: publicProcedure.mutation(() => ({ success: true }) as const),
   }),
 
   // ── AI Image Studio ──
@@ -33,14 +31,21 @@ export const appRouter = router({
         const { url: imageUrl } = await generateImage({ prompt: input.prompt });
         if (!imageUrl) throw new Error("No image returned from generation");
 
-        const row = await saveImageGeneration(ctx.user.id, input.prompt, imageUrl, imageUrl, {
-          generatedAt: new Date().toISOString(),
-        });
+        const row = await saveImageGeneration(
+          ctx.accessToken,
+          ctx.user.id,
+          input.prompt,
+          imageUrl,
+          imageUrl,
+          { generatedAt: new Date().toISOString() },
+        );
         return { id: row.id, imageUrl, prompt: input.prompt, createdAt: row.createdAt, success: true };
       }),
     getHistory: protectedProcedure
       .input(z.object({ limit: z.number().min(1).max(100).default(20) }))
-      .query(({ input, ctx }) => getImageGenerationsByUserId(ctx.user.id, input.limit)),
+      .query(({ input, ctx }) =>
+        getImageGenerationsByUserId(ctx.accessToken, ctx.user.id, input.limit),
+      ),
   }),
 
   // ── Web Crawler ──
@@ -114,6 +119,7 @@ export const appRouter = router({
         ].join("\n");
 
         const row = await saveWebScrape(
+          ctx.accessToken,
           ctx.user.id,
           input.url,
           rawContent,
@@ -134,7 +140,7 @@ export const appRouter = router({
       }),
     getHistory: protectedProcedure
       .input(z.object({ limit: z.number().min(1).max(100).default(20) }))
-      .query(({ input, ctx }) => getWebScrapesByUserId(ctx.user.id, input.limit)),
+      .query(({ input, ctx }) => getWebScrapesByUserId(ctx.accessToken, ctx.user.id, input.limit)),
   }),
 
   // ── Project history (combined) ──
@@ -143,8 +149,8 @@ export const appRouter = router({
       .input(z.object({ limit: z.number().min(1).max(100).default(50) }))
       .query(async ({ input, ctx }) => {
         const [images, scrapes] = await Promise.all([
-          getImageGenerationsByUserId(ctx.user.id, input.limit),
-          getWebScrapesByUserId(ctx.user.id, input.limit),
+          getImageGenerationsByUserId(ctx.accessToken, ctx.user.id, input.limit),
+          getWebScrapesByUserId(ctx.accessToken, ctx.user.id, input.limit),
         ]);
         return { images, scrapes, total: images.length + scrapes.length };
       }),

@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
 
       - name: Scrape n8n.io and update the brainstorm backlog
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@c96dd0a84e0232ab86947fca5fe34f1caae8792f # v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
@@ -87,7 +87,7 @@ jobs:
           fetch-depth: 0
 
       - name: File today's entries into the Obsidian vault
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@c96dd0a84e0232ab86947fca5fe34f1caae8792f # v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
