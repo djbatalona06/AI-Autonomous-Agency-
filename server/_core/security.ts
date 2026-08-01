@@ -21,6 +21,10 @@ export function securityHeaders(): RequestHandler {
   return (_req: Request, res: Response, next: NextFunction) => {
     // A JSON API never returns HTML, so lock the CSP all the way down.
     res.setHeader("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'");
+    // Responses are per-user and authorized by a bearer token. Without this the
+    // platform's default (`public, max-age=0, must-revalidate`) marks them
+    // cacheable by shared caches, which must never hold one user's data.
+    res.setHeader("Cache-Control", "no-store");
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -138,14 +142,38 @@ export function rateLimit(opts: {
   };
 }
 
-/** Best-effort client IP: first hop of `x-forwarded-for`, else socket address. */
+/**
+ * Client IP for rate-limit keying, chosen so a caller cannot pick their own key.
+ *
+ * `x-forwarded-for` is deliberately NOT consulted. It is append-only and
+ * client-writable: a request can arrive with a forged value already in it, and
+ * a proxy only appends. Reading the first hop hands the attacker the bucket key
+ * outright — rotate it per request and the limit never fires. Reading the last
+ * hop is only correct when a trusted proxy is guaranteed to be in front, which
+ * we cannot know from here; run bare, the last hop is attacker-controlled too.
+ * (Express's `req.ip` under `trust proxy` reads the *first* hop, so it is out
+ * for the same reason.)
+ *
+ * Instead, in order:
+ *   1. `x-vercel-forwarded-for` — set by Vercel's edge and stripped from client
+ *      input, so it cannot be forged in production.
+ *   2. `x-real-ip` — set by convention by a reverse proxy, and overwritten
+ *      rather than appended. Set this if you self-host behind nginx/Caddy.
+ *   3. the socket address — correct when nothing is in front.
+ */
 function clientIp(req: Request): string {
-  const fwd = req.headers["x-forwarded-for"];
-  if (typeof fwd === "string" && fwd.length > 0) {
-    return fwd.split(",")[0].trim();
-  }
-  if (Array.isArray(fwd) && fwd.length > 0) {
-    return fwd[0].trim();
-  }
-  return req.ip ?? req.socket.remoteAddress ?? "unknown";
+  const single = (name: string): string | null => {
+    const v = req.headers[name];
+    const s = Array.isArray(v) ? v[0] : v;
+    return s && s.trim() ? s.trim() : null;
+  };
+
+  // Vercel sends a single address, but take the last entry defensively.
+  const vercel = single("x-vercel-forwarded-for");
+  if (vercel) return vercel.split(",").pop()!.trim();
+
+  const real = single("x-real-ip");
+  if (real) return real;
+
+  return req.socket.remoteAddress ?? "unknown";
 }

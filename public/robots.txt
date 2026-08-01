@@ -19,4 +19,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://yawn.ai/sitemap.xml
+Sitemap: https://ai-autonomous-agency.vercel.app/sitemap.xml
