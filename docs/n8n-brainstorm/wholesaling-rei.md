@@ -137,3 +137,28 @@ aren't on `main` yet. This entry is numbered `WHL-B10` to avoid colliding with a
      lenders, home-service contractors, and insurance agents qualifying by property
      characteristics — worth keeping in mind if Yawn ever sells `WHL-03` outside the core
      wholesaling niche.
+
+---
+
+### 2026-08-02 batch
+
+*(Note: `WHL-B11` exists only in still-open draft PR #50 — an inbound buyer chatbot
+sourced from the same template this run also turned up
+([n8n.io/workflows/7250](https://n8n.io/workflows/7250-real-estate-chatbot-with-ai-property-matching-and-automated-calendar-scheduling/)).
+Not re-logged here to avoid a duplicate once #50 merges. This entry is numbered `WHL-B12`
+and sourced from a different live template to avoid colliding with #50.)*
+
+8. **AI Voice Ops Agent — Seller Correspondence + Buyer Negotiation Scheduling** — *new
+   candidate, no card yet*
+   - *Inspired by:* "AI real estate agent: end-to-end ops automation (web, data, voice)" —
+     [n8n.io/workflows/4368](https://n8n.io/workflows/4368-ai-real-estate-agent-end-to-end-ops-automation-web-data-voice/).
+   - *Node design:* Webhook (inbound seller/buyer call or message) → AI Agent
+     (Claude/voice — classify intent: seller inquiry / buyer negotiation / scheduling) →
+     Switch → [seller branch: AI drafts correspondence, logs to CRM] / [buyer branch: AI
+     prepares counter-offer talking points, proposes times] → Google Calendar (book
+     confirmed slot) → CRM (log outcome) → Slack (deal-desk notify on any offer/counter).
+   - *Why it's distinct:* `WHL-01`/`WHL-B01` is instant multi-channel follow-up; `WHL-B11`
+     (pending) is inbound property-match + scheduling. This is the first card handling live
+     negotiation talking points and dual seller+buyer correspondence via voice, not just
+     text follow-up or property matching — Complex tier ($3,500–$5,000): multi-path
+     orchestration, AI agent, CRM + calendar integrations.

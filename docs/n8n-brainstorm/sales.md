@@ -132,3 +132,26 @@ aren't on `main` yet. This entry is numbered `SAL-B10` to avoid colliding with a
      workflow — the reply-intent classifier (book/object/decline) and the no-show
      re-engagement branch are both new patterns not yet reflected in any `SAL-0X` card.
      Worth pulling apart into standalone add-ons rather than one $3k+ monolith sale.
+
+---
+
+### 2026-08-02 batch
+
+*(Note: `SAL-B11` exists only in still-open draft PR #50 and isn't on `main` yet. This
+entry is numbered `SAL-B12` to avoid colliding with it. GitHub Actions health check this
+run: `n8n-workflow-scout.yml` and `n8n-brainstorm-scrape.yml` are still failing every
+scheduled fire — 13+ days running now, unchanged since PR #49/#50 flagged it. Root cause
+unchanged: `ANTHROPIC_API_KEY` credit balance. n8n.io/workflows still 403s a direct fetch
+from this environment too — see `n8n-workflows/_inbox/2026-08-02-scrape-log.md`.)*
+
+8. **AI Web Researcher for Pre-Outreach Personalization** — *new candidate, no card yet*
+   - *Inspired by:* "AI web researcher for sales" —
+     [n8n.io/workflows/2324](https://n8n.io/workflows/2324-ai-web-researcher-for-sales/).
+   - *Node design:* Manual/Webhook Trigger (prospect name + company) → HTTP Request/Web
+     Search tool (company site, recent news, LinkedIn) → AI Agent (Claude — synthesize a
+     research brief: recent news, pain points, tech-stack signals) → Google Sheets (write
+     brief) → Gmail (draft a personalized opener from the brief) → Slack (rep review ping).
+   - *Why it's distinct:* `SAL-03`/`SAL-B04` fire *after* a meeting is booked; `SAL-B07`
+     personalizes off LinkedIn scrape data specifically. This runs *before the first cold
+     touch* on open-web research (site, news, socials), not just a CRM/LinkedIn lookup —
+     Medium tier ($2,000–$3,500): AI Agent + 2 integrations, no branching.

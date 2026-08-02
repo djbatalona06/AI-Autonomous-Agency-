@@ -121,3 +121,23 @@ aren't on `main` yet. This entry is numbered `SMB-B10` to avoid colliding with a
      agent losing quotes to slow follow-up is the same pain as `SMB-01`'s booking-confirmation
      buyer, just in a regulated vertical with underwriting-flag nuance built into the AI
      scoring step.
+
+---
+
+### 2026-08-02 batch
+
+*(Note: `SMB-B11` exists only in still-open draft PR #50 and isn't on `main` yet. This
+entry is numbered `SMB-B12` to avoid colliding with it.)*
+
+8. **AI Invoice Agent — Create, Send, Track** — *new candidate, complements `SMB-02`*
+   - *Inspired by:* "AI invoice agent" —
+     [n8n.io/workflows/7905](https://n8n.io/workflows/7905-ai-invoice-agent/).
+   - *Node design:* Webhook/Form (job or order marked billable) → AI Agent (Claude — draft
+     line items from job notes) → PDF generation (invoice template) → Gmail (send to
+     customer) → Google Sheets/Airtable (log invoice, status = sent) → Schedule Trigger
+     (daily status poll) → IF (marked paid in accounting tool) → update status.
+   - *Why it's distinct:* `SMB-02` chases invoices that already exist and are unpaid
+     (follow-up reminders); this is the front half — drafting and issuing the invoice from
+     raw job notes in the first place, and initializing status tracking. Natural pairing:
+     sell this + `SMB-02` together as the full invoice lifecycle. Medium tier
+     ($2,000–$3,500): AI agent + PDF generation + tracking loop.
