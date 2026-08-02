@@ -30,8 +30,13 @@ Daily-refreshed map of the automation agency's template pipeline, sourced from [
 
 | Vertical | Designs seeded | Last scrape |
 |---|---|---|
-| Sales | 7 | 2026-07-22 |
-| Ecommerce | 7 | 2026-07-22 |
-| Wholesaling / REI | 7 | 2026-07-22 |
-| Productivity | 7 | 2026-07-22 |
-| Small Business | 7 | 2026-07-22 |
+| Sales | 8 | 2026-08-02 |
+| Ecommerce | 8 | 2026-08-02 |
+| Wholesaling / REI | 8 | 2026-08-02 |
+| Productivity | 8 | 2026-08-02 |
+| Small Business | 8 | 2026-08-02 |
+
+**Automation health:** the scheduled GitHub Action (`n8n-workflow-scout.yml`) has failed
+every run since 2026-07-20 (13+ days) — Anthropic account credit balance too low. See
+`_inbox/2026-08-02-scrape-log.md` for the current status; needs DJ to add credits at
+console.anthropic.com before the daily routine can run unattended again.

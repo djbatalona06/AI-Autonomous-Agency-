@@ -127,3 +127,23 @@ aren't on `main` yet. This entry is numbered `ECM-B10` to avoid colliding with a
      5-minute setup, built-in nodes only" framing is a near-perfect **Rung 1 Template
      Install** ($750, 14-day warranty): cheapest possible ECM on-ramp, cross-sell straight
      into `ECM-01` (abandoned checkout) once the store has volume.
+
+---
+
+### 2026-08-02 batch
+
+*(Note: `ECM-B11` exists only in still-open draft PR #50 and isn't on `main` yet. This
+entry is numbered `ECM-B12` to avoid colliding with it.)*
+
+8. **AI Product-to-Blog SEO Content Generator** — *new candidate, no card yet*
+   - *Inspired by:* "Auto-generate problem-focused blog posts for Shopify products with
+     AI" —
+     [n8n.io/workflows/5107](https://n8n.io/workflows/5107-auto-generate-problem-focused-blog-posts-for-shopify-products-with-ai/).
+   - *Node design:* Schedule Trigger (weekly) → Shopify (Get Many products) → Filter (no
+     blog post yet / needs refresh) → AI Agent (Claude — problem-focused SEO blog draft
+     per product) → Shopify/CMS (create draft blog post) → Slack (review ping).
+   - *Why it's distinct:* every existing `ECM` card automates a transactional/lifecycle
+     flow (cart, reviews, stock, pricing, support, brand-protection) — this is the first
+     content-marketing/SEO card, a top-of-funnel traffic play. Simple tier ($1,500–$2,000):
+     linear trigger→action, 2 integrations, no branching — good upsell once `ECM-01`/`ECM-05`
+     are already live.

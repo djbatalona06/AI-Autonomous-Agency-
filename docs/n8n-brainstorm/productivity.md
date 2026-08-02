@@ -130,3 +130,26 @@ aren't on `main` yet. This entry is numbered `PRD-B10` to avoid colliding with a
      classification-only step. Worth keeping as an alternate-stack option for thin-margin
      Rung 1 clients where API cost eats into the $750–$1,000 price band, or as a fallback
      when a client is rate-limited on OpenAI.
+
+---
+
+### 2026-08-02 batch
+
+*(Note: `PRD-B11` exists only in still-open draft PR #50 and isn't on `main` yet. This
+entry is numbered `PRD-B12` to avoid colliding with it.)*
+
+8. **Internal Knowledge-Base RAG Search Assistant (Drive + Gemini)** — *new candidate, no
+   card yet*
+   - *Inspired by:* "RAG chatbot for company documents using Google Drive and Gemini" —
+     [n8n.io/workflows/2753](https://n8n.io/workflows/2753-rag-chatbot-for-company-documents-using-google-drive-and-gemini/)
+     (already cited as the node-shape inspiration behind `SAL-03`'s call-prep design —
+     logging it here as its own general-purpose card instead of only a borrowed pattern).
+   - *Node design:* Google Drive Trigger (new/updated doc in a watched folder) →
+     Text Splitter + Embeddings (Gemini) → Vector Store (Supabase pgvector) upsert — on a
+     separate branch: Chat Trigger (Slack/webhook question) → Vector Store retrieval → AI
+     Agent (Gemini — answer grounded in retrieved chunks, cites source doc) → Slack (reply
+     in thread).
+   - *Why it's distinct:* `PRD-B08` is Notion-specific (tasks/content via MCP); this is a
+     general cross-doc-type (PDFs, Docs, Sheets in Drive) knowledge assistant for "where's
+     our X policy/SOP" questions — fits any client with a scattered internal wiki. Medium
+     tier ($2,000–$3,500): vector store + AI agent + Slack, one AI/LLM node.
