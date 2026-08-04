@@ -30,8 +30,16 @@ Daily-refreshed map of the automation agency's template pipeline, sourced from [
 
 | Vertical | Designs seeded | Last scrape |
 |---|---|---|
-| Sales | 7 | 2026-07-22 |
-| Ecommerce | 7 | 2026-07-22 |
-| Wholesaling / REI | 7 | 2026-07-22 |
-| Productivity | 7 | 2026-07-22 |
-| Small Business | 7 | 2026-07-22 |
+| Sales | 9 | 2026-08-04 |
+| Ecommerce | 9 | 2026-08-04 |
+| Wholesaling / REI | 9 | 2026-08-04 |
+| Productivity | 9 | 2026-08-04 |
+| Small Business | 9 | 2026-08-04 |
+
+**Automation health:** both scheduled GitHub Actions (`n8n-workflow-scout.yml` at
+00:07 UTC and `n8n-brainstorm-scrape.yml` at 07:00 UTC) have failed on every run since
+2026-07-20 — **15+ consecutive days**, confirmed again on the 2026-08-04 run. Root cause
+unchanged: the `ANTHROPIC_API_KEY` account's credit balance is too low. This needs DJ to
+add credits at console.anthropic.com — no in-repo code change can fix it. Draft PRs #49,
+#50, and #52 (plus today's) are open and green, awaiting manual review/merge per standing
+instruction. See `_inbox/2026-08-04-scrape-log.md`.

@@ -130,3 +130,24 @@ aren't on `main` yet. This entry is numbered `PRD-B10` to avoid colliding with a
      classification-only step. Worth keeping as an alternate-stack option for thin-margin
      Rung 1 clients where API cost eats into the $750–$1,000 price band, or as a fallback
      when a client is rate-limited on OpenAI.
+
+---
+
+### 2026-08-04 batch
+
+*(Note: `PRD-B11` and `PRD-B12` exist only in still-open draft PRs #50 and #52 and aren't
+on `main` yet. This entry is numbered `PRD-B13` to avoid colliding with either.)*
+
+8. **Realtime Meeting Co-Pilot** — *new candidate, no card yet*
+   - *Inspired by:* "AI agent for realtime insights on meetings" —
+     [n8n.io/workflows/2651](https://n8n.io/workflows/2651-ai-agent-for-realtime-insights-on-meetings/).
+   - *Node design:* Webhook (live meeting transcript stream, e.g. Zoom/Meet bot
+     integration) → AI Agent (streaming — extract objections, questions, commitments as
+     they're said) → Filter (surface only actionable/flagged moments) → Slack/desktop
+     notify (push live prompts to the rep/host mid-call) → Google Sheets (log flagged
+     moments post-call for follow-up).
+   - *Why it's distinct:* `PRD-B02` processes a finished transcript after the meeting ends;
+     this runs *during* the live call as an in-meeting copilot — different infrastructure
+     (streaming vs. batch) and a different buyer (real-time sales/support calls, not async
+     task capture). Complex tier ($3,500–$5,000): streaming AI, real-time triggers,
+     multi-integration.
