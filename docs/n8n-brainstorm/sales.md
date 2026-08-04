@@ -132,3 +132,31 @@ aren't on `main` yet. This entry is numbered `SAL-B10` to avoid colliding with a
      workflow — the reply-intent classifier (book/object/decline) and the no-show
      re-engagement branch are both new patterns not yet reflected in any `SAL-0X` card.
      Worth pulling apart into standalone add-ons rather than one $3k+ monolith sale.
+
+---
+
+### 2026-08-04 batch
+
+*(Note: `SAL-B11` and `SAL-B12` exist only in still-open draft PRs #50 and #52 and aren't
+on `main` yet. This entry is numbered `SAL-B13` to avoid colliding with either. GitHub
+Actions health check: `n8n-workflow-scout.yml` and `n8n-brainstorm-scrape.yml` are still
+failing every scheduled fire — 15+ consecutive days now (2026-07-20 through 2026-08-04),
+unchanged since first flagged in PR #48. Root cause unchanged: `ANTHROPIC_API_KEY` credit
+balance. A direct `WebFetch` of `n8n.io/workflows` from this session still 403s
+(Cloudflare); today's findings come from targeted web search, same fallback as prior runs.
+See `n8n-workflows/_inbox/2026-08-04-scrape-log.md`.)*
+
+8. **AI Sales Agent — Automated Email Handling & Lead Scoring** — *new candidate, no card
+   yet*
+   - *Inspired by:* "AI sales agent — fully automated email handling & lead scoring
+     system" —
+     [n8n.io/workflows/10128](https://n8n.io/workflows/10128-ai-sales-agent-fully-automated-email-handling-and-lead-scoring-system/).
+   - *Node design:* Email Trigger (IMAP/Gmail — inbound lead reply or inquiry) → AI Agent
+     (Claude — classify + score lead hot/warm/cold from message content) → CRM update
+     (write score + stage) → Switch by score → hot: AI drafts reply + Slack ping to rep /
+     cold: nurture-sequence tag → Gmail (send AI-drafted reply, human-reviewed queue for hot
+     leads) → Google Sheets (scoring log for pipeline reporting).
+   - *Why it's distinct:* `SAL-01` scores leads once at intake; `SAL-B12` researches before
+     the first touch. This scores and routes on *every* inbound reply as the email
+     conversation continues — an always-on inbox layer, not a one-time event. Medium tier
+     ($2,000–$3,500): branching, 3 integrations, one AI node, error handling.

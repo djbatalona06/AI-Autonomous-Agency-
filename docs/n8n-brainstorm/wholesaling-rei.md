@@ -137,3 +137,26 @@ aren't on `main` yet. This entry is numbered `WHL-B10` to avoid colliding with a
      lenders, home-service contractors, and insurance agents qualifying by property
      characteristics — worth keeping in mind if Yawn ever sells `WHL-03` outside the core
      wholesaling niche.
+
+---
+
+### 2026-08-04 batch
+
+*(Note: `WHL-B11` and `WHL-B12` exist only in still-open draft PRs #50 and #52 and aren't
+on `main` yet. This entry is numbered `WHL-B13` to avoid colliding with either.)*
+
+8. **Property Condition Photo Intelligence** — *new candidate, complements `WHL-B04`*
+   - *Inspired by:* "Enrich property inventory survey with image recognition and AI agent"
+     —
+     [n8n.io/workflows/2330](https://n8n.io/workflows/2330-enrich-property-inventory-survey-with-image-recognition-and-ai-agent/).
+   - *Node design:* Webhook/Form (property photos + address, from acquisitions team or
+     seller) → AI Agent (vision model — condition flags: roof, foundation, water damage,
+     clutter/hoarding) → HTTP Request (BatchData comps/ARV lookup, same source as
+     `WHL-01`/`WHL-B01`) → AI Agent (synthesize condition + comps into a repair-cost-
+     adjusted MAO estimate) → Google Sheets/CRM (write property record with condition score
+     + adjusted MAO) → Slack (flag high-repair-risk properties for acquisitions review).
+   - *Why it's distinct:* every existing `WHL` card routes/qualifies leads by contact
+     behavior (calls, SMS, follow-up cadence); this is the first card scoring the *property
+     itself* from photos, feeding a repair-risk signal straight into the deal analyzer
+     (`WHL-B04`) that analysts currently estimate manually. Complex tier ($3,500–$5,000):
+     vision AI, multi-step synthesis, 3+ integrations.

@@ -127,3 +127,25 @@ aren't on `main` yet. This entry is numbered `ECM-B10` to avoid colliding with a
      5-minute setup, built-in nodes only" framing is a near-perfect **Rung 1 Template
      Install** ($750, 14-day warranty): cheapest possible ECM on-ramp, cross-sell straight
      into `ECM-01` (abandoned checkout) once the store has volume.
+
+---
+
+### 2026-08-04 batch
+
+*(Note: `ECM-B11` and `ECM-B12` exist only in still-open draft PRs #50 and #52 and aren't
+on `main` yet. This entry is numbered `ECM-B13` to avoid colliding with either.)*
+
+8. **Shopify Ops Agent Bundle** — *new candidate, no card yet*
+   - *Inspired by:* "Shopify multi-module automation with GPT-4o, Langchain agents &
+     integrations" —
+     [n8n.io/workflows/4455](https://n8n.io/workflows/4455-shopify-multi-module-automation-with-gpt-4o-langchain-agents-and-integrations/).
+   - *Node design:* Schedule Trigger/Webhook (per module: order, review, stock events) → AI
+     Agent (GPT-4o router — classify event type) → Switch (support ticket / product
+     recommendation / inventory alert / review response) → Shopify (read/write order,
+     inventory, or customer data per branch) → Slack (ops team notify on flagged items) →
+     Google Sheets (unified activity log across modules).
+   - *Why it's distinct:* every existing `ECM` card automates one lifecycle step; this is
+     the first "ops agent" pattern — one AI router coordinating multiple modules under a
+     single always-on agent. Complex tier ($3,500–$5,000): multi-path orchestration, 5+
+     integrations, AI — a natural upsell umbrella once 2–3 individual `ECM` cards are
+     already sold to a client.

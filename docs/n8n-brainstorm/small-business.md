@@ -121,3 +121,23 @@ aren't on `main` yet. This entry is numbered `SMB-B10` to avoid colliding with a
      agent losing quotes to slow follow-up is the same pain as `SMB-01`'s booking-confirmation
      buyer, just in a regulated vertical with underwriting-flag nuance built into the AI
      scoring step.
+
+---
+
+### 2026-08-04 batch
+
+*(Note: `SMB-B11` and `SMB-B12` exist only in still-open draft PRs #50 and #52 and aren't
+on `main` yet. This entry is numbered `SMB-B13` to avoid colliding with either.)*
+
+8. **Unified Multi-Channel Support Inbox** — *new candidate, complements `SMB-B06`*
+   - *Inspired by:* "Automate multi-channel customer support with Gmail, Telegram, and GPT
+     AI" —
+     [n8n.io/workflows/4474](https://n8n.io/workflows/4474-automate-multi-channel-customer-support-with-gmail-telegram-and-gpt-ai/).
+   - *Node design:* Gmail Trigger + Telegram Trigger (inbound messages from either channel)
+     → AI Agent (GPT — classify intent + draft reply, channel-agnostic) → Switch (reply via
+     originating channel) → Airtable/Sheets (unified ticket log across channels) → Slack
+     (escalation ping on low AI confidence or negative sentiment).
+   - *Why it's distinct:* `SMB-B06` is WhatsApp-specific; this unifies Gmail + Telegram (and
+     is extensible to more channels) into one ticket log and one AI brain — the pitch for
+     SMB owners juggling 3+ inboxes who don't want a channel-by-channel point solution.
+     Medium tier ($2,000–$3,500): branching, 3 integrations, one AI node.
