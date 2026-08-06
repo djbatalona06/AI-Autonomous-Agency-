@@ -127,3 +127,27 @@ aren't on `main` yet. This entry is numbered `ECM-B10` to avoid colliding with a
      5-minute setup, built-in nodes only" framing is a near-perfect **Rung 1 Template
      Install** ($750, 14-day warranty): cheapest possible ECM on-ramp, cross-sell straight
      into `ECM-01` (abandoned checkout) once the store has volume.
+
+---
+
+### 2026-08-06 batch
+
+*(Note: `ECM-B11`/`ECM-B12`/`ECM-B13` exist only in still-open draft PRs #50/#52/#55 and
+aren't on `main` yet. This entry is numbered `ECM-B14` to avoid colliding with any of them.
+See `n8n-workflows/_inbox/2026-08-06-scrape-log.md` for this run's automation-health
+recheck — 17+ consecutive days of both scheduled Actions failing on the Anthropic credit
+balance, unchanged.)*
+
+8. **Multi-Platform RAG Storefront Assistant (Shopify + WooCommerce)** — reinforces
+   `ECM-B06`
+   - *Inspired by:* "E-commerce assistant for Shopify & WooCommerce with GPT-4o, Gemini &
+     RAG" —
+     [n8n.io/workflows/6100](https://n8n.io/workflows/6100-e-commerce-assistant-for-shopify-and-woocommerce-with-gpt-4o-gemini-and-rag/).
+   - *Node design:* Chat Widget/Webhook Trigger (either platform) → Switch (route by
+     store platform) → Vector Store retrieval (product catalog + policy docs) →
+     Shopify/WooCommerce (live order-status lookup) → AI Agent (GPT-4o/Gemini — answer
+     grounded in catalog docs + live order data) → IF (needs human) → Slack/Zendesk
+     escalate.
+   - *Why it's distinct:* `ECM-B06` is Shopify + Supabase order-memory only; this adds a
+     RAG layer over catalog/policy docs (not just order history) and native WooCommerce
+     support — a fit for merchants running both platforms. Medium tier ($2,000–$3,500).

@@ -132,3 +132,28 @@ aren't on `main` yet. This entry is numbered `SAL-B10` to avoid colliding with a
      workflow — the reply-intent classifier (book/object/decline) and the no-show
      re-engagement branch are both new patterns not yet reflected in any `SAL-0X` card.
      Worth pulling apart into standalone add-ons rather than one $3k+ monolith sale.
+
+---
+
+### 2026-08-06 batch
+
+*(Note: `SAL-B11`/`SAL-B12`/`SAL-B13` exist only in still-open draft PRs #50/#52/#55 and
+aren't on `main` yet. This entry is numbered `SAL-B14` to avoid colliding with any of them.
+GitHub Actions health check: `n8n-workflow-scout.yml` and `n8n-brainstorm-scrape.yml` are
+still failing every scheduled fire — reconfirmed directly against 12 consecutive daily run
+records (2026-07-26 through 2026-08-06), on top of the failures already documented back to
+2026-07-20. 17+ consecutive days total, unchanged root cause: `ANTHROPIC_API_KEY` credit
+balance. See `n8n-workflows/_inbox/2026-08-06-scrape-log.md`.)*
+
+8. **Rep Performance Tracker with AI Coaching Insights** — reinforces `SAL-B08`
+   - *Inspired by:* "Track and analyze sales performance with AI insights and Google
+     Sheets" —
+     [n8n.io/workflows/5975](https://n8n.io/workflows/5975-track-and-analyze-sales-performance-with-ai-insights-and-google-sheets/).
+   - *Node design:* Schedule Trigger (daily) → HTTP Request (CRM + telephony/email log pull
+     — calls, emails, meetings, quota attainment per rep) → Code (aggregate activity
+     metrics) → AI Agent (analyze patterns, surface coaching tips + quota-risk flags) →
+     Google Sheets (rep scorecard) → Slack (weekly manager digest).
+   - *Why it's distinct:* `SAL-B08` alerts on individual stalled deals; this is
+     manager-facing and rep-level — activity/quota trend coaching, not deal-by-deal
+     triage. Medium tier ($2,000–$3,500): scheduled aggregation, one AI node, 2
+     integrations.

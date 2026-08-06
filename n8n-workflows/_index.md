@@ -28,10 +28,24 @@ Daily-refreshed map of the automation agency's template pipeline, sourced from [
 
 ## Status
 
-| Vertical | Designs seeded | Last scrape |
-|---|---|---|
-| Sales | 7 | 2026-07-22 |
-| Ecommerce | 7 | 2026-07-22 |
-| Wholesaling / REI | 7 | 2026-07-22 |
-| Productivity | 7 | 2026-07-22 |
-| Small Business | 7 | 2026-07-22 |
+| Vertical | Designs seeded (on `main`) | Designs seeded (incl. open draft PRs) | Last scrape |
+|---|---|---|---|
+| Sales | 10 | 14 | 2026-08-06 |
+| Ecommerce | 10 | 14 | 2026-08-06 |
+| Wholesaling / REI | 10 | 14 | 2026-08-06 |
+| Productivity | 10 | 14 | 2026-08-06 |
+| Small Business | 10 | 14 | 2026-08-06 |
+
+**Automation health — P0, unresolved 17+ days:** both scheduled GitHub Actions
+(`n8n-workflow-scout.yml` at 00:07 UTC and `n8n-brainstorm-scrape.yml` at 07:00 UTC) have
+failed on every scheduled run since 2026-07-20 — reconfirmed against 12 consecutive daily
+run records on 2026-08-06. Root cause unchanged: the Anthropic account backing
+`ANTHROPIC_API_KEY` has an insufficient credit balance. No in-repo code change can fix
+this — three PRs (#42, #48, #49) have proposed code-level fixes and none of them address
+it. **Needs DJ to add credits at console.anthropic.com.** See
+`_inbox/2026-08-06-scrape-log.md` for full evidence.
+
+Five draft PRs are open awaiting manual review (all green/passing): #49 (07-30), #50
+(07-31, B11), #52 (08-02, B12), #55 (08-04, B13), and today's (08-06, B14). Nothing in any
+of them needs a code fix — they're simply unreviewed, per standing instruction to review
+before merge.
