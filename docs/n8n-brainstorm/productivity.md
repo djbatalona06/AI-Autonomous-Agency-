@@ -130,3 +130,25 @@ aren't on `main` yet. This entry is numbered `PRD-B10` to avoid colliding with a
      classification-only step. Worth keeping as an alternate-stack option for thin-margin
      Rung 1 clients where API cost eats into the $750–$1,000 price band, or as a fallback
      when a client is rate-limited on OpenAI.
+
+---
+
+### 2026-08-06 batch
+
+*(Note: `PRD-B11`/`PRD-B12`/`PRD-B13` exist only in still-open draft PRs #50/#52/#55 and
+aren't on `main` yet. This entry is numbered `PRD-B14` to avoid colliding with any of them.
+See `n8n-workflows/_inbox/2026-08-06-scrape-log.md` for this run's automation-health
+recheck — 17+ consecutive days of both scheduled Actions failing on the Anthropic credit
+balance, unchanged.)*
+
+8. **AI Receipt & Expense Processing Agent** — new candidate, no card yet
+   - *Inspired by:* "Automate receipt processing for expense tracking with Google Drive,
+     VLM Run & Airtable" —
+     [n8n.io/workflows/8393](https://n8n.io/workflows/8393-automate-receipt-processing-for-expense-tracking-with-google-drive-vlm-run-and-airtable/).
+   - *Node design:* Google Drive Trigger (new receipt image/PDF in watched folder) → VLM
+     Run (vision model — extract vendor, date, line items, total) → Code (categorize by
+     expense type) → Airtable (log expense record) → IF (over threshold → Slack approval
+     ping) → Schedule Trigger (monthly summary report to Sheets).
+   - *Why it's distinct:* first finance/back-office card in `PRD` — every existing card
+     automates inbox, meetings, or docs, not expenses. Simple tier ($1,500–$2,000): linear
+     flow, one AI/vision node, 2 integrations — a clean low-hours Ops Retainer add-on.

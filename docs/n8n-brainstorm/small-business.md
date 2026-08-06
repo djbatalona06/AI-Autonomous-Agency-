@@ -121,3 +121,27 @@ aren't on `main` yet. This entry is numbered `SMB-B10` to avoid colliding with a
      agent losing quotes to slow follow-up is the same pain as `SMB-01`'s booking-confirmation
      buyer, just in a regulated vertical with underwriting-flag nuance built into the AI
      scoring step.
+
+---
+
+### 2026-08-06 batch
+
+*(Note: `SMB-B11`/`SMB-B12`/`SMB-B13` exist only in still-open draft PRs #50/#52/#55 and
+aren't on `main` yet. This entry is numbered `SMB-B14` to avoid colliding with any of them.
+See `n8n-workflows/_inbox/2026-08-06-scrape-log.md` for this run's automation-health
+recheck — 17+ consecutive days of both scheduled Actions failing on the Anthropic credit
+balance, unchanged.)*
+
+8. **Custom Booking Engine (Calendar + Business Hours + REST API)** — reinforces `SMB-01`
+   - *Inspired by:* "Complete booking system with Google Calendar, business hours & REST
+     API" —
+     [n8n.io/workflows/8635](https://n8n.io/workflows/8635-complete-booking-system-with-google-calendar-business-hours-and-rest-api/).
+   - *Node design:* Webhook/REST API (availability query or booking request from any
+     front-end) → Code (business-hours + buffer-time rules) → Google Calendar (check
+     conflicts) → IF (slot available) → Google Calendar (create event) → Webhook Response
+     (confirmation payload).
+   - *Why it's distinct:* `SMB-01` confirms an intake booking and `SMB-05` chases
+     no-shows — both are messaging layers on top of an existing calendar. This is the
+     booking backend/API itself, for a client with no calendar tooling who needs a custom
+     intake form built on top. Medium tier ($2,000–$3,500): business-hours logic, REST
+     API surface, calendar integration.

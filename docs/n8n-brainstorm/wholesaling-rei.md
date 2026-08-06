@@ -137,3 +137,26 @@ aren't on `main` yet. This entry is numbered `WHL-B10` to avoid colliding with a
      lenders, home-service contractors, and insurance agents qualifying by property
      characteristics — worth keeping in mind if Yawn ever sells `WHL-03` outside the core
      wholesaling niche.
+
+---
+
+### 2026-08-06 batch
+
+*(Note: `WHL-B11`/`WHL-B12`/`WHL-B13` exist only in still-open draft PRs #50/#52/#55 and
+aren't on `main` yet. This entry is numbered `WHL-B14` to avoid colliding with any of them.
+See `n8n-workflows/_inbox/2026-08-06-scrape-log.md` for this run's automation-health
+recheck — 17+ consecutive days of both scheduled Actions failing on the Anthropic credit
+balance, unchanged.)*
+
+8. **Automated Property Market Report Generator** — new candidate, no card yet
+   - *Inspired by:* "Automated property market reports with Bright Data & n8n" —
+     [n8n.io/workflows/5220](https://n8n.io/workflows/5220-automated-property-market-reports-with-bright-data-and-n8n/).
+   - *Node design:* Schedule Trigger (weekly, per target market/zip) → HTTP Request
+     (Bright Data — comps, days-on-market, price trends) → AI Agent (synthesize
+     market-trend narrative + investment angle) → PDF/Doc generation (branded report) →
+     Gmail (send to seller leads/investor list) → Google Sheets (log + open/click
+     tracking).
+   - *Why it's distinct:* every existing `WHL` card is transactional (lead gen,
+     qualification, scoring, correspondence); this is the first content/authority-marketing
+     card — a recurring seller/investor touch that doubles as warm-lead nurture. Medium
+     tier ($2,000–$3,500): scraped data + AI synthesis + doc generation, 2-3 integrations.
