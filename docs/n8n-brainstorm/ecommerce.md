@@ -127,3 +127,23 @@ aren't on `main` yet. This entry is numbered `ECM-B10` to avoid colliding with a
      5-minute setup, built-in nodes only" framing is a near-perfect **Rung 1 Template
      Install** ($750, 14-day warranty): cheapest possible ECM on-ramp, cross-sell straight
      into `ECM-01` (abandoned checkout) once the store has volume.
+
+---
+
+### 2026-08-07 batch
+
+*(Note: `ECM-B11`–`ECM-B14` exist only in still-open draft PRs #50/#52/#55/#56 and aren't on
+`main` yet. This entry is numbered `ECM-B15` to avoid colliding with any of them.)*
+
+8. **AI Product Listing Generator from Photos (Gemini + Airtable)** — proposed `ECM-10`
+   (new candidate)
+   - *Inspired by:* "Generate Shopify product listings from images with Gemini AI and
+     Airtable" —
+     [n8n.io/workflows/10008](https://n8n.io/workflows/10008-generate-shopify-product-listings-from-images-with-gemini-ai-and-airtable/).
+   - *Node design:* Google Drive/Airtable Trigger (new product photo uploaded) → Gemini
+     vision (identify product, draft title/description/tags) → Airtable (stage listing for
+     review) → IF (approved) → Shopify (create product + variants) → Slack (notify
+     merchandiser).
+   - *Why it's distinct:* first listing-*creation* (content) card in the vertical — every
+     existing ECM card manages an order/customer lifecycle event; this cuts new-SKU setup
+     time instead, a fit for any merchant adding inventory regularly.
