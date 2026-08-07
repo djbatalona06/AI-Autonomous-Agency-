@@ -18,3 +18,4 @@ tags: [n8n-brainstorm, index, vertical/smb]
 - [[2026-07-23-SMB-B08-AI-Request-to-Quote-PDF-Generator|AI Request-to-Quote PDF Generator]] 🆕 new-candidate
 - [[2026-07-24-SMB-B09-Contractor-Vendor-License-Verification-for-Lead-Lists|Contractor/Vendor License Verification for Lead Lists]] 🆕 new-candidate
 - [[2026-07-25-SMB-B10-Insurance-Quote-Lead-Routing|Insurance Quote Lead Routing]] 🆕 new-candidate
+- [[2026-08-07-SMB-B15-Client-Onboarding-Orchestrator|Client Onboarding Orchestrator (Contract → Welcome Packet → Task Board)]]

@@ -132,3 +132,25 @@ aren't on `main` yet. This entry is numbered `SAL-B10` to avoid colliding with a
      workflow — the reply-intent classifier (book/object/decline) and the no-show
      re-engagement branch are both new patterns not yet reflected in any `SAL-0X` card.
      Worth pulling apart into standalone add-ons rather than one $3k+ monolith sale.
+
+---
+
+### 2026-08-07 batch
+
+*(Note: `SAL-B11`–`SAL-B14` exist only in still-open draft PRs #50/#52/#55/#56 and aren't on
+`main` yet. This entry is numbered `SAL-B15` to avoid colliding with any of them. Direct
+`n8n.io` scraping is still Cloudflare-blocked from this environment — sourced via targeted
+web search cross-checked against the live template page.)*
+
+8. **Technographic Prospecting: BuiltWith Tech-Stack Signals → Trello Lead Board** —
+   proposed `SAL-10` (new candidate)
+   - *Inspired by:* "Automate Sales Pipeline: BuiltWith Technology Data to Trello Lead
+     Cards with Google Sheets" —
+     [n8n.io/workflows/4786](https://n8n.io/workflows/4786-automate-sales-pipeline-builtwith-technology-data-to-trello-lead-cards-with-google-sheets/).
+   - *Node design:* Schedule Trigger → Google Sheets (target domain list) → HTTP Request
+     (BuiltWith tech-stack lookup per domain) → Code (flag domains missing/using a
+     competing tool — buying signal) → Trello (create lead card with detected stack) →
+     Google Sheets (mark processed).
+   - *Why it's distinct:* every prior SAL entry enriches or routes an *inbound* lead; this
+     builds an outbound list by what software a prospect already runs — a colder-outbound
+     signal, good SDR-team retainer fodder.

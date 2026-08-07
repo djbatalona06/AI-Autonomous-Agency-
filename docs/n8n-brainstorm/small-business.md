@@ -121,3 +121,23 @@ aren't on `main` yet. This entry is numbered `SMB-B10` to avoid colliding with a
      agent losing quotes to slow follow-up is the same pain as `SMB-01`'s booking-confirmation
      buyer, just in a regulated vertical with underwriting-flag nuance built into the AI
      scoring step.
+
+---
+
+### 2026-08-07 batch
+
+*(Note: `SMB-B11`–`SMB-B14` exist only in still-open draft PRs #50/#52/#55/#56 and aren't on
+`main` yet. This entry is numbered `SMB-B15` to avoid colliding with any of them.)*
+
+8. **Client Onboarding Orchestrator (Contract → Welcome Packet → Task Board)** —
+   reinforces `SMB-01`
+   - *Inspired by:* "Streamline client onboarding with PDF, Trello, Slack, Gmail &
+     Airtable" —
+     [n8n.io/workflows/8930](https://n8n.io/workflows/8930-streamline-client-onboarding-with-pdf-trello-slack-gmail-and-airtable/).
+   - *Node design:* Webhook (signed contract/deposit received) → Airtable (create client
+     record) → PDF generation (welcome packet from template) → Trello (onboarding
+     checklist board per client) → Gmail (welcome packet + kickoff-call link) → Slack
+     (notify assigned account owner).
+   - *Why it's distinct:* picks up right where `SMB-01`'s intake booking leaves off — turns
+     a signed deal into a structured onboarding checklist instead of an ad hoc email
+     thread, a natural bundle upsell for any client already on `SMB-01`.

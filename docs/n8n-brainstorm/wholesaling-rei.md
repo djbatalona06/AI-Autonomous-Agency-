@@ -137,3 +137,22 @@ aren't on `main` yet. This entry is numbered `WHL-B10` to avoid colliding with a
      lenders, home-service contractors, and insurance agents qualifying by property
      characteristics — worth keeping in mind if Yawn ever sells `WHL-03` outside the core
      wholesaling niche.
+
+---
+
+### 2026-08-07 batch
+
+*(Note: `WHL-B11`–`WHL-B14` exist only in still-open draft PRs #50/#52/#55/#56 and aren't on
+`main` yet. This entry is numbered `WHL-B15` to avoid colliding with any of them.)*
+
+8. **Conversational AI Property Search Agent (Buyer-Facing)** — reinforces `WHL-02`
+   - *Inspired by:* "Find your home with Real Estate Agent and Bright Data" —
+     [n8n.io/workflows/4872](https://n8n.io/workflows/4872-find-your-home-with-real-estate-agent-and-bright-data/).
+   - *Node design:* Chat Widget/WhatsApp Trigger (buyer inquiry) → AI Agent (parse budget,
+     area, beds/baths, investor vs. owner-occupant) → HTTP Request (Bright Data/MLS listing
+     search) → Code (match against cash-buyer buy-box on file) → AI Agent (conversational
+     results + follow-up questions) → CRM (log buyer + matched listings).
+   - *Why it's distinct:* every prior WHL entry targets the seller/lead-gen side. This is
+     the buyer-facing counterpart to `WHL-02`'s dispo matching — cash buyers self-serve a
+     natural-language search instead of a manual blast list, feeding matches straight into
+     the existing dispo CRM step.

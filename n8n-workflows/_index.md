@@ -30,8 +30,14 @@ Daily-refreshed map of the automation agency's template pipeline, sourced from [
 
 | Vertical | Designs seeded | Last scrape |
 |---|---|---|
-| Sales | 7 | 2026-07-22 |
-| Ecommerce | 7 | 2026-07-22 |
-| Wholesaling / REI | 7 | 2026-07-22 |
-| Productivity | 7 | 2026-07-22 |
-| Small Business | 7 | 2026-07-22 |
+| Sales | 12 (+3 in open PRs #50/#52/#55/#56) | 2026-08-07 |
+| Ecommerce | 12 (+3 in open PRs #50/#52/#55/#56) | 2026-08-07 |
+| Wholesaling / REI | 12 (+3 in open PRs #50/#52/#55/#56) | 2026-08-07 |
+| Productivity | 12 (+3 in open PRs #50/#52/#55/#56) | 2026-08-07 |
+| Small Business | 12 (+3 in open PRs #50/#52/#55/#56) | 2026-08-07 |
+
+**Automation health:** both scheduled scrape Actions (`n8n-workflow-scout.yml`,
+`n8n-brainstorm-scrape.yml`) have failed every run since 2026-07-20 — the
+`ANTHROPIC_API_KEY` used by the Actions has an exhausted/too-low credit balance. This is an
+off-repo billing fix (console.anthropic.com), not a code fix. See PR #56 and the
+2026-08-07 entry in `docs/n8n-brainstorm/README.md` history for detail.

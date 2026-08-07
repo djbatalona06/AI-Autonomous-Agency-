@@ -130,3 +130,23 @@ aren't on `main` yet. This entry is numbered `PRD-B10` to avoid colliding with a
      classification-only step. Worth keeping as an alternate-stack option for thin-margin
      Rung 1 clients where API cost eats into the $750–$1,000 price band, or as a fallback
      when a client is rate-limited on OpenAI.
+
+---
+
+### 2026-08-07 batch
+
+*(Note: `PRD-B11`–`PRD-B14` exist only in still-open draft PRs #50/#52/#55/#56 and aren't on
+`main` yet. This entry is numbered `PRD-B15` to avoid colliding with any of them.)*
+
+8. **Internal Knowledge Base Assistant (Slack + RAG over Drive)** — proposed `PRD-10` (new
+   candidate)
+   - *Inspired by:* "Slack AI chatbot for business team with RAG, Claude 3.7 Sonnet and
+     Google Drive" —
+     [n8n.io/workflows/3414](https://n8n.io/workflows/3414-slack-ai-chatbot-for-business-team-with-rag-claude-37-sonnet-and-google-drive/).
+   - *Node design:* Slack Trigger (@mention or DM) → Vector Store retrieval (indexed
+     Google Drive docs — SOPs, policies, past proposals) → AI Agent, Claude (answer
+     grounded in retrieved docs, cite source) → IF (no confident match) → Slack (reply with
+     answer + source links, or escalate to a human channel).
+   - *Why it's distinct:* first "ask the company anything" card — every existing PRD card
+     automates an inbox/meeting/doc/task/receipt event; this indexes and answers from the
+     team's own knowledge instead.
