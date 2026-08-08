@@ -1,5 +1,27 @@
 # n8n Template Brainstorm Pipeline
 
+> ⚠️ **Automation status (last confirmed 2026-08-08): both scheduled scrapers are down.**
+> `n8n-brainstorm-scrape.yml` and `n8n-workflow-scout.yml` have failed on **every run since
+> 2026-07-20** (20 consecutive days). Root cause, confirmed from job logs on multiple runs:
+> the Anthropic account behind the `ANTHROPIC_API_KEY` repo secret has **insufficient
+> credit balance** — `"Your credit balance is too low to access the Anthropic API"`. The
+> secret itself is present and correctly wired; this is a billing issue, not a config bug
+> (PRs #42/#48/#49 fixed unrelated permissions/OIDC issues that were not the actual
+> blocker). **The only fix is adding credits at console.anthropic.com** — no further code
+> change in this repo will resume the schedule.
+>
+> Content hasn't stopped, though: interactive sessions have been running this pipeline by
+> hand daily since, each opening a draft PR (`n8n brainstorm — YYYY-MM-DD`). As of
+> 2026-08-08 there are **6 open draft PRs awaiting manual review/merge** (#49, #50, #52,
+> #55, #56, #57), all `mergeable_state: clean`, oldest from 2026-07-31 — recommend merging
+> in date order so `N8N_BRAINSTORM` and the `B`-number sequence stop drifting from what's
+> sitting in open branches.
+>
+> Also unresolved: **two separate Google Drive folders** exist for this same mirror —
+> "Yawn Agency — n8n Templates" (`1rM6sVJuudG6csbqcGj3eCjUkw7-TU7Hr`, linked below) and
+> "Yawn Agency — n8n Template Library" (`1Ly4NAQtZPYQjqppCvEbi2bK5wyEXWCkz`, linked from
+> `n8n-workflows/README.md`) — pick one and the other should be archived/merged in.
+
 This folder is the landing zone for the recurring **n8n.io workflow scrape** that feeds
 brainstorming for the Yawn Agency catalog (`src/data/verticals.ts`). It covers the five
 buyer verticals the app already sells against:
@@ -43,10 +65,10 @@ via the Claude Code GitHub Action, in two stages:
    tags, wikilinks) so the folder can be opened directly as an Obsidian vault (or symlinked
    into an existing one) after a `git pull`.
 
-**Setup required before this fires:** add an `ANTHROPIC_API_KEY` repository secret
-(Settings → Secrets and variables → Actions) with an Anthropic API key that has budget for
-daily runs. Until that secret exists, the workflow will run but the Claude step will fail —
-GitHub will email whoever's watching the repo's Actions tab.
+**Setup required before this fires:** the `ANTHROPIC_API_KEY` repository secret
+(Settings → Secrets and variables → Actions) needs an Anthropic API key with **available
+credit balance**. The secret already exists in this repo but the account behind it is out
+of credit — see the automation-status banner at the top of this file for specifics.
 
 Google Drive uploads are seeded manually / from an interactive session for now — headless
 GitHub Actions runs don't carry this account's Google Drive connector auth, so the daily

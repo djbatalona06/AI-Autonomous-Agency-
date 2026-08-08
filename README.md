@@ -114,7 +114,8 @@ obsidian-vault/      Same brainstorm backlog, filed as one Obsidian note per ide
 template ideas against the 5 catalog verticals (Sales, E-commerce, Wholesaling/REI,
 Productivity, Small Business) into `docs/n8n-brainstorm/`, `src/data/n8nBrainstorm.ts`, and
 `obsidian-vault/n8n-templates/`. See `docs/n8n-brainstorm/README.md` for how it's wired up
-and what setup it needs (an `ANTHROPIC_API_KEY` repo secret).
+and what setup it needs (an `ANTHROPIC_API_KEY` repo secret with available credit — **the
+schedule has been down since 2026-07-20 on a billing block**; see that file's status banner).
 
 ---
 
