@@ -1,5 +1,14 @@
 # n8n Template Library — Yawn Agency
 
+> ⚠️ **Automation status (last confirmed 2026-08-08):** the two scheduled scrapers
+> (`.github/workflows/n8n-brainstorm-scrape.yml`, `n8n-workflow-scout.yml`) have failed
+> every run since 2026-07-20 — the `ANTHROPIC_API_KEY` account is out of credit. Fix is
+> adding credits at console.anthropic.com; see `docs/n8n-brainstorm/README.md` for the full
+> status, the PR backlog awaiting review, and the Drive-folder-duplication decision still
+> open. The `CronCreate`-based routine described below is superseded by those two GitHub
+> Actions workflows — no session-scoped cron is needed for this to run (once billing is
+> fixed).
+
 Working set of n8n node designs for Yawn's 5 buyer verticals, sourced from a daily scrape of [n8n.io/workflows](https://n8n.io/workflows/) plus agency-original builds where the public gallery has no direct hit (Wholesaling/REI in particular).
 
 ## Structure
