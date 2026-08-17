@@ -1,5 +1,13 @@
 # n8n Template Library — Yawn Agency
 
+> **Status (2026-08-17):** the daily scrape (`.github/workflows/n8n-workflow-scout.yml`,
+> 00:07 UTC) has failed every run since 2026-07-20 (28 days) — Anthropic account credit
+> balance too low, confirmed again this run. Fix: add credits at console.anthropic.com.
+> Manual catch-up briefs live in `docs/n8n-brainstorming/latest.md`; a backlog of draft PRs
+> (`#49`–`#58`) is awaiting review — see the banner in `docs/n8n-brainstorm/README.md` for
+> the full list and merge order. **Template preview photos** are now captured automatically
+> (`preview_image_url`) once `FIRECRAWL_API_KEY` is set — see that file for details.
+
 Working set of n8n node designs for Yawn's 5 buyer verticals, sourced from a daily scrape of [n8n.io/workflows](https://n8n.io/workflows/) plus agency-original builds where the public gallery has no direct hit (Wholesaling/REI in particular).
 
 ## Structure
@@ -26,27 +34,22 @@ These are **design specs**, not validated n8n exports. Before deploying to a cli
 
 ## Daily scrape routine
 
-A recurring agent scrapes n8n.io/workflows daily, checks Trending/Featured/Recently-Added plus a category crawl (`sales`, `marketing`, `other`, `document-ops`), matches findings against the 5 verticals, and:
+This now runs as a durable **GitHub Action** (`.github/workflows/n8n-workflow-scout.yml`,
+`scripts/n8n-workflow-scout.mjs`), fires 00:07 UTC daily, and:
 
-1. Drops raw findings + inspiration links into `_inbox/{date}-scrape-log.md`
-2. Hands off to a second agent that triages the findings, writes/updates node-design specs in the relevant vertical file, commits to GitHub, and mirrors the update to the Drive folder above
-3. Never inflates a vertical past what's genuinely new — see the coverage-gap notes in each day's inbox log
+1. Scrapes n8n.io/workflows (homepage rails + `sales`/`marketing` category pages)
+2. Asks Claude to translate findings into >=5 node designs per vertical, with a
+   best-effort preview-image lookup per idea when `FIRECRAWL_API_KEY` is set
+3. Writes `docs/n8n-brainstorming/<date>.md` + `latest.md`, inserts rows into
+   `public.n8n_workflow_ideas`, and opens a **draft PR** rather than pushing to `main`
+   — review and merge when it looks good
 
-**Scheduling limitation:** this was set up via the in-session `CronCreate` tool, which is session-scoped and auto-expires after 7 days — it does not survive past this Claude session ending. For the routine to run indefinitely, set up a recurring **Trigger** in Claude Code on the web (Settings → Triggers) with the daily prompt below, or ask a future session to recreate the cron job.
+A sibling Action, `.github/workflows/n8n-brainstorm-scrape.yml` (07:00 UTC), runs the
+parallel `docs/n8n-brainstorm/` + `src/data/n8nBrainstorm.ts` + Obsidian-vault pipeline —
+see `docs/n8n-brainstorm/README.md` for that one's details, including the current status
+banner.
 
-**Daily prompt used by the routine:**
-```
-Scrape https://n8n.io/workflows/ (homepage rails + category pages for sales,
-marketing, other, document-ops) for new or trending workflow templates.
-Match findings against Yawn's 5 verticals (Sales, E-commerce,
-Wholesaling/REI, Productivity, Small Business) using
-src/data/verticals.ts as the catalog reference. Log raw findings to
-n8n-workflows/_inbox/{today}-scrape-log.md with links and node lists.
-Then spawn a second agent to triage: update the relevant
-n8n-workflows/{vertical}/README.md node designs only if something is
-genuinely new (not already covered), commit + push to the
-claude/funny-wright-dp4g0f branch (or its successor once merged), and
-mirror the updated files into the "Yawn Agency — n8n Template Library"
-Google Drive folder (id 1Ly4NAQtZPYQjqppCvEbi2bK5wyEXWCkz). Do not
-duplicate existing catalog IDs. Report a short summary of what changed.
-```
+**Prior scheduling note (superseded):** this folder used to describe a session-scoped
+`CronCreate` routine as the daily driver. That was always meant as a stopgap — the GitHub
+Action above is the durable version and is what actually fires now (when the billing
+blocker above isn't in the way).

@@ -52,7 +52,12 @@ jobs:
                logging (more if there's real signal — don't pad with filler). For each:
                translate it into a concrete node-by-node design (trigger -> nodes ->
                output), tag which existing TemplateCard id in verticals.ts it reinforces,
-               or mark it `newCandidate: true` if nothing in the catalog covers it.
+               or mark it `newCandidate: true` if nothing in the catalog covers it. When
+               the source is a real n8n.io/workflows/<id>-... template page, also capture
+               its preview screenshot (the og:image meta tag, or the template's featured
+               image on the page) as `source.previewImageUrl` — the `BrainstormSource` type
+               already has this field. Skip it silently if the page has no image or can't
+               be reached; never let a missing photo block logging the idea itself.
             3. Append the new entries to the matching `docs/n8n-brainstorm/<vertical>.md`
                file under a new dated heading, and add matching objects to the
                `N8N_BRAINSTORM` array in `src/data/n8nBrainstorm.ts` (follow the existing
@@ -101,7 +106,10 @@ jobs:
             existing notes in that folder (YAML frontmatter with id/title/vertical/
             related_card/new_candidate/date_added/tags, then a body with the source line,
             summary, and a numbered "## Node design" list). Vertical folders: Sales,
-            Ecommerce, Wholesaling-REI, Productivity, Small-Business.
+            Ecommerce, Wholesaling-REI, Productivity, Small-Business. If the entry has a
+            `source.previewImageUrl`, embed it right under the source line as
+            `![<title> preview](<previewImageUrl>)` so the note carries the same template
+            screenshot n8n.io shows — omit this line entirely when there's no image.
 
             Then add a link to each new note into that vertical's `<Vertical> Index.md`
             under "## Node designs", using the same wikilink format as the existing
