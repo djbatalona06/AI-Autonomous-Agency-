@@ -1,5 +1,19 @@
 # n8n Template Brainstorm Pipeline
 
+> **Status (2026-08-17): daily automation blocked, 28 days running.** Both scheduled
+> Actions (`n8n-brainstorm-scrape.yml` @ 07:00 UTC, `n8n-workflow-scout.yml` @ 00:07 UTC)
+> have failed every run since 2026-07-20 — confirmed again this run via `actions_list` /
+> `get_job_logs`. Root cause unchanged: `ANTHROPIC_API_KEY` is configured correctly but the
+> Anthropic account behind it is out of credits (`"Your credit balance is too low..."`).
+> **Fix: add credits at console.anthropic.com — no code change in this repo resumes it.**
+> A live Claude session also confirmed this run that `n8n.io` itself is unreachable from a
+> sandboxed session environment (separate from the Cloudflare-bot-protection issue below),
+> which is why manual catch-up runs have been getting thinner over the past couple weeks.
+> Seven draft PRs are stacked up awaiting review (oldest 18+ days: **#49, #50, #52, #55,
+> #56, #57, #58** — all green, no code fixes needed) — recommend merging oldest → newest so
+> the `N8N_BRAINSTORM` id sequence and this pipeline's `.md` files stop drifting further
+> from what's sitting in open branches. **This run intentionally did not add an eighth.**
+
 This folder is the landing zone for the recurring **n8n.io workflow scrape** that feeds
 brainstorming for the Yawn Agency catalog (`src/data/verticals.ts`). It covers the five
 buyer verticals the app already sells against:
@@ -30,6 +44,11 @@ buyer verticals the app already sells against:
    - **Google Drive** — mirrored into **"Yawn Agency — n8n Templates"**
      (`https://drive.google.com/drive/folders/1rM6sVJuudG6csbqcGj3eCjUkw7-TU7Hr`), which has
      a subfolder per vertical plus an `_Inbox` for the raw daily drop before triage.
+     **Note:** a second, separate folder — **"Yawn Agency — n8n Template Library"**
+     (`1Ly4NAQtZPYQjqppCvEbi2bK5wyEXWCkz`, referenced by `n8n-workflows/README.md`) — mirrors
+     the sibling `n8n-workflow-scout.yml` pipeline's output instead. Both are live and
+     current as of this run; consolidating to one is a standing decision for DJ (flagged
+     repeatedly since #56/#57), not something automated here.
 
 ## The recurring job
 
@@ -43,10 +62,19 @@ via the Claude Code GitHub Action, in two stages:
    tags, wikilinks) so the folder can be opened directly as an Obsidian vault (or symlinked
    into an existing one) after a `git pull`.
 
-**Setup required before this fires:** add an `ANTHROPIC_API_KEY` repository secret
-(Settings → Secrets and variables → Actions) with an Anthropic API key that has budget for
-daily runs. Until that secret exists, the workflow will run but the Claude step will fail —
-GitHub will email whoever's watching the repo's Actions tab.
+**Current blocker:** the `ANTHROPIC_API_KEY` secret already exists and is wired correctly —
+the workflow runs, but the Claude step fails because that account's credit balance is too
+low (see the status banner above). Adding credits at console.anthropic.com is the only fix;
+re-adding or re-checking the secret itself won't help.
+
+**Template preview photos:** `scripts/n8n-workflow-scout.mjs` and this workflow's prompt now
+both capture each idea's `preview_image_url` / `source.previewImageUrl` (the template's
+og:image from its n8n.io page) when a source is a real n8n.io/workflows/ page and
+`FIRECRAWL_API_KEY` is set — the Obsidian notes embed it under the source line, and the
+`.md` briefs embed it under the heading. No `FIRECRAWL_API_KEY` is currently configured for
+either scheduled Action, so photos will start appearing automatically once one is added
+(same billing-account fix as above covers this too — Firecrawl has its own free tier if a
+separate key is preferred).
 
 Google Drive uploads are seeded manually / from an interactive session for now — headless
 GitHub Actions runs don't carry this account's Google Drive connector auth, so the daily

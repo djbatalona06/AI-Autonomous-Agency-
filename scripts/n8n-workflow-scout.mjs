@@ -18,7 +18,9 @@
  * Env:
  *   ANTHROPIC_API_KEY        - required, drives the categorization + design pass
  *   FIRECRAWL_API_KEY        - optional but recommended (n8n.io has Cloudflare
- *                              bot protection; plain fetch often gets a 403)
+ *                              bot protection; plain fetch often gets a 403).
+ *                              Also gates the preview-image enrichment pass
+ *                              below — without it, ideas ship with no image.
  *   SUPABASE_URL              - required for the DB insert step (skipped if unset)
  *   SUPABASE_SERVICE_ROLE_KEY - required for the DB insert step (skipped if unset)
  *   RUN_DATE                  - overrides today's date (YYYY-MM-DD), for testing
@@ -111,6 +113,43 @@ ${scrapedText.slice(0, 40000)}`;
   return JSON.parse(stripped);
 }
 
+/**
+ * Best-effort pass to pair each idea with the template screenshot n8n.io
+ * publishes on its source page (og:image), so the daily brief and the
+ * Obsidian/GitHub notes carry the same photo a human browsing n8n.io/workflows
+ * would see. Firecrawl-only (n8n.io's Cloudflare bot protection blocks plain
+ * fetch for this the same way it does the main scrape); skips silently with
+ * no image if FIRECRAWL_API_KEY isn't set or a given page can't be reached —
+ * this must never fail the whole run over one missing photo.
+ */
+async function enrichPreviewImages(ideasByVertical) {
+  const firecrawlKey = process.env.FIRECRAWL_API_KEY;
+  if (!firecrawlKey) {
+    console.log("[Scout] FIRECRAWL_API_KEY not set — skipping preview-image enrichment.");
+    return;
+  }
+  const allIdeas = Object.values(ideasByVertical).flat();
+  for (const idea of allIdeas) {
+    if (!idea.source_url || !idea.source_url.includes("n8n.io/workflows/")) continue;
+    try {
+      const res = await fetch("https://api.firecrawl.dev/v1/scrape", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${firecrawlKey}`,
+        },
+        body: JSON.stringify({ url: idea.source_url, formats: ["markdown"] }),
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const image = data.data?.metadata?.ogImage;
+      if (image) idea.preview_image_url = image;
+    } catch (error) {
+      console.warn(`[Scout] preview-image lookup failed for ${idea.source_url}:`, error.message);
+    }
+  }
+}
+
 function renderMarkdown(runDate, ideasByVertical) {
   let md = `# n8n Workflow Scout — ${runDate}\n\n`;
   md += `Automated daily brief. See \`README.md\` for how this is generated.\n\n---\n\n`;
@@ -119,6 +158,7 @@ function renderMarkdown(runDate, ideasByVertical) {
     const ideas = ideasByVertical[v.slug] ?? [];
     ideas.forEach((idea, i) => {
       md += `### ${i + 1}. ${idea.title} — *${idea.complexity}*\n`;
+      if (idea.preview_image_url) md += `![${idea.title}](${idea.preview_image_url})\n\n`;
       md += `\`${idea.node_chain}\`\n`;
       if (idea.template_fit) md += `- **Template fit:** ${idea.template_fit}\n`;
       if (idea.source_title || idea.source_url) {
@@ -151,6 +191,7 @@ async function insertIntoSupabase(runDate, ideasByVertical) {
       source_url: idea.source_url ?? null,
       source_title: idea.source_title ?? null,
       notes: idea.notes ?? null,
+      preview_image_url: idea.preview_image_url ?? null,
     })),
   );
   if (rows.length === 0) return;
@@ -184,6 +225,8 @@ async function main() {
       console.warn(`[Scout] Only ${ideasByVertical[v.slug].length} ideas for ${v.slug} (wanted >=5).`);
     }
   }
+
+  await enrichPreviewImages(ideasByVertical);
 
   fs.mkdirSync(briefDir, { recursive: true });
   const md = renderMarkdown(runDate, ideasByVertical);
