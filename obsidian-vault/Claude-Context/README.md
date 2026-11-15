@@ -1,6 +1,6 @@
 ---
 tags: [claude-context, index]
-synced: 2026-10-11
+synced: 2026-11-15
 ---
 # Claude Context Index
 Load THIS note first to avoid re-scanning repos (saves tokens).
